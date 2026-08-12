@@ -1,0 +1,40 @@
+# Dependencies and build output
+node_modules/
+.expo/
+target/
+dist/
+build/
+
+# Rust
+**/*.rs.bk
+Cargo.lock
+
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# iOS
+app/ios/
+app/ios/build/
+app/ios/Pods/
+app/ios/*.xcworkspace/
+app/ios/*.xcodeproj/xcuserdata/
+app/ios/*.xcodeproj/project.xcworkspace/xcuserdata/
+
+# Android
+app/android/app/build/
+app/android/.gradle/
+app/android/local.properties
+
+# Generated (Rust -> TypeScript bindings, produced by `npm run generate`)
+app/src/native/generated/
+rust/inward_core/target/
+rust/inward_core/Cargo.lock

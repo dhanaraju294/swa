@@ -1,0 +1,27 @@
+{
+  "name": "swa-mobile",
+  "private": true,
+  "workspaces": [
+    "app"
+  ],
+  "scripts": {
+    "setup": "npm install",
+    "generate:ios": "if command -v ubrn >/dev/null 2>&1; then ubrn build ios --and-generate --config ubrn.config.yaml; else echo 'ubrn CLI not found. Skipping native binding generation and using existing bindings or JS fallback.'; fi",
+    "generate:android": "if command -v ubrn >/dev/null 2>&1; then ubrn build android --and-generate --config ubrn.config.yaml; else echo 'ubrn CLI not found. Skipping native binding generation and using existing bindings or JS fallback.'; fi",
+    "generate": "npm run generate:android && npm run generate:ios",
+    "prebuild": "npm run generate && npm run --workspace app prebuild",
+    "ios": "npm run generate:ios && npm run --workspace app ios",
+    "android": "npm run generate:android && npm run --workspace app android",
+    "start": "npm run --workspace app start",
+    "test:rust": "cd rust/inward_core && cargo test",
+    "test:app": "npm run --workspace app test",
+    "typecheck": "npm run --workspace app typecheck"
+  },
+  "devDependencies": {},
+  "version": "1.0.0",
+  "dependencies": {
+    "expo": "~52.0.49",
+    "react": "18.3.1",
+    "react-native": "0.76.9"
+  }
+}

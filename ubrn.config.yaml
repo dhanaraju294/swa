@@ -1,0 +1,10 @@
+rust-crate-dir: ./rust/inward_core
+crate: inward_core
+typescript:
+  module: inward_core
+  path: ./app/src/native/generated
+  cxx-include-cpp: inward_core
+ios:
+  framework: InwardCore
+android:
+  library: inward_core
