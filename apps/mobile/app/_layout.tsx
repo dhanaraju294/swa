@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
 import * as FileSystem from 'expo-file-system';
 import { getInwardEngine } from '../src/native/InwardEngineProvider';
@@ -7,6 +7,8 @@ import { AppLockProvider } from '../src/navigation/AppLockContext';
 import AppLockGate from '../src/components/AppLockGate';
 
 export default function RootLayout() {
+  const [ready, setReady] = useState(false);
+
   useEffect(() => {
     const initDatabase = async () => {
       try {
@@ -15,10 +17,14 @@ export default function RootLayout() {
         await engine.initialize(appDocumentsDir);
       } catch (e) {
         console.error('Failed to initialize database:', e);
+      } finally {
+        setReady(true);
       }
     };
     initDatabase();
   }, []);
+
+  if (!ready) return null;
 
   return (
     <AppLockProvider>
