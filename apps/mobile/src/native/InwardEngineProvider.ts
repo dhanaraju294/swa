@@ -27,6 +27,20 @@ function probeNativeBridge(): { available: boolean; detail: string } {
   if (Platform.OS === 'web') {
     return { available: false, detail: 'Platform is web' };
   }
+  // Android: the C++ TurboModule bridge is not wired in this build. Only the
+  // prebuilt libinward_core.so is bundled; there is no CMake/externalNativeBuild
+  // compiling the JSI shim (cpp/inward-core.cpp + cpp/generated) and no
+  // Java/Kotlin registration of the `InwardCore` module. RN codegen still emits
+  // a stub `InwardCore` spec whose installRustCrate() aborts natively at launch,
+  // which surfaces as a white screen. Skip the native path entirely and use the
+  // in-memory mock engine until the Android native bridge is wired (phase 1.3).
+  if (Platform.OS === 'android') {
+    return {
+      available: false,
+      detail:
+        'Android native bridge not wired (no C++ TurboModule registration) — using mock engine (phase 1.3)',
+    };
+  }
   try {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     require('../native/generated');
