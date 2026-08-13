@@ -93,7 +93,9 @@ CREATE TABLE IF NOT EXISTS _migrations_meta (
 ";
 
 pub fn open_or_create(db_path: &str) -> Result<Connection> {
-    let path = std::path::Path::new(db_path);
+    // Clean file:// URI prefix if passed from JS
+    let clean_path = db_path.trim_start_matches("file://");
+    let path = std::path::Path::new(clean_path);
     let parent = path.parent().ok_or_else(|| {
         CoreError::Validation("DB path must include a parent directory".to_string())
     })?;
@@ -104,7 +106,7 @@ pub fn open_or_create(db_path: &str) -> Result<Connection> {
     let flags = OpenFlags::SQLITE_OPEN_CREATE
         | OpenFlags::SQLITE_OPEN_READ_WRITE
         | OpenFlags::SQLITE_OPEN_URI;
-    let mut conn = Connection::open_with_flags(db_path, flags)?;
+    let mut conn = Connection::open_with_flags(clean_path, flags)?;
     conn.pragma_update(None, "journal_mode", "WAL")?;
     conn.execute("PRAGMA foreign_keys = ON", [])?;
 

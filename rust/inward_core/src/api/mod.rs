@@ -3,19 +3,17 @@ use rusqlite::Connection;
 use crate::error::{CoreError, Result};
 use crate::models::*;
 
-pub struct CoreApi {
-    conn: Connection,
-}
+/// Stateless data-access layer. Every method takes a `&Connection` so the
+/// caller owns the connection lifecycle. In production the connection lives
+/// inside a long-lived `CoreEngine` (see `crate::engine`), which means the
+/// database is opened once and reused instead of churning a new handle per call.
+pub struct CoreApi;
 
 impl CoreApi {
-    pub fn new(conn: Connection) -> Self {
-        Self { conn }
-    }
-
-    pub fn save_checkin(&self, input: CheckinInput) -> Result<Checkin> {
+    pub fn save_checkin(conn: &Connection, input: CheckinInput) -> Result<Checkin> {
         let c = Checkin::new(input);
         c.validate()?;
-        self.conn.execute(
+        conn.execute(
             "INSERT INTO daily_checkins (id, created_at, mood, energy, stress, sleep, confidence, one_word)
              VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
             rusqlite::params![c.id, c.created_at, c.mood, c.energy, c.stress, c.sleep, c.confidence, c.one_word],
@@ -23,8 +21,8 @@ impl CoreApi {
         Ok(c)
     }
 
-    pub fn list_checkins(&self, from_iso: &str, to_iso: &str) -> Result<Vec<Checkin>> {
-        let mut stmt = self.conn.prepare(
+    pub fn list_checkins(conn: &Connection, from_iso: &str, to_iso: &str) -> Result<Vec<Checkin>> {
+        let mut stmt = conn.prepare(
             "SELECT id, created_at, mood, energy, stress, sleep, confidence, one_word
              FROM daily_checkins WHERE created_at >= ?1 AND created_at <= ?2
              ORDER BY created_at DESC",
@@ -44,8 +42,8 @@ impl CoreApi {
         rows.collect::<std::result::Result<Vec<_>, _>>().map_err(|e| CoreError::Database(e.to_string()))
     }
 
-    pub fn latest_checkin(&self) -> Result<Option<Checkin>> {
-        let mut stmt = self.conn.prepare(
+    pub fn latest_checkin(conn: &Connection) -> Result<Option<Checkin>> {
+        let mut stmt = conn.prepare(
             "SELECT id, created_at, mood, energy, stress, sleep, confidence, one_word
              FROM daily_checkins ORDER BY created_at DESC LIMIT 1",
         )?;
@@ -68,10 +66,10 @@ impl CoreApi {
         }
     }
 
-    pub fn save_on_the_spot(&self, input: OnTheSpotInput) -> Result<OnTheSpotEntry> {
+    pub fn save_on_the_spot(conn: &Connection, input: OnTheSpotInput) -> Result<OnTheSpotEntry> {
         let e = OnTheSpotEntry::new(input);
         e.validate()?;
-        self.conn.execute(
+        conn.execute(
             "INSERT INTO on_the_spot_entries (id, created_at, feeling, intensity, note)
              VALUES (?1, ?2, ?3, ?4, ?5)",
             rusqlite::params![e.id, e.created_at, e.feeling, e.intensity, e.note],
@@ -79,8 +77,8 @@ impl CoreApi {
         Ok(e)
     }
 
-    pub fn list_on_the_spot(&self, limit: u32) -> Result<Vec<OnTheSpotEntry>> {
-        let mut stmt = self.conn.prepare(
+    pub fn list_on_the_spot(conn: &Connection, limit: u32) -> Result<Vec<OnTheSpotEntry>> {
+        let mut stmt = conn.prepare(
             "SELECT id, created_at, feeling, intensity, note
              FROM on_the_spot_entries ORDER BY created_at DESC LIMIT ?1",
         )?;
@@ -96,8 +94,8 @@ impl CoreApi {
         rows.collect::<std::result::Result<Vec<_>, _>>().map_err(|e| CoreError::Database(e.to_string()))
     }
 
-    pub fn get_journal_day(&self, journal_id: &str, day: u32) -> Result<JournalDay> {
-        let mut stmt = self.conn.prepare(
+    pub fn get_journal_day(conn: &Connection, journal_id: &str, day: u32) -> Result<JournalDay> {
+        let mut stmt = conn.prepare(
             "SELECT journal_id, day_number, title, subtitle, content_json
              FROM journal_days WHERE journal_id = ?1 AND day_number = ?2",
         )?;
@@ -120,8 +118,8 @@ impl CoreApi {
         }
     }
 
-    pub fn get_journal_progress(&self, journal_id: &str) -> Result<JournalProgress> {
-        let mut stmt = self.conn.prepare(
+    pub fn get_journal_progress(conn: &Connection, journal_id: &str) -> Result<JournalProgress> {
+        let mut stmt = conn.prepare(
             "SELECT journal_id, current_day, completed_days_json, updated_at
              FROM journal_progress WHERE journal_id = ?1",
         )?;
@@ -147,8 +145,8 @@ impl CoreApi {
         }
     }
 
-    pub fn complete_journal_day(&self, journal_id: &str, day: u32) -> Result<JournalProgress> {
-        let tx = self.conn.unchecked_transaction()?;
+    pub fn complete_journal_day(conn: &Connection, journal_id: &str, day: u32) -> Result<JournalProgress> {
+        let tx = conn.unchecked_transaction()?;
         let today = now_iso();
         let today_date_str = today[..10].to_string();
 
@@ -191,18 +189,18 @@ impl CoreApi {
 
         tx.commit()?;
 
-        self.get_journal_progress(journal_id)
+        CoreApi::get_journal_progress(conn, journal_id)
     }
 
     pub fn save_reflection(
-        &self,
+        conn: &Connection,
         journal_id: &str,
         day: u32,
         prompt: &str,
         response: &str,
     ) -> Result<Reflection> {
         let r = Reflection::new(journal_id.to_string(), day, prompt.to_string(), response.to_string());
-        self.conn.execute(
+        conn.execute(
             "INSERT INTO reflections (id, journal_id, day_number, prompt, response, created_at)
              VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
             rusqlite::params![r.id, r.journal_id, r.day_number, r.prompt, r.response, r.created_at],
@@ -210,7 +208,7 @@ impl CoreApi {
         Ok(r)
     }
 
-    pub fn list_reflections(&self, journal_id: Option<&str>) -> Result<Vec<Reflection>> {
+    pub fn list_reflections(conn: &Connection, journal_id: Option<&str>) -> Result<Vec<Reflection>> {
         let (sql, param): (&str, Box<dyn rusqlite::types::ToSql>) = match journal_id {
             Some(jid) => (
                 "SELECT id, journal_id, day_number, prompt, response, created_at
@@ -223,7 +221,7 @@ impl CoreApi {
                 Box::new(""),
             ),
         };
-        let mut stmt = self.conn.prepare(sql)?;
+        let mut stmt = conn.prepare(sql)?;
         let rows = if journal_id.is_some() {
             stmt.query_map(rusqlite::params![param.as_ref()], |row| {
                 Ok(Reflection {
@@ -252,8 +250,8 @@ impl CoreApi {
         rows.map_err(|e| CoreError::Database(e.to_string()))
     }
 
-    pub fn get_streak(&self) -> Result<Streak> {
-        let mut stmt = self.conn.prepare(
+    pub fn get_streak(conn: &Connection) -> Result<Streak> {
+        let mut stmt = conn.prepare(
             "SELECT current_streak, longest_streak, last_active_date FROM streaks WHERE id = 1",
         )?;
         let mut rows = stmt.query_map([], |row| {
@@ -270,15 +268,15 @@ impl CoreApi {
         }
     }
 
-    pub fn list_badges(&self) -> Result<Vec<Badge>> {
-        let mut stmt = self.conn.prepare("SELECT key, earned_at FROM badges ORDER BY earned_at")?;
+    pub fn list_badges(conn: &Connection) -> Result<Vec<Badge>> {
+        let mut stmt = conn.prepare("SELECT key, earned_at FROM badges ORDER BY earned_at")?;
         let rows = stmt.query_map([], |row| {
             Ok(Badge { key: row.get(0)?, earned_at: row.get(1)? })
         })?;
         rows.collect::<std::result::Result<Vec<_>, _>>().map_err(|e| CoreError::Database(e.to_string()))
     }
 
-    pub fn get_awareness_snapshot(&self) -> Result<Vec<AwarenessDimensionScore>> {
+    pub fn get_awareness_snapshot(conn: &Connection) -> Result<Vec<AwarenessDimensionScore>> {
         use crate::scoring::awareness::{compute_awareness, AwarenessInputs};
         use time::{Duration, OffsetDateTime};
 
@@ -288,26 +286,25 @@ impl CoreApi {
         let monday = today - Duration::days(today.weekday().number_days_from_monday() as i64);
         let week_of = monday.to_string();
 
-        let checkins_last_7: u32 = self.conn.query_row(
+        let checkins_last_7: u32 = conn.query_row(
             "SELECT COUNT(*) FROM daily_checkins WHERE created_at >= ?1",
             [&seven_days_ago],
             |row| row.get(0),
         )?;
-        let reflections_last_7: u32 = self.conn.query_row(
+        let reflections_last_7: u32 = conn.query_row(
             "SELECT COUNT(*) FROM reflections WHERE created_at >= ?1",
             [&seven_days_ago],
             |row| row.get(0),
         )?;
-        let (avg_mood, avg_stress, avg_confidence): (Option<f64>, Option<f64>, Option<f64>) = self
-            .conn
+        let (avg_mood, avg_stress, avg_confidence): (Option<f64>, Option<f64>, Option<f64>) = conn
             .query_row(
                 "SELECT AVG(mood), AVG(stress), AVG(confidence) FROM daily_checkins WHERE created_at >= ?1",
                 [&seven_days_ago],
                 |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
             )?;
-        let streak = self.get_streak()?;
-        let seven_day_progress = self.get_journal_progress("seven-day")?;
-        let twenty_one_day_progress = self.get_journal_progress("twenty-one-day")?;
+        let streak = CoreApi::get_streak(conn)?;
+        let seven_day_progress = CoreApi::get_journal_progress(conn, "seven-day")?;
+        let twenty_one_day_progress = CoreApi::get_journal_progress(conn, "twenty-one-day")?;
 
         let journal_7day_completed = seven_day_progress.completed_days.len() as u32;
         let journal_21day_completed = twenty_one_day_progress.completed_days.len() as u32;
@@ -344,7 +341,7 @@ impl CoreApi {
 
         // Cache this week's snapshot so it's available even before the next
         // recompute, and so export_all_data_json reflects real numbers too.
-        let tx = self.conn.unchecked_transaction()?;
+        let tx = conn.unchecked_transaction()?;
         for s in &scores {
             tx.execute(
                 "INSERT INTO awareness_scores (dimension, score, week_of) VALUES (?1, ?2, ?3)
@@ -357,8 +354,8 @@ impl CoreApi {
         Ok(scores)
     }
 
-    pub fn get_profile(&self) -> Result<Profile> {
-        let mut stmt = self.conn.prepare(
+    pub fn get_profile(conn: &Connection) -> Result<Profile> {
+        let mut stmt = conn.prepare(
             "SELECT display_name, app_lock_enabled, created_at FROM profile WHERE id = 1",
         )?;
         let mut rows = stmt.query_map([], |row| {
@@ -375,16 +372,16 @@ impl CoreApi {
         }
     }
 
-    pub fn update_profile(&self, input: ProfileInput) -> Result<Profile> {
-        self.conn.execute(
+    pub fn update_profile(conn: &Connection, input: ProfileInput) -> Result<Profile> {
+        conn.execute(
             "UPDATE profile SET display_name = ?1, app_lock_enabled = ?2 WHERE id = 1",
             rusqlite::params![input.display_name, input.app_lock_enabled as i32],
         )?;
-        self.get_profile()
+        CoreApi::get_profile(conn)
     }
 
-    pub fn get_settings(&self) -> Result<AppSettings> {
-        let mut stmt = self.conn.prepare(
+    pub fn get_settings(conn: &Connection) -> Result<AppSettings> {
+        let mut stmt = conn.prepare(
             "SELECT theme, reminder_time, export_format_pref FROM app_settings WHERE id = 1",
         )?;
         let mut rows = stmt.query_map([], |row| {
@@ -401,23 +398,23 @@ impl CoreApi {
         }
     }
 
-    pub fn update_settings(&self, input: AppSettingsInput) -> Result<AppSettings> {
-        self.conn.execute(
+    pub fn update_settings(conn: &Connection, input: AppSettingsInput) -> Result<AppSettings> {
+        conn.execute(
             "UPDATE app_settings SET theme = ?1, reminder_time = ?2, export_format_pref = ?3 WHERE id = 1",
             rusqlite::params![input.theme, input.reminder_time, input.export_format_pref],
         )?;
-        self.get_settings()
+        CoreApi::get_settings(conn)
     }
 
-    pub fn export_all_data_json(&self) -> Result<String> {
-        let profile = self.get_profile()?;
-        let settings = self.get_settings()?;
-        let streak = self.get_streak()?;
-        let checkins = self.list_checkins("0000-01-01", "9999-12-31")?;
-        let on_the_spot = self.list_on_the_spot(10000)?;
-        let badges = self.list_badges()?;
-        let reflections = self.list_reflections(None)?;
-        let awareness = self.get_awareness_snapshot()?;
+    pub fn export_all_data_json(conn: &Connection) -> Result<String> {
+        let profile = CoreApi::get_profile(conn)?;
+        let settings = CoreApi::get_settings(conn)?;
+        let streak = CoreApi::get_streak(conn)?;
+        let checkins = CoreApi::list_checkins(conn, "0000-01-01", "9999-12-31")?;
+        let on_the_spot = CoreApi::list_on_the_spot(conn, 10000)?;
+        let badges = CoreApi::list_badges(conn)?;
+        let reflections = CoreApi::list_reflections(conn, None)?;
+        let awareness = CoreApi::get_awareness_snapshot(conn)?;
 
         let export = serde_json::json!({
             "version": "1.0",
@@ -434,22 +431,22 @@ impl CoreApi {
         serde_json::to_string_pretty(&export).map_err(CoreError::from)
     }
 
-    pub fn delete_all_data(&self) -> Result<()> {
-        self.conn.execute("DELETE FROM daily_checkins", [])?;
-        self.conn.execute("DELETE FROM on_the_spot_entries", [])?;
-        self.conn.execute("DELETE FROM journal_progress", [])?;
-        self.conn.execute("DELETE FROM reflections", [])?;
-        self.conn.execute("DELETE FROM badges", [])?;
-        self.conn.execute("DELETE FROM awareness_scores", [])?;
-        self.conn.execute(
+    pub fn delete_all_data(conn: &Connection) -> Result<()> {
+        conn.execute("DELETE FROM daily_checkins", [])?;
+        conn.execute("DELETE FROM on_the_spot_entries", [])?;
+        conn.execute("DELETE FROM journal_progress", [])?;
+        conn.execute("DELETE FROM reflections", [])?;
+        conn.execute("DELETE FROM badges", [])?;
+        conn.execute("DELETE FROM awareness_scores", [])?;
+        conn.execute(
             "UPDATE streaks SET current_streak = 0, longest_streak = 0, last_active_date = NULL WHERE id = 1",
             [],
         )?;
-        self.conn.execute(
+        conn.execute(
             "UPDATE profile SET display_name = NULL, app_lock_enabled = 0 WHERE id = 1",
             [],
         )?;
-        self.conn.execute(
+        conn.execute(
             "UPDATE app_settings SET theme = 'default', reminder_time = NULL, export_format_pref = 'json' WHERE id = 1",
             [],
         )?;

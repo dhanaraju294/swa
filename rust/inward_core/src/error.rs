@@ -11,6 +11,8 @@ pub enum CoreError {
     NotFound(String),
     #[error("Migration error: {0}")]
     Migration(String),
+    #[error("Engine lock poisoned or unavailable")]
+    LockError,
     #[error("Serialization error: {0}")]
     Serialization(String),
     #[error("UUID parse error: {0}")]

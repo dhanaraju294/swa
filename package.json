@@ -2,7 +2,7 @@
   "name": "swa-mobile",
   "private": true,
   "workspaces": [
-    "app"
+    "apps/mobile"
   ],
   "scripts": {
     "setup": "npm install",
@@ -17,9 +17,12 @@
     "test:app": "npm run --workspace app test",
     "typecheck": "npm run --workspace app typecheck"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "uniffi-bindgen-react-native": "^0.29.3-1"
+  },
   "version": "1.0.0",
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^2.1.2",
     "expo": "~52.0.49",
     "react": "18.3.1",
     "react-native": "0.76.9"

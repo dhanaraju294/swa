@@ -1,10 +1,19 @@
-rust-crate-dir: ./rust/inward_core
-crate: inward_core
-typescript:
-  module: inward_core
-  path: ./app/src/native/generated
-  cxx-include-cpp: inward_core
+rust:
+  directory: ./rust/inward_core
+  manifestPath: Cargo.toml
+bindings:
+  ts: ./app/src/native/generated
+  cpp: ./app/cpp/generated
+  uniffiToml: ./rust/inward_core/uniffi.toml
 ios:
-  framework: InwardCore
+  directory: ./app/ios
+  frameworkName: InwardCore
 android:
+  directory: ./app/android
   library: inward_core
+turboModule:
+  cpp: ./app/cpp
+  ts: ./app/src/native/generated
+  specName: InwardCore
+  name: InwardCore
+  entrypoint: ./app/src/native/generated/index.tsx
