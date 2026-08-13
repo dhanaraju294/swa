@@ -34,8 +34,10 @@ apps/mobile/android/app/build/
 apps/mobile/android/.gradle/
 apps/mobile/android/local.properties
 
-# Generated (Rust -> TypeScript bindings, produced by `npm run generate`)
-apps/mobile/src/native/generated/
+# Generated (Rust -> TypeScript bindings). The mobile TS bindings under
+# apps/mobile/src/native/generated are committed because the app imports them
+# directly and React Native's codegen scans that directory (codegenConfig.jsSrcsDir).
+# Only the Rust build artifacts stay ignored.
 rust/inward_core/target/
 rust/inward_core/Cargo.lock
 # guildly agent workspace (linked project) — unstaged by default
