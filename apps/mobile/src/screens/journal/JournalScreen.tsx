@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity,
+  View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, Animated, Dimensions,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { colors, spacing } from '../../design-system/tokens';
@@ -15,7 +15,7 @@ import { BreathingSquare } from '../../design-system/BreathingSquare';
 import { SensesWheel } from '../../design-system/SensesWheel';
 import { ProgressPetals } from '../../design-system/ProgressPetals';
 import { Button } from '../../design-system/Button';
-import { useJournalProgress, useCompleteDay } from '../../hooks/useJournal';
+import { useJournalProgress, useCompleteDay, useSaveReflection } from '../../hooks/useJournal';
 import { useUI } from '../../hooks/useUI';
 import { getDayContent } from '../../content/day1';
 
@@ -36,10 +36,12 @@ function BlockRenderer({
   block,
   journalId,
   dayNumber,
+  onBegin,
 }: {
   block: Block;
   journalId: string;
   dayNumber: number;
+  onBegin?: () => void;
 }) {
   const { journalDrafts, setJournalDraft, checkinDraft, setCheckinDraft } = useUI();
   const [breathingActive, setBreathingActive] = useState(false);
@@ -59,9 +61,9 @@ function BlockRenderer({
             <Text style={styles.coverTitle}>{block.title}</Text>
           </View>
           <Text style={styles.coverQuote}>{block.quote}</Text>
-          <Card style={styles.coverCta}>
+          <TouchableOpacity style={styles.coverCta} onPress={onBegin} activeOpacity={0.8}>
             <Text style={styles.coverCtaText}>I'm ready to begin</Text>
-          </Card>
+          </TouchableOpacity>
         </View>
       );
 
@@ -275,15 +277,82 @@ export default function JournalScreen() {
   const router = useRouter();
   const [journalId, setJournalId] = useState('seven-day');
   const [dayNumber, setDayNumber] = useState(1);
-  const { data: progress } = useJournalProgress(journalId);
+  const { data: progress, refresh: refreshProgress } = useJournalProgress(journalId);
   const { complete, saving } = useCompleteDay();
+  const { save: saveReflection, saving: savingReflection } = useSaveReflection();
+  const { journalDrafts, clearJournalDraft } = useUI();
+
+  const total = journalId === 'seven-day' ? 7 : 21;
+  const completedDays = progress?.completedDays || [];
+  const maxCompleted = completedDays.length ? Math.max(...completedDays) : 0;
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const lastJournalDate = completedDays.length
+    ? (progress?.updatedAt || '').slice(0, 10)
+    : null;
+  const todayDone = lastJournalDate === todayStr;
+  // Only one journal per day: the next day unlocks on a new calendar day.
+  // Today's already-completed day stays visible, but future days stay locked
+  // until tomorrow. Completed (previous) days are always viewable.
+  const unlockedDay =
+    maxCompleted === 0 ? 1 : Math.min(maxCompleted + (todayDone ? 0 : 1), total);
 
   const content = getDayContent(journalId, dayNumber) as { blocks: Block[] };
   const blocks: Block[] = content.blocks || [];
+  const totalSlides = blocks.length;
+
+  // Slide-by-slide navigation: one block per slide, animated horizontally.
+  const [slideIndex, setSlideIndex] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const slideAnim = useRef(new Animated.Value(0)).current;
+  const screenWidth = Dimensions.get('window').width - spacing.lg * 2;
+
+  // Reset to the first slide whenever the user switches journal or day.
+  useEffect(() => {
+    setSlideIndex(0);
+  }, [journalId, dayNumber]);
+
+  // Animate each slide in from the side it's entering from.
+  useEffect(() => {
+    slideAnim.setValue(direction >= 0 ? screenWidth : -screenWidth);
+    Animated.timing(slideAnim, {
+      toValue: 0,
+      duration: 280,
+      useNativeDriver: true,
+    }).start();
+  }, [slideIndex, direction, slideAnim, screenWidth]);
+
+  const goToSlide = (next: number) => {
+    if (next < 0 || next >= totalSlides) return;
+    setDirection(next > slideIndex ? 1 : -1);
+    setSlideIndex(next);
+  };
+
+  const canComplete = dayNumber === unlockedDay && !todayDone;
 
   const handleComplete = async () => {
     try {
-      await complete(journalId, dayNumber);
+      const draftKey = `${journalId}-${unlockedDay}`;
+      const saves: Promise<unknown>[] = [];
+      for (const block of blocks) {
+        if (block.type === 'reflection-prompts' || block.type === 'evening-reflection') {
+          const prefix = block.type === 'reflection-prompts' ? 'ref' : 'evening';
+          block.prompts.forEach((prompt, i) => {
+            const response = journalDrafts[`${draftKey}-${prefix}-${i}`]?.trim();
+            if (response) {
+              const draftId = `${draftKey}-${prefix}-${i}`;
+              saves.push(
+                saveReflection(journalId, unlockedDay, prompt, response).then(() =>
+                  clearJournalDraft(draftId),
+                ),
+              );
+            }
+          });
+        }
+      }
+      await Promise.all(saves);
+      await complete(journalId, unlockedDay);
+      await refreshProgress();
+      setDayNumber(unlockedDay);
       Alert.alert('Day Complete', 'Great work showing up today!', [
         { text: 'OK' },
       ]);
@@ -326,33 +395,76 @@ export default function JournalScreen() {
           <Button
             title="Next →"
             variant="ghost"
-            onPress={() => setDayNumber(dayNumber + 1)}
-            disabled={dayNumber >= (journalId === 'seven-day' ? 7 : 21)}
+            onPress={() => setDayNumber(Math.min(unlockedDay, dayNumber + 1))}
+            disabled={dayNumber >= unlockedDay}
             style={styles.dayNavBtn}
           />
         </View>
 
         <ProgressPetals
-          total={journalId === 'seven-day' ? 7 : 21}
+          total={total}
           current={dayNumber}
           completed={progress?.completedDays || []}
         />
 
-        {/* Render blocks */}
-        {blocks.map((block, i) => (
-          <BlockRenderer
-            key={i}
-            block={block}
-            journalId={journalId}
-            dayNumber={dayNumber}
+        {todayDone && dayNumber === unlockedDay && (
+          <View style={styles.doneBanner}>
+            <Text style={styles.doneText}>
+              You've journaled today. The next day unlocks tomorrow.
+            </Text>
+          </View>
+        )}
+
+        {/* Slide-by-slide journal content */}
+        <View style={styles.slideViewport}>
+          <Animated.View
+            key={slideIndex}
+            style={[styles.slideTrack, { transform: [{ translateX: slideAnim }] }]}
+          >
+            <BlockRenderer
+              block={blocks[slideIndex]}
+              journalId={journalId}
+              dayNumber={dayNumber}
+              onBegin={() => goToSlide(slideIndex + 1)}
+            />
+          </Animated.View>
+        </View>
+
+        {/* Slide navigation */}
+        <View style={styles.slideNav}>
+          <Button
+            title="← Back"
+            variant="ghost"
+            onPress={() => goToSlide(slideIndex - 1)}
+            disabled={slideIndex <= 0}
+            style={styles.slideNavBtn}
           />
-        ))}
+          <View style={styles.dots}>
+            {blocks.map((_, i) => (
+              <View
+                key={i}
+                style={[styles.dot, i === slideIndex && styles.dotActive]}
+              />
+            ))}
+          </View>
+          <Button
+            title={slideIndex >= totalSlides - 1 ? 'Done' : 'Next →'}
+            variant="ghost"
+            onPress={() => goToSlide(slideIndex + 1)}
+            disabled={slideIndex >= totalSlides - 1}
+            style={styles.slideNavBtn}
+          />
+        </View>
+
+        <Text style={styles.slideCount}>
+          Slide {slideIndex + 1} of {totalSlides}
+        </Text>
 
         <Button
-          title={saving ? 'Saving...' : 'Complete Day'}
+          title={saving || savingReflection ? 'Saving...' : dayNumber === unlockedDay ? 'Complete Day' : 'Locked Until Unlocked'}
           onPress={handleComplete}
           color={colors.gold}
-          disabled={saving}
+          disabled={saving || savingReflection || !canComplete}
           style={{ marginTop: spacing.xl }}
         />
 
@@ -372,6 +484,16 @@ const styles = StyleSheet.create({
   dayNav: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md },
   dayNavBtn: { paddingHorizontal: spacing.md },
   dayLabel: { fontFamily: 'Fraunces', fontSize: 16, fontWeight: '600', color: colors.ink },
+  doneBanner: { padding: spacing.md, backgroundColor: '#F1F7EF', borderRadius: 12, marginBottom: spacing.md },
+  doneText: { fontFamily: 'Nunito', fontSize: 12.5, fontWeight: '700', color: colors.ink },
+  slideViewport: { overflow: 'hidden', marginTop: spacing.md },
+  slideTrack: { width: '100%' },
+  slideNav: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: spacing.lg },
+  slideNavBtn: { paddingHorizontal: spacing.md },
+  dots: { flexDirection: 'row', gap: 6, alignItems: 'center' },
+  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.writingLine },
+  dotActive: { backgroundColor: colors.gold, width: 10, height: 10, borderRadius: 5 },
+  slideCount: { fontFamily: 'Nunito', fontSize: 12, color: colors.inkSoft, textAlign: 'center', marginTop: spacing.sm },
   page: { marginTop: spacing.xxl },
   coverPage: { alignItems: 'center', paddingVertical: spacing.xxxl },
   coverTop: { marginBottom: spacing.xxl },

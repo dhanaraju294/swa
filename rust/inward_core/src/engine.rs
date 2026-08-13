@@ -158,7 +158,8 @@ mod tests {
         assert_eq!(list.len(), 1);
         assert_eq!(list[0].id, saved.id);
         let streak = engine.get_streak().unwrap();
-        assert_eq!(streak.current_streak, 0);
+        // A check-in counts as showing up today, so the streak starts at 1.
+        assert_eq!(streak.current_streak, 1);
     }
 
     #[test]

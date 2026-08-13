@@ -11,14 +11,30 @@ import { Button } from '../../design-system/Button';
 import { useStreak, useAwarenessSnapshot } from '../../hooks/useAwareness';
 import { useLatestCheckin } from '../../hooks/useCheckins';
 import { useJournalProgress } from '../../hooks/useJournal';
+import { useProfile } from '../../hooks/useProfile';
+import type { JournalProgress } from '../../native/InwardEngine';
 
 const today = new Date();
 const greeting = today.getHours() < 12 ? 'Good morning' : today.getHours() < 18 ? 'Good afternoon' : 'Good evening';
 const dateStr = today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
+// The day the user is allowed to work on: one journal per calendar day, so the
+// next day only unlocks on a new day. Completed days stay viewable.
+function unlockedDayOf(progress: JournalProgress | null, total: number): number {
+  const completedDays = progress?.completedDays || [];
+  const maxCompleted = completedDays.length ? Math.max(...completedDays) : 0;
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const lastJournalDate = completedDays.length
+    ? (progress?.updatedAt || '').slice(0, 10)
+    : null;
+  const todayDone = lastJournalDate === todayStr;
+  return maxCompleted === 0 ? 1 : Math.min(maxCompleted + (todayDone ? 0 : 1), total);
+}
+
 export default function HomeScreen() {
   const router = useRouter();
   const isFocused = useIsFocused();
+  const { data: profile } = useProfile();
   const { data: streak, refresh: refreshStreak } = useStreak();
   const { data: latestCheckin, refresh: refreshLatestCheckin } = useLatestCheckin();
   const { data: sevenDayProgress, refresh: refreshSevenDayProgress } = useJournalProgress('seven-day');
@@ -46,7 +62,9 @@ export default function HomeScreen() {
       {/* Header */}
       <View style={styles.header}>
         <View>
-          <Text style={styles.greeting}>{greeting}</Text>
+          <Text style={styles.greeting}>
+            {profile?.displayName ? `${greeting}, ${profile.displayName}` : greeting}
+          </Text>
           <Text style={styles.date}>{dateStr}</Text>
         </View>
         <PetalMark size={32} />
@@ -93,11 +111,11 @@ export default function HomeScreen() {
             <View style={styles.journeyInfo}>
               <Text style={styles.journeyTitle}>7-Day Journal</Text>
               <Text style={styles.journeySub}>
-                Day {sevenDayProgress?.currentDay || 1} of 7
+                Day {unlockedDayOf(sevenDayProgress, 7)} of 7
               </Text>
               <ProgressPetals
                 total={7}
-                current={sevenDayProgress?.currentDay || 1}
+                current={unlockedDayOf(sevenDayProgress, 7)}
                 completed={sevenDayProgress?.completedDays || []}
               />
             </View>
@@ -114,11 +132,11 @@ export default function HomeScreen() {
             <View style={styles.journeyInfo}>
               <Text style={styles.journeyTitle}>21-Day Deep Journal</Text>
               <Text style={styles.journeySub}>
-                Day {twentyOneDayProgress?.currentDay || 1} of 21
+                Day {unlockedDayOf(twentyOneDayProgress, 21)} of 21
               </Text>
               <ProgressPetals
                 total={21}
-                current={twentyOneDayProgress?.currentDay || 1}
+                current={unlockedDayOf(twentyOneDayProgress, 21)}
                 completed={twentyOneDayProgress?.completedDays || []}
               />
             </View>

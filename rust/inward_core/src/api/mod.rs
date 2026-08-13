@@ -18,7 +18,41 @@ impl CoreApi {
              VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
             rusqlite::params![c.id, c.created_at, c.mood, c.energy, c.stress, c.sleep, c.confidence, c.one_word],
         )?;
+        // Showing up for a check-in counts toward the streak.
+        CoreApi::record_activity(conn)?;
         Ok(c)
+    }
+
+    /// Update the streak for "activity today": a check-in, an on-the-spot entry,
+    /// or a completed journal day all count as the user showing up. Uses the same
+    /// pure `compute_streak` logic as journal completion so every activity source
+    /// keeps the streak consistent.
+    pub fn record_activity(conn: &Connection) -> Result<()> {
+        let today = now_iso();
+        let today_date_str = today[..10].to_string();
+
+        let (current, longest): (u32, u32) = conn.query_row(
+            "SELECT current_streak, longest_streak FROM streaks WHERE id = 1",
+            [],
+            |row| Ok((row.get(0)?, row.get(1)?)),
+        )?;
+
+        let (new_streak, new_longest, _same_day) = {
+            let last_date: Option<String> = conn
+                .query_row(
+                    "SELECT last_active_date FROM streaks WHERE id = 1",
+                    [],
+                    |row| row.get(0),
+                )
+                .unwrap_or(None);
+            crate::scoring::streaks::compute_streak(last_date.as_deref(), current, longest)
+        };
+
+        conn.execute(
+            "UPDATE streaks SET current_streak = ?1, longest_streak = ?2, last_active_date = ?3 WHERE id = 1",
+            rusqlite::params![new_streak, new_longest, today_date_str],
+        )?;
+        Ok(())
     }
 
     pub fn list_checkins(conn: &Connection, from_iso: &str, to_iso: &str) -> Result<Vec<Checkin>> {
@@ -74,6 +108,8 @@ impl CoreApi {
              VALUES (?1, ?2, ?3, ?4, ?5)",
             rusqlite::params![e.id, e.created_at, e.feeling, e.intensity, e.note],
         )?;
+        // An on-the-spot reflection also counts as showing up today.
+        CoreApi::record_activity(conn)?;
         Ok(e)
     }
 
@@ -148,48 +184,71 @@ impl CoreApi {
     pub fn complete_journal_day(conn: &Connection, journal_id: &str, day: u32) -> Result<JournalProgress> {
         let tx = conn.unchecked_transaction()?;
         let today = now_iso();
-        let today_date_str = today[..10].to_string();
 
-        // Update progress
-        tx.execute(
-            "INSERT OR REPLACE INTO journal_progress (journal_id, current_day, completed_days_json, updated_at)
-             SELECT ?1,
-               MAX(COALESCE((SELECT current_day FROM journal_progress WHERE journal_id = ?1), 1), ?2 + 1),
-               json_insert(
-                 COALESCE((SELECT completed_days_json FROM journal_progress WHERE journal_id = ?1), '[]'),
-                 '$[' || json_array_length(COALESCE((SELECT completed_days_json FROM journal_progress WHERE journal_id = ?1), '[]')) || ']',
-                 ?2
-               ),
-               ?3",
-            rusqlite::params![journal_id, day, today],
-        )?;
+        // The first 7 days of the 21-day journal ARE the 7-day journal, so
+        // completing a shared day in either journal completes it in both.
+        let mut journals_to_update = vec![journal_id.to_string()];
+        if day <= 7 {
+            let other = if journal_id == "seven-day" {
+                "twenty-one-day"
+            } else {
+                "seven-day"
+            };
+            journals_to_update.push(other.to_string());
+        }
 
-        // Get current streak data
-        let (current, longest): (u32, u32) = tx.query_row(
-            "SELECT current_streak, longest_streak FROM streaks WHERE id = 1",
-            [],
-            |row| Ok((row.get(0)?, row.get(1)?)),
-        )?;
+        for jid in &journals_to_update {
+            CoreApi::mark_journal_day_complete(&tx, jid, day, &today)?;
+        }
 
-        let (new_streak, new_longest, _same_day) = {
-            let last_date: Option<String> = tx
-                .query_row(
-                    "SELECT last_active_date FROM streaks WHERE id = 1",
-                    [],
-                    |row| row.get(0),
-                )
-                .unwrap_or(None);
-            crate::scoring::streaks::compute_streak(last_date.as_deref(), current, longest)
-        };
-
-        tx.execute(
-            "UPDATE streaks SET current_streak = ?1, longest_streak = ?2, last_active_date = ?3 WHERE id = 1",
-            rusqlite::params![new_streak, new_longest, today_date_str],
-        )?;
+        // Completing a journal day counts as showing up today (once per day).
+        CoreApi::record_activity(&tx)?;
 
         tx.commit()?;
 
         CoreApi::get_journal_progress(conn, journal_id)
+    }
+
+    /// Idempotently record that `day` of `journal_id` is complete. Reads the
+    /// existing progress, merges the day into the completed set (no duplicates),
+    /// and advances `current_day`.
+    fn mark_journal_day_complete(
+        conn: &Connection,
+        journal_id: &str,
+        day: u32,
+        today: &str,
+    ) -> Result<()> {
+        let current_json: Option<String> = conn
+            .query_row(
+                "SELECT completed_days_json FROM journal_progress WHERE journal_id = ?1",
+                [journal_id],
+                |row| row.get(0),
+            )
+            .unwrap_or(None);
+        let mut completed: Vec<u32> = current_json
+            .and_then(|s| serde_json::from_str(&s).ok())
+            .unwrap_or_default();
+        if !completed.contains(&day) {
+            completed.push(day);
+        }
+        completed.sort_unstable();
+
+        let current_day: Option<u32> = conn
+            .query_row(
+                "SELECT current_day FROM journal_progress WHERE journal_id = ?1",
+                [journal_id],
+                |row| row.get(0),
+            )
+            .unwrap_or(None);
+        let new_current = std::cmp::max(current_day.unwrap_or(1), day + 1);
+
+        let completed_json = serde_json::to_string(&completed).map_err(CoreError::from)?;
+        conn.execute(
+            "INSERT OR REPLACE INTO journal_progress (journal_id, current_day, completed_days_json, updated_at)
+             VALUES (?1, ?2, ?3, ?4)",
+            rusqlite::params![journal_id, new_current, completed_json, today],
+        )?;
+        Ok(())
     }
 
     pub fn save_reflection(

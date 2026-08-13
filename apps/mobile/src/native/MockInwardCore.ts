@@ -60,6 +60,8 @@ export class MockCoreEngine implements InwardEngine {
     }
     const checkin: Checkin = { id: newId(), createdAt: nowIso(), ...input };
     this.checkins.push(checkin);
+    // Showing up for a check-in counts toward the streak.
+    this.recordActivity();
     return checkin;
   }
 
@@ -83,6 +85,8 @@ export class MockCoreEngine implements InwardEngine {
     }
     const entry: OnTheSpotEntry = { id: newId(), createdAt: nowIso(), ...input };
     this.onTheSpot.push(entry);
+    // An on-the-spot reflection also counts as showing up today.
+    this.recordActivity();
     return entry;
   }
 
@@ -114,31 +118,51 @@ export class MockCoreEngine implements InwardEngine {
   }
 
   async completeJournalDay(journalId: string, day: number): Promise<JournalProgress> {
-    const current = await this.getJournalProgress(journalId);
-    const completed = current.completedDays.includes(day)
-      ? current.completedDays
-      : [...current.completedDays, day];
-    const progress: JournalProgress = {
-      journalId,
-      currentDay: Math.max(current.currentDay, day + 1),
-      completedDays: completed,
-      updatedAt: nowIso(),
+    const mark = (jid: string) => {
+      const current = this.progress[jid] ?? {
+        journalId: jid,
+        currentDay: 1,
+        completedDays: [] as number[],
+        updatedAt: nowIso(),
+      };
+      const completed = current.completedDays.includes(day)
+        ? current.completedDays
+        : [...current.completedDays, day];
+      this.progress[jid] = {
+        journalId: jid,
+        currentDay: Math.max(current.currentDay, day + 1),
+        completedDays: completed,
+        updatedAt: nowIso(),
+      };
     };
-    this.progress[journalId] = progress;
 
-    // Mirror Rust: completing a journal day advances the streak.
+    // The first 7 days of the 21-day journal ARE the 7-day journal, so
+    // completing a shared day in either journal completes it in both.
+    mark(journalId);
+    if (day <= 7) {
+      const other = journalId === 'seven-day' ? 'twenty-one-day' : 'seven-day';
+      mark(other);
+    }
+
+    // Completing a journal day counts as showing up today (once per day).
+    this.recordActivity();
+    return this.getJournalProgress(journalId);
+  }
+
+  // Mirror Rust: any activity (check-in, on-the-spot, journal day) bumps the
+  // streak using the same same-day / consecutive-day / gap-reset rules.
+  private recordActivity(): void {
     const today = isoToday();
     if (this.streak.lastActiveDate === today) {
-      // same-day completion doesn't bump again
-    } else {
-      const bumped = this.streak.currentStreak + 1;
-      this.streak = {
-        currentStreak: bumped,
-        longestStreak: Math.max(this.streak.longestStreak, bumped),
-        lastActiveDate: today,
-      };
+      // same-day activity doesn't bump the streak again
+      return;
     }
-    return progress;
+    const bumped = this.streak.currentStreak + 1;
+    this.streak = {
+      currentStreak: bumped,
+      longestStreak: Math.max(this.streak.longestStreak, bumped),
+      lastActiveDate: today,
+    };
   }
 
   async saveReflection(

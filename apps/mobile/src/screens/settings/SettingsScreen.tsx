@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert, Switch } from 'react-native';
 import { colors, spacing } from '../../design-system/tokens';
 import { Card } from '../../design-system/Card';
@@ -6,14 +6,33 @@ import { EyebrowLabel } from '../../design-system/EyebrowLabel';
 import { Button } from '../../design-system/Button';
 import { WritingLineInput } from '../../design-system/WritingLineInput';
 import { useProfile, useSettings, useExportData, useDeleteAllData } from '../../hooks/useProfile';
+import { useAppLockContext } from '../../navigation/AppLockContext';
+
+type PasscodeMode = 'create' | 'verify' | null;
 
 export default function SettingsScreen() {
   const { data: profile, update: updateProfile } = useProfile();
   const { data: settings, update: updateSettings } = useSettings();
   const { exportData, loading: exporting } = useExportData();
   const { deleteAll, loading: deleting } = useDeleteAllData();
+  const { enabled: lockEnabled, hasPasscode, enableAppLock, disableAppLock, verify } =
+    useAppLockContext();
 
   const [displayName, setDisplayName] = useState(profile?.displayName || '');
+  // Keep the name field in sync with the persisted profile (async-loaded),
+  // e.g. after reopening settings or after onboarding set the name.
+  const syncedName = React.useRef<string | null | undefined>(undefined);
+  useEffect(() => {
+    if (profile && profile.displayName !== syncedName.current) {
+      syncedName.current = profile.displayName;
+      setDisplayName(profile.displayName ?? '');
+    }
+  }, [profile]);
+
+  const [passcodeMode, setPasscodeMode] = useState<PasscodeMode>(null);
+  const [passcode, setPasscode] = useState('');
+  const [passcodeConfirm, setPasscodeConfirm] = useState('');
+  const [passcodeError, setPasscodeError] = useState('');
 
   const handleExport = async () => {
     try {
@@ -47,12 +66,55 @@ export default function SettingsScreen() {
   const handleSaveName = async () => {
     await updateProfile({
       displayName: displayName || undefined,
-      appLockEnabled: profile?.appLockEnabled || false,
+      appLockEnabled: lockEnabled,
     });
     Alert.alert('Saved', 'Profile updated.');
   };
 
+  const handleLockToggle = (next: boolean) => {
+    if (next) {
+      if (hasPasscode) {
+        enableAppLock();
+      } else {
+        setPasscode('');
+        setPasscodeConfirm('');
+        setPasscodeError('');
+        setPasscodeMode('create');
+      }
+    } else {
+      setPasscode('');
+      setPasscodeError('');
+      setPasscodeMode('verify');
+    }
+  };
+
+  const submitCreatePasscode = async () => {
+    if (passcode.length < 4) {
+      setPasscodeError('Passcode must be 4 digits.');
+      return;
+    }
+    if (passcode !== passcodeConfirm) {
+      setPasscodeError('Passcodes do not match.');
+      return;
+    }
+    await enableAppLock(passcode);
+    setPasscodeMode(null);
+    setPasscode('');
+    setPasscodeConfirm('');
+  };
+
+  const submitVerifyPasscode = async () => {
+    if (verify(passcode)) {
+      await disableAppLock();
+      setPasscodeMode(null);
+      setPasscode('');
+    } else {
+      setPasscodeError('Incorrect passcode.');
+    }
+  };
+
   return (
+    <>
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text style={styles.title}>Settings</Text>
       <Text style={styles.subtitle}>Your space, your rules.</Text>
@@ -82,16 +144,11 @@ export default function SettingsScreen() {
         <View style={styles.row}>
           <View style={styles.rowInfo}>
             <Text style={styles.rowLabel}>App Lock</Text>
-            <Text style={styles.rowDesc}>Require Face ID or passcode to open</Text>
+            <Text style={styles.rowDesc}>Require a passcode to open the app</Text>
           </View>
           <Switch
-            value={profile?.appLockEnabled || false}
-            onValueChange={async (v) => {
-              await updateProfile({
-                displayName: profile?.displayName || undefined,
-                appLockEnabled: v,
-              });
-            }}
+            value={lockEnabled}
+            onValueChange={handleLockToggle}
             trackColor={{ true: colors.sage, false: '#E0DAD0' }}
           />
         </View>
@@ -166,6 +223,68 @@ export default function SettingsScreen() {
 
       <View style={{ height: 80 }} />
     </ScrollView>
+
+    {passcodeMode && (
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalCard}>
+          <EyebrowLabel label={passcodeMode === 'create' ? 'SET APP LOCK' : 'ENTER PASSCODE'} />
+          <Text style={styles.modalTitle}>
+            {passcodeMode === 'create' ? 'Create a 4-digit passcode' : 'Enter your passcode to turn off App Lock'}
+          </Text>
+
+          <Text style={styles.label}>Passcode</Text>
+          <WritingLineInput
+            value={passcode}
+            onChangeText={(t) => {
+              setPasscodeError('');
+              setPasscode(t.replace(/[^0-9]/g, '').slice(0, 4));
+            }}
+            placeholder="••••"
+            multiline={false}
+            secureTextEntry
+            keyboardType="number-pad"
+          />
+
+          {passcodeMode === 'create' && (
+            <>
+              <Text style={styles.label}>Confirm Passcode</Text>
+              <WritingLineInput
+                value={passcodeConfirm}
+                onChangeText={(t) => {
+                  setPasscodeError('');
+                  setPasscodeConfirm(t.replace(/[^0-9]/g, '').slice(0, 4));
+                }}
+                placeholder="••••"
+                multiline={false}
+                secureTextEntry
+                keyboardType="number-pad"
+              />
+            </>
+          )}
+
+          {passcodeError ? <Text style={styles.modalError}>{passcodeError}</Text> : null}
+
+          <View style={styles.modalButtons}>
+            <Button
+              title="Cancel"
+              variant="ghost"
+              onPress={() => {
+                setPasscodeMode(null);
+                setPasscode('');
+                setPasscodeConfirm('');
+                setPasscodeError('');
+              }}
+            />
+            <Button
+              title={passcodeMode === 'create' ? 'Set Passcode' : 'Confirm'}
+              color={colors.sage}
+              onPress={passcodeMode === 'create' ? submitCreatePasscode : submitVerifyPasscode}
+            />
+          </View>
+        </View>
+      </View>
+    )}
+    </>
   );
 }
 
@@ -183,4 +302,41 @@ const styles = StyleSheet.create({
   aboutTitle: { fontFamily: 'Fraunces', fontSize: 18, fontWeight: '600', color: colors.ink, marginBottom: spacing.sm },
   aboutBody: { fontFamily: 'Nunito', fontSize: 12, color: colors.inkSoft, lineHeight: 17, marginBottom: spacing.sm },
   version: { fontFamily: 'Nunito', fontSize: 11, color: colors.ghost, marginTop: spacing.md },
+  modalOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(40, 34, 28, 0.45)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing.lg,
+    zIndex: 50,
+  },
+  modalCard: {
+    width: '100%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: spacing.lg,
+  },
+  modalTitle: {
+    fontFamily: 'Nunito',
+    fontSize: 13,
+    color: colors.inkSoft,
+    marginBottom: spacing.md,
+    marginTop: spacing.xs,
+  },
+  modalError: {
+    fontFamily: 'Nunito',
+    fontSize: 12,
+    color: '#D4795F',
+    marginTop: spacing.sm,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: spacing.sm,
+    marginTop: spacing.lg,
+  },
 });

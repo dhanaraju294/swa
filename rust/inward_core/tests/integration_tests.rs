@@ -224,6 +224,35 @@ fn complete_journal_day_streak_update() {
 }
 
 #[test]
+fn seven_day_completion_syncs_to_twenty_one_day() {
+    let engine = setup_test_engine();
+    // Completing days 1-7 of the 7-day journal should also complete days 1-7
+    // of the 21-day journal, and the 21-day journal should then continue at day 8.
+    for day in 1..=7u32 {
+        engine.complete_journal_day("seven-day".into(), day).unwrap();
+    }
+
+    let seven = engine.get_journal_progress("seven-day".into()).unwrap();
+    assert_eq!(seven.completed_days, vec![1, 2, 3, 4, 5, 6, 7]);
+
+    let twenty_one = engine.get_journal_progress("twenty-one-day".into()).unwrap();
+    assert_eq!(twenty_one.completed_days, vec![1, 2, 3, 4, 5, 6, 7]);
+
+    // Completing a 21-day-only day (8) must not affect the 7-day journal.
+    engine.complete_journal_day("twenty-one-day".into(), 8).unwrap();
+    let twenty_one_after = engine.get_journal_progress("twenty-one-day".into()).unwrap();
+    assert_eq!(twenty_one_after.completed_days, vec![1, 2, 3, 4, 5, 6, 7, 8]);
+
+    let seven_after = engine.get_journal_progress("seven-day".into()).unwrap();
+    assert_eq!(seven_after.completed_days, vec![1, 2, 3, 4, 5, 6, 7]);
+
+    // And vice versa: completing a shared day via the 21-day journal reflects in 7-day.
+    engine.complete_journal_day("twenty-one-day".into(), 1).unwrap();
+    let seven_again = engine.get_journal_progress("seven-day".into()).unwrap();
+    assert_eq!(seven_again.completed_days, vec![1, 2, 3, 4, 5, 6, 7]);
+}
+
+#[test]
 fn update_settings_then_get() {
     let engine = setup_test_engine();
     engine.update_settings(AppSettingsInput {
@@ -251,5 +280,6 @@ fn free_functions_delegate_to_singleton() {
     let checkins = inward_core::list_checkins("0000-01-01".into(), "9999-12-31".into()).unwrap();
     assert_eq!(checkins.len(), 1);
     let streak = inward_core::get_streak().unwrap();
-    assert_eq!(streak.current_streak, 0);
+    // A check-in counts as showing up, so the streak starts at 1.
+    assert_eq!(streak.current_streak, 1);
 }

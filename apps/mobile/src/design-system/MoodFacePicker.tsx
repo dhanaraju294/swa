@@ -19,19 +19,29 @@ const faces = [
 export function MoodFacePicker({ value, onChange }: Props) {
   return (
     <View style={styles.row}>
-      {faces.map((f, i) => (
-        <TouchableOpacity
-          key={i}
-          onPress={() => onChange(i + 1)}
-          style={[styles.face, value === i + 1 && styles.selected]}
-          activeOpacity={0.7}
-        >
-          <Svg width="38" height="38" viewBox="0 0 38 38">
-            <Circle cx="19" cy="19" r="17" fill={f.bg} />
-            <Path d={f.mouth} stroke={f.stroke} strokeWidth="2" fill="none" strokeLinecap="round" />
-          </Svg>
-        </TouchableOpacity>
-      ))}
+      {faces.map((f, i) => {
+        const selected = value === i + 1;
+        return (
+          <TouchableOpacity
+            key={i}
+            onPress={() => onChange(i + 1)}
+            style={[styles.face, selected && styles.selected]}
+            activeOpacity={0.7}
+          >
+            <View style={[styles.bubble, selected && styles.bubbleSelected, { backgroundColor: f.bg }]}>
+              <Svg width="38" height="38" viewBox="0 0 38 38">
+                <Circle cx="19" cy="19" r="17" fill={f.bg} />
+                <Path d={f.mouth} stroke={f.stroke} strokeWidth="2" fill="none" strokeLinecap="round" />
+              </Svg>
+            </View>
+            {selected && (
+              <View style={styles.checkWrap}>
+                <Text style={styles.check}>✓</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        );
+      })}
     </View>
   );
 }
@@ -44,9 +54,39 @@ const styles = StyleSheet.create({
   },
   face: {
     padding: 2,
-    borderRadius: 20,
+    borderRadius: 22,
+    alignItems: 'center',
+  },
+  bubble: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  bubbleSelected: {
+    borderColor: colors.gold,
+    borderWidth: 2.5,
+    transform: [{ scale: 1.12 }],
+  },
+  checkWrap: {
+    marginTop: 2,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: colors.gold,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  check: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: '800',
+    lineHeight: 12,
   },
   selected: {
-    transform: [{ scale: 1.15 }],
+    transform: [{ scale: 1.05 }],
   },
 });

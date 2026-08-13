@@ -1,0 +1,59 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: ["**"]
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    name: Build Android Release APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      # Installs all workspace deps (root + apps/mobile). The React Native Gradle
+      # plugin bundles the JS via the Expo CLI, so node_modules must be present.
+      - name: Install JavaScript dependencies
+        run: npm ci
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      # compileSdk 35, build-tools 35.0.0, and the NDK pinned in android/build.gradle.
+      - name: Install Android SDK packages and NDK
+        run: |
+          yes | sdkmanager --licenses
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0" "ndk;27.3.13750724"
+
+      - name: Make Gradle wrapper executable
+        working-directory: apps/mobile/android
+        run: chmod +x gradlew
+
+      - name: Build Release APK
+        working-directory: apps/mobile/android
+        run: ./gradlew assembleRelease --no-daemon --build-cache
+        env:
+          GRADLE_OPTS: "-Xmx3072m -XX:MaxMetaspaceSize=512m"
+          ANDROID_NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.3.13750724
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk
+          path: apps/mobile/android/app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
