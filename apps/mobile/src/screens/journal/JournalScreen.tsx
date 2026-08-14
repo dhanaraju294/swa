@@ -43,6 +43,9 @@ function BlockRenderer({
   dayNumber: number;
   onBegin?: () => void;
 }) {
+  // Guard against an undefined block (e.g. stale slide index, empty content).
+  if (!block) return null;
+
   const { journalDrafts, setJournalDraft, checkinDraft, setCheckinDraft } = useUI();
   const [breathingActive, setBreathingActive] = useState(false);
   const [sensesValues, setSensesValues] = useState<Record<string, string>>({});
@@ -282,6 +285,13 @@ export default function JournalScreen() {
   const { save: saveReflection, saving: savingReflection } = useSaveReflection();
   const { journalDrafts, clearJournalDraft } = useUI();
 
+  // Slide-by-slide navigation state. Declared before any value that reads
+  // `slideIndex` so it's never referenced before initialization.
+  const [slideIndex, setSlideIndex] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const slideAnim = useRef(new Animated.Value(0)).current;
+  const screenWidth = Dimensions.get('window').width - spacing.lg * 2;
+
   const total = journalId === 'seven-day' ? 7 : 21;
   const completedDays = progress?.completedDays || [];
   const maxCompleted = completedDays.length ? Math.max(...completedDays) : 0;
@@ -297,14 +307,10 @@ export default function JournalScreen() {
     maxCompleted === 0 ? 1 : Math.min(maxCompleted + (todayDone ? 0 : 1), total);
 
   const content = getDayContent(journalId, dayNumber) as { blocks: Block[] };
-  const blocks: Block[] = content.blocks || [];
+  const blocks: Block[] = content?.blocks || [];
   const totalSlides = blocks.length;
-
-  // Slide-by-slide navigation: one block per slide, animated horizontally.
-  const [slideIndex, setSlideIndex] = useState(0);
-  const [direction, setDirection] = useState(1);
-  const slideAnim = useRef(new Animated.Value(0)).current;
-  const screenWidth = Dimensions.get('window').width - spacing.lg * 2;
+  // Never read past the end of the blocks array, even mid-transition.
+  const safeSlideIndex = blocks.length ? Math.min(slideIndex, blocks.length - 1) : 0;
 
   // Reset to the first slide whenever the user switches journal or day.
   useEffect(() => {
@@ -422,10 +428,10 @@ export default function JournalScreen() {
             style={[styles.slideTrack, { transform: [{ translateX: slideAnim }] }]}
           >
             <BlockRenderer
-              block={blocks[slideIndex]}
+              block={blocks[safeSlideIndex]}
               journalId={journalId}
               dayNumber={dayNumber}
-              onBegin={() => goToSlide(slideIndex + 1)}
+              onBegin={() => goToSlide(safeSlideIndex + 1)}
             />
           </Animated.View>
         </View>

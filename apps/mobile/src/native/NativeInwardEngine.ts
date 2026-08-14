@@ -49,86 +49,116 @@ export class NativeInwardEngine implements InwardEngine {
     return this.initialized;
   }
 
-  saveCheckin(input: CheckinInput): Promise<Checkin> {
+  /** Guarantee `init_db` has run before any native call so the process-wide
+   *  Rust ENGINE singleton points at the real on-device database (never the
+   *  `/tmp` fallback). Without this, a read/write issued before `initialize`
+   *  resolves would open a different database and silently break the streak
+   *  and every other persisted feature. */
+  private async ready(): Promise<void> {
+    if (this.initialized) {
+      await this.initialized;
+    }
+  }
+
+  async saveCheckin(input: CheckinInput): Promise<Checkin> {
+    await this.ready();
     return offload(() => loadBindings().saveCheckin(input));
   }
 
-  listCheckins(fromIso: string, toIso: string): Promise<Checkin[]> {
+  async listCheckins(fromIso: string, toIso: string): Promise<Checkin[]> {
+    await this.ready();
     return offload(() => loadBindings().listCheckins(fromIso, toIso));
   }
 
-  latestCheckin(): Promise<Checkin | null> {
+  async latestCheckin(): Promise<Checkin | null> {
+    await this.ready();
     return offload(() => loadBindings().latestCheckin() ?? null);
   }
 
-  saveOnTheSpot(input: OnTheSpotInput): Promise<OnTheSpotEntry> {
+  async saveOnTheSpot(input: OnTheSpotInput): Promise<OnTheSpotEntry> {
+    await this.ready();
     return offload(() => loadBindings().saveOnTheSpot(input));
   }
 
-  listOnTheSpot(limit: number): Promise<OnTheSpotEntry[]> {
+  async listOnTheSpot(limit: number): Promise<OnTheSpotEntry[]> {
+    await this.ready();
     return offload(() => loadBindings().listOnTheSpot(limit));
   }
 
-  getJournalDay(journalId: string, day: number): Promise<JournalDay> {
+  async getJournalDay(journalId: string, day: number): Promise<JournalDay> {
+    await this.ready();
     return offload(() => loadBindings().getJournalDay(journalId, day));
   }
 
-  getJournalProgress(journalId: string): Promise<JournalProgress> {
+  async getJournalProgress(journalId: string): Promise<JournalProgress> {
+    await this.ready();
     return offload(() => loadBindings().getJournalProgress(journalId));
   }
 
-  completeJournalDay(journalId: string, day: number): Promise<JournalProgress> {
+  async completeJournalDay(journalId: string, day: number): Promise<JournalProgress> {
+    await this.ready();
     return offload(() => loadBindings().completeJournalDay(journalId, day));
   }
 
-  saveReflection(
+  async saveReflection(
     journalId: string,
     day: number,
     prompt: string,
     response: string,
   ): Promise<Reflection> {
+    await this.ready();
     return offload(() =>
       loadBindings().saveReflection(journalId, day, prompt, response),
     );
   }
 
-  listReflections(journalId?: string): Promise<Reflection[]> {
+  async listReflections(journalId?: string): Promise<Reflection[]> {
+    await this.ready();
     return offload(() => loadBindings().listReflections(journalId));
   }
 
-  getStreak(): Promise<Streak> {
+  async getStreak(): Promise<Streak> {
+    await this.ready();
     return offload(() => loadBindings().getStreak());
   }
 
-  listBadges(): Promise<Badge[]> {
+  async listBadges(): Promise<Badge[]> {
+    await this.ready();
     return offload(() => loadBindings().listBadges());
   }
 
-  getAwarenessSnapshot(): Promise<AwarenessDimensionScore[]> {
+  async getAwarenessSnapshot(): Promise<AwarenessDimensionScore[]> {
+    await this.ready();
     return offload(() => loadBindings().getAwarenessSnapshot());
   }
 
-  getProfile(): Promise<Profile> {
+  async getProfile(): Promise<Profile> {
+    await this.ready();
     return offload(() => loadBindings().getProfile());
   }
 
-  updateProfile(input: ProfileInput): Promise<Profile> {
+  async updateProfile(input: ProfileInput): Promise<Profile> {
+    await this.ready();
     return offload(() => loadBindings().updateProfile(input));
   }
 
-  getSettings(): Promise<AppSettings> {
+  async getSettings(): Promise<AppSettings> {
+    await this.ready();
     return offload(() => loadBindings().getSettings());
   }
 
-  updateSettings(input: AppSettingsInput): Promise<AppSettings> {
+  async updateSettings(input: AppSettingsInput): Promise<AppSettings> {
+    await this.ready();
     return offload(() => loadBindings().updateSettings(input));
   }
 
-  exportAllDataJson(): Promise<string> {
+  async exportAllDataJson(): Promise<string> {
+    await this.ready();
     return offload(() => loadBindings().exportAllDataJson());
   }
 
-  deleteAllData(): Promise<void> {
+  async deleteAllData(): Promise<void> {
+    await this.ready();
     return offload(() => loadBindings().deleteAllData());
   }
 }
