@@ -42,3 +42,7 @@ rust/inward_core/target/
 rust/inward_core/Cargo.lock
 # guildly agent workspace (linked project) — unstaged by default
 .guildly/
+
+# Binary frameworks
+InwardCore.xcframework/
+
