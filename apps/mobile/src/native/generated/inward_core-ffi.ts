@@ -14,6 +14,28 @@ interface NativeModuleInterface {
     ubrn_uniffi_internal_fn_func_ffi__string_to_byte_length(string: string, uniffi_out_err: UniffiRustCallStatus): number;
     ubrn_uniffi_internal_fn_func_ffi__string_to_arraybuffer(string: string, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
     ubrn_uniffi_internal_fn_func_ffi__arraybuffer_to_string(buffer: Uint8Array, uniffi_out_err: UniffiRustCallStatus): string;
+    ubrn_uniffi_inward_core_fn_clone_coreengine(ptr: bigint, uniffi_out_err: UniffiRustCallStatus): bigint;
+    ubrn_uniffi_inward_core_fn_free_coreengine(ptr: bigint, uniffi_out_err: UniffiRustCallStatus): void;
+    ubrn_uniffi_inward_core_fn_constructor_coreengine_new(dbPath: Uint8Array, uniffi_out_err: UniffiRustCallStatus): bigint;
+    ubrn_uniffi_inward_core_fn_method_coreengine_complete_journal_day(ptr: bigint, journalId: Uint8Array, day: number, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
+    ubrn_uniffi_inward_core_fn_method_coreengine_delete_all_data(ptr: bigint, uniffi_out_err: UniffiRustCallStatus): void;
+    ubrn_uniffi_inward_core_fn_method_coreengine_export_all_data_json(ptr: bigint, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
+    ubrn_uniffi_inward_core_fn_method_coreengine_get_awareness_snapshot(ptr: bigint, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
+    ubrn_uniffi_inward_core_fn_method_coreengine_get_journal_day(ptr: bigint, journalId: Uint8Array, day: number, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
+    ubrn_uniffi_inward_core_fn_method_coreengine_get_journal_progress(ptr: bigint, journalId: Uint8Array, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
+    ubrn_uniffi_inward_core_fn_method_coreengine_get_profile(ptr: bigint, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
+    ubrn_uniffi_inward_core_fn_method_coreengine_get_settings(ptr: bigint, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
+    ubrn_uniffi_inward_core_fn_method_coreengine_get_streak(ptr: bigint, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
+    ubrn_uniffi_inward_core_fn_method_coreengine_latest_checkin(ptr: bigint, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
+    ubrn_uniffi_inward_core_fn_method_coreengine_list_badges(ptr: bigint, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
+    ubrn_uniffi_inward_core_fn_method_coreengine_list_checkins(ptr: bigint, fromIso: Uint8Array, toIso: Uint8Array, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
+    ubrn_uniffi_inward_core_fn_method_coreengine_list_on_the_spot(ptr: bigint, limit: number, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
+    ubrn_uniffi_inward_core_fn_method_coreengine_list_reflections(ptr: bigint, journalId: Uint8Array, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
+    ubrn_uniffi_inward_core_fn_method_coreengine_save_checkin(ptr: bigint, input: Uint8Array, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
+    ubrn_uniffi_inward_core_fn_method_coreengine_save_on_the_spot(ptr: bigint, input: Uint8Array, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
+    ubrn_uniffi_inward_core_fn_method_coreengine_save_reflection(ptr: bigint, journalId: Uint8Array, day: number, prompt: Uint8Array, response: Uint8Array, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
+    ubrn_uniffi_inward_core_fn_method_coreengine_update_profile(ptr: bigint, input: Uint8Array, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
+    ubrn_uniffi_inward_core_fn_method_coreengine_update_settings(ptr: bigint, input: Uint8Array, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
     ubrn_uniffi_inward_core_fn_func_complete_journal_day(journalId: Uint8Array, day: number, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
     ubrn_uniffi_inward_core_fn_func_delete_all_data(uniffi_out_err: UniffiRustCallStatus): void;
     ubrn_uniffi_inward_core_fn_func_export_all_data_json(uniffi_out_err: UniffiRustCallStatus): Uint8Array;
@@ -54,7 +76,28 @@ interface NativeModuleInterface {
     ubrn_uniffi_inward_core_checksum_func_save_reflection(): number;
     ubrn_uniffi_inward_core_checksum_func_update_profile(): number;
     ubrn_uniffi_inward_core_checksum_func_update_settings(): number;
+    ubrn_uniffi_inward_core_checksum_method_coreengine_complete_journal_day(): number;
+    ubrn_uniffi_inward_core_checksum_method_coreengine_delete_all_data(): number;
+    ubrn_uniffi_inward_core_checksum_method_coreengine_export_all_data_json(): number;
+    ubrn_uniffi_inward_core_checksum_method_coreengine_get_awareness_snapshot(): number;
+    ubrn_uniffi_inward_core_checksum_method_coreengine_get_journal_day(): number;
+    ubrn_uniffi_inward_core_checksum_method_coreengine_get_journal_progress(): number;
+    ubrn_uniffi_inward_core_checksum_method_coreengine_get_profile(): number;
+    ubrn_uniffi_inward_core_checksum_method_coreengine_get_settings(): number;
+    ubrn_uniffi_inward_core_checksum_method_coreengine_get_streak(): number;
+    ubrn_uniffi_inward_core_checksum_method_coreengine_latest_checkin(): number;
+    ubrn_uniffi_inward_core_checksum_method_coreengine_list_badges(): number;
+    ubrn_uniffi_inward_core_checksum_method_coreengine_list_checkins(): number;
+    ubrn_uniffi_inward_core_checksum_method_coreengine_list_on_the_spot(): number;
+    ubrn_uniffi_inward_core_checksum_method_coreengine_list_reflections(): number;
+    ubrn_uniffi_inward_core_checksum_method_coreengine_save_checkin(): number;
+    ubrn_uniffi_inward_core_checksum_method_coreengine_save_on_the_spot(): number;
+    ubrn_uniffi_inward_core_checksum_method_coreengine_save_reflection(): number;
+    ubrn_uniffi_inward_core_checksum_method_coreengine_update_profile(): number;
+    ubrn_uniffi_inward_core_checksum_method_coreengine_update_settings(): number;
+    ubrn_uniffi_inward_core_checksum_constructor_coreengine_new(): number;
     ubrn_ffi_inward_core_uniffi_contract_version(): number;
+    ubrn_uniffi_internal_fn_method_coreengine_ffi__bless_pointer(pointer: bigint, uniffi_out_err: UniffiRustCallStatus): UniffiRustArcPtr;
 }
 
 // Casting globalThis to any allows us to look for `NativeInwardCore`

@@ -6,8 +6,8 @@
   ],
   "scripts": {
     "setup": "npm install",
-    "generate:ios": "if command -v ubrn >/dev/null 2>&1; then ubrn build ios --and-generate --config ubrn.config.yaml; else echo 'ubrn CLI not found. Skipping native binding generation and using existing bindings or JS fallback.'; fi",
-    "generate:android": "if command -v ubrn >/dev/null 2>&1; then ubrn build android --and-generate --config ubrn.config.yaml; else echo 'ubrn CLI not found. Skipping native binding generation and using existing bindings or JS fallback.'; fi",
+    "generate:ios": "if command -v ubrn >/dev/null 2>&1; then ubrn build ios --and-generate --config ubrn.config.yaml && sed -i '' 's#\"apps/[^\"]*mobile/cpp/generated/inward_core.hpp\"#\"generated/inward_core.hpp\"#' apps/mobile/cpp/swa-mobile.cpp; else echo 'ubrn CLI not found. Skipping native binding generation and using existing bindings or JS fallback.'; fi",
+    "generate:android": "if command -v ubrn >/dev/null 2>&1; then ubrn build android --and-generate --config ubrn.config.yaml && sed -i '' 's#\"apps/[^\"]*mobile/cpp/generated/inward_core.hpp\"#\"generated/inward_core.hpp\"#' apps/mobile/cpp/swa-mobile.cpp; else echo 'ubrn CLI not found. Skipping native binding generation and using existing bindings or JS fallback.'; fi",
     "generate": "npm run generate:android && npm run generate:ios",
     "prebuild": "npm run generate && npm run --workspace app prebuild",
     "ios": "npm run generate:ios && npm run --workspace app ios",

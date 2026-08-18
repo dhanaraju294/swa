@@ -176,11 +176,33 @@ dependencies {
 }
 
 
-// withRustCore: jniLibs sourceSet
+// withRustCore: build BOTH the React Native default app native library
+// (libappmodules.so -> New Architecture entry point + core TurboModules such as
+// PlatformConstants) AND the uniffi-bindgen-react-native Rust bridge
+// (libswa-mobile.so -> JSI global `NativeInwardCore`).
+//
+// The combined CMakeLists lives at android/app/src/main/jni/CMakeLists.txt (the
+// canonical RN "customize your C++" location). It extends RN's default-app-setup
+// with the ubrn Rust bridge so a single CMake build produces both .so files.
+// Pointing externalNativeBuild solely at ubrn's generated android/CMakeLists.txt
+// replaces the default build and crashes at launch with
+// "'PlatformConstants' could not be found".
 android {
-  sourceSets {
-    main {
-      jniLibs.srcDirs = ['src/main/jniLibs']
+  externalNativeBuild {
+    cmake {
+      path "src/main/jni/CMakeLists.txt"
+      version "3.22.1"
     }
   }
 }
+
+// Builds the Rust core static libraries (libinward_core.a) from the committed
+// Rust source (rust/inward_core) via cargo-ndk. The .a files are gitignored
+// and rebuilt on demand, so no ~740MB binaries are stored in git.
+// See scripts/build-android-static-libs.sh for the underlying command.
+def repoRoot = new File("${projectRoot}/..").absoluteFile
+tasks.register('buildRustCore', Exec) {
+  workingDir repoRoot
+  commandLine 'bash', 'scripts/build-android-static-libs.sh'
+}
+preBuild.dependsOn buildRustCore

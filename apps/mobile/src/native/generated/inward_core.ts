@@ -31,17 +31,26 @@ import nativeModule, {
   type UniffiForeignFutureCompleteVoid,
 } from "./inward_core-ffi";
 import {
+  type FfiConverter, 
   type UniffiByteArray, 
+  type UniffiObjectFactory, 
+  type UniffiRustArcPtr, 
+  type UnsafeMutableRawPointer, 
   AbstractFfiConverterByteArray, 
   FfiConverterArray, 
   FfiConverterBool, 
   FfiConverterInt32, 
+  FfiConverterObject, 
   FfiConverterOptional, 
   FfiConverterUInt32, 
+  FfiConverterUInt64, 
   RustBuffer, 
+  UniffiAbstractObject, 
   UniffiError, 
   UniffiInternalError, 
   UniffiRustCaller, 
+  destructorGuardSymbol, 
+  pointerLiteralSymbol, 
   uniffiCreateFfiConverterString, 
   uniffiCreateRecord, 
   uniffiTypeNameSymbol, 
@@ -1222,12 +1231,15 @@ const FfiConverterString = uniffiCreateFfiConverterString(stringConverter);
 
 
 
+
+
 // Flat error type: CoreError
 export enum CoreError_Tags {
     Database = "Database",
     Validation = "Validation",
     NotFound = "NotFound",
     Migration = "Migration",
+    LockError = "LockError",
     Serialization = "Serialization",
     UuidParse = "UuidParse",
     TimeParse = "TimeParse"
@@ -1329,7 +1341,7 @@ export const CoreError = (() => {
             );
         }
     }
-    class Serialization extends UniffiError {
+    class LockError extends UniffiError {
         /**
          * @private
          * This field is private and should not be used.
@@ -1341,6 +1353,30 @@ export const CoreError = (() => {
          */
         readonly [variantOrdinalSymbol] = 5;
 
+        public readonly tag = CoreError_Tags.LockError;
+
+        constructor(message: string) {
+            super("CoreError", "LockError", message);
+        }
+
+        static instanceOf(e: any): e is LockError {
+            return (
+                instanceOf(e) && (e as any)[variantOrdinalSymbol] === 5
+            );
+        }
+    }
+    class Serialization extends UniffiError {
+        /**
+         * @private
+         * This field is private and should not be used.
+         */
+        readonly [uniffiTypeNameSymbol]: string = "CoreError";
+        /**
+         * @private
+         * This field is private and should not be used.
+         */
+        readonly [variantOrdinalSymbol] = 6;
+
         public readonly tag = CoreError_Tags.Serialization;
 
         constructor(message: string) {
@@ -1349,7 +1385,7 @@ export const CoreError = (() => {
 
         static instanceOf(e: any): e is Serialization {
             return (
-                instanceOf(e) && (e as any)[variantOrdinalSymbol] === 5
+                instanceOf(e) && (e as any)[variantOrdinalSymbol] === 6
             );
         }
     }
@@ -1363,7 +1399,7 @@ export const CoreError = (() => {
          * @private
          * This field is private and should not be used.
          */
-        readonly [variantOrdinalSymbol] = 6;
+        readonly [variantOrdinalSymbol] = 7;
 
         public readonly tag = CoreError_Tags.UuidParse;
 
@@ -1373,7 +1409,7 @@ export const CoreError = (() => {
 
         static instanceOf(e: any): e is UuidParse {
             return (
-                instanceOf(e) && (e as any)[variantOrdinalSymbol] === 6
+                instanceOf(e) && (e as any)[variantOrdinalSymbol] === 7
             );
         }
     }
@@ -1387,7 +1423,7 @@ export const CoreError = (() => {
          * @private
          * This field is private and should not be used.
          */
-        readonly [variantOrdinalSymbol] = 7;
+        readonly [variantOrdinalSymbol] = 8;
 
         public readonly tag = CoreError_Tags.TimeParse;
 
@@ -1397,7 +1433,7 @@ export const CoreError = (() => {
 
         static instanceOf(e: any): e is TimeParse {
             return (
-                instanceOf(e) && (e as any)[variantOrdinalSymbol] === 7
+                instanceOf(e) && (e as any)[variantOrdinalSymbol] === 8
             );
         }
     }
@@ -1411,6 +1447,7 @@ export const CoreError = (() => {
         Validation,
         NotFound,
         Migration,
+        LockError,
         Serialization,
         UuidParse,
         TimeParse,
@@ -1443,13 +1480,16 @@ const FfiConverterTypeCoreError = (() => {
                 case 4: return new CoreError.Migration(FfiConverterString.read(from)
                 );
             
-                case 5: return new CoreError.Serialization(FfiConverterString.read(from)
+                case 5: return new CoreError.LockError(FfiConverterString.read(from)
                 );
             
-                case 6: return new CoreError.UuidParse(FfiConverterString.read(from)
+                case 6: return new CoreError.Serialization(FfiConverterString.read(from)
                 );
             
-                case 7: return new CoreError.TimeParse(FfiConverterString.read(from)
+                case 7: return new CoreError.UuidParse(FfiConverterString.read(from)
+                );
+            
+                case 8: return new CoreError.TimeParse(FfiConverterString.read(from)
                 );
             
                 default: throw new UniffiInternalError.UnexpectedEnumCase();
@@ -1466,6 +1506,377 @@ const FfiConverterTypeCoreError = (() => {
     }
     return new FfiConverter();
 })();
+
+
+export interface CoreEngineInterface {
+    
+    completeJournalDay(journalId: string, day: /*u32*/number)  /*throws*/: JournalProgress;
+    deleteAllData()  /*throws*/: void;
+    exportAllDataJson()  /*throws*/: string;
+    getAwarenessSnapshot()  /*throws*/: Array<AwarenessDimensionScore>;
+    getJournalDay(journalId: string, day: /*u32*/number)  /*throws*/: JournalDay;
+    getJournalProgress(journalId: string)  /*throws*/: JournalProgress;
+    getProfile()  /*throws*/: Profile;
+    getSettings()  /*throws*/: AppSettings;
+    getStreak()  /*throws*/: Streak;
+    latestCheckin()  /*throws*/: Checkin | undefined;
+    listBadges()  /*throws*/: Array<Badge>;
+    listCheckins(fromIso: string, toIso: string)  /*throws*/: Array<Checkin>;
+    listOnTheSpot(limit: /*u32*/number)  /*throws*/: Array<OnTheSpotEntry>;
+    listReflections(journalId: string | undefined)  /*throws*/: Array<Reflection>;
+    saveCheckin(input: CheckinInput)  /*throws*/: Checkin;
+    saveOnTheSpot(input: OnTheSpotInput)  /*throws*/: OnTheSpotEntry;
+    saveReflection(journalId: string, day: /*u32*/number, prompt: string, response: string)  /*throws*/: Reflection;
+    updateProfile(input: ProfileInput)  /*throws*/: Profile;
+    updateSettings(input: AppSettingsInput)  /*throws*/: AppSettings;
+}
+
+
+export class CoreEngine extends UniffiAbstractObject implements CoreEngineInterface {
+
+    readonly [uniffiTypeNameSymbol] = "CoreEngine";
+    readonly [destructorGuardSymbol]: UniffiRustArcPtr;
+    readonly [pointerLiteralSymbol]: UnsafeMutableRawPointer;
+    /**
+     * Open (creating + migrating if needed) the SQLite database at `db_path`
+     * and return a stateful engine that owns the connection for the process.
+     */
+    constructor(dbPath: string) /*throws*/ {
+        super();
+        const pointer =
+            
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeCoreError.lift.bind(FfiConverterTypeCoreError),
+            /*caller:*/ (callStatus) => {
+                return nativeModule().ubrn_uniffi_inward_core_fn_constructor_coreengine_new(
+        FfiConverterString.lower(dbPath),
+                callStatus);
+            },
+            /*liftString:*/ FfiConverterString.lift,
+    );
+        this[pointerLiteralSymbol] = pointer;
+        this[destructorGuardSymbol] = uniffiTypeCoreEngineObjectFactory.bless(pointer);
+    }
+
+    
+
+    
+public completeJournalDay(journalId: string, day: /*u32*/number): JournalProgress /*throws*/ {
+    return FfiConverterTypeJournalProgress.lift(
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeCoreError.lift.bind(FfiConverterTypeCoreError),
+            /*caller:*/ (callStatus) => {
+                return nativeModule().ubrn_uniffi_inward_core_fn_method_coreengine_complete_journal_day(uniffiTypeCoreEngineObjectFactory.clonePointer(this), 
+        FfiConverterString.lower(journalId),
+        FfiConverterUInt32.lower(day),
+                callStatus);
+            },
+            /*liftString:*/ FfiConverterString.lift,
+    ));
+    }
+    
+public deleteAllData(): void /*throws*/ {
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeCoreError.lift.bind(FfiConverterTypeCoreError),
+            /*caller:*/ (callStatus) => { nativeModule().ubrn_uniffi_inward_core_fn_method_coreengine_delete_all_data(uniffiTypeCoreEngineObjectFactory.clonePointer(this), 
+                callStatus);
+            },
+            /*liftString:*/ FfiConverterString.lift,
+    );
+    }
+    
+public exportAllDataJson(): string /*throws*/ {
+    return FfiConverterString.lift(
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeCoreError.lift.bind(FfiConverterTypeCoreError),
+            /*caller:*/ (callStatus) => {
+                return nativeModule().ubrn_uniffi_inward_core_fn_method_coreengine_export_all_data_json(uniffiTypeCoreEngineObjectFactory.clonePointer(this), 
+                callStatus);
+            },
+            /*liftString:*/ FfiConverterString.lift,
+    ));
+    }
+    
+public getAwarenessSnapshot(): Array<AwarenessDimensionScore> /*throws*/ {
+    return FfiConverterArrayTypeAwarenessDimensionScore.lift(
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeCoreError.lift.bind(FfiConverterTypeCoreError),
+            /*caller:*/ (callStatus) => {
+                return nativeModule().ubrn_uniffi_inward_core_fn_method_coreengine_get_awareness_snapshot(uniffiTypeCoreEngineObjectFactory.clonePointer(this), 
+                callStatus);
+            },
+            /*liftString:*/ FfiConverterString.lift,
+    ));
+    }
+    
+public getJournalDay(journalId: string, day: /*u32*/number): JournalDay /*throws*/ {
+    return FfiConverterTypeJournalDay.lift(
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeCoreError.lift.bind(FfiConverterTypeCoreError),
+            /*caller:*/ (callStatus) => {
+                return nativeModule().ubrn_uniffi_inward_core_fn_method_coreengine_get_journal_day(uniffiTypeCoreEngineObjectFactory.clonePointer(this), 
+        FfiConverterString.lower(journalId),
+        FfiConverterUInt32.lower(day),
+                callStatus);
+            },
+            /*liftString:*/ FfiConverterString.lift,
+    ));
+    }
+    
+public getJournalProgress(journalId: string): JournalProgress /*throws*/ {
+    return FfiConverterTypeJournalProgress.lift(
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeCoreError.lift.bind(FfiConverterTypeCoreError),
+            /*caller:*/ (callStatus) => {
+                return nativeModule().ubrn_uniffi_inward_core_fn_method_coreengine_get_journal_progress(uniffiTypeCoreEngineObjectFactory.clonePointer(this), 
+        FfiConverterString.lower(journalId),
+                callStatus);
+            },
+            /*liftString:*/ FfiConverterString.lift,
+    ));
+    }
+    
+public getProfile(): Profile /*throws*/ {
+    return FfiConverterTypeProfile.lift(
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeCoreError.lift.bind(FfiConverterTypeCoreError),
+            /*caller:*/ (callStatus) => {
+                return nativeModule().ubrn_uniffi_inward_core_fn_method_coreengine_get_profile(uniffiTypeCoreEngineObjectFactory.clonePointer(this), 
+                callStatus);
+            },
+            /*liftString:*/ FfiConverterString.lift,
+    ));
+    }
+    
+public getSettings(): AppSettings /*throws*/ {
+    return FfiConverterTypeAppSettings.lift(
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeCoreError.lift.bind(FfiConverterTypeCoreError),
+            /*caller:*/ (callStatus) => {
+                return nativeModule().ubrn_uniffi_inward_core_fn_method_coreengine_get_settings(uniffiTypeCoreEngineObjectFactory.clonePointer(this), 
+                callStatus);
+            },
+            /*liftString:*/ FfiConverterString.lift,
+    ));
+    }
+    
+public getStreak(): Streak /*throws*/ {
+    return FfiConverterTypeStreak.lift(
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeCoreError.lift.bind(FfiConverterTypeCoreError),
+            /*caller:*/ (callStatus) => {
+                return nativeModule().ubrn_uniffi_inward_core_fn_method_coreengine_get_streak(uniffiTypeCoreEngineObjectFactory.clonePointer(this), 
+                callStatus);
+            },
+            /*liftString:*/ FfiConverterString.lift,
+    ));
+    }
+    
+public latestCheckin(): Checkin | undefined /*throws*/ {
+    return FfiConverterOptionalTypeCheckin.lift(
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeCoreError.lift.bind(FfiConverterTypeCoreError),
+            /*caller:*/ (callStatus) => {
+                return nativeModule().ubrn_uniffi_inward_core_fn_method_coreengine_latest_checkin(uniffiTypeCoreEngineObjectFactory.clonePointer(this), 
+                callStatus);
+            },
+            /*liftString:*/ FfiConverterString.lift,
+    ));
+    }
+    
+public listBadges(): Array<Badge> /*throws*/ {
+    return FfiConverterArrayTypeBadge.lift(
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeCoreError.lift.bind(FfiConverterTypeCoreError),
+            /*caller:*/ (callStatus) => {
+                return nativeModule().ubrn_uniffi_inward_core_fn_method_coreengine_list_badges(uniffiTypeCoreEngineObjectFactory.clonePointer(this), 
+                callStatus);
+            },
+            /*liftString:*/ FfiConverterString.lift,
+    ));
+    }
+    
+public listCheckins(fromIso: string, toIso: string): Array<Checkin> /*throws*/ {
+    return FfiConverterArrayTypeCheckin.lift(
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeCoreError.lift.bind(FfiConverterTypeCoreError),
+            /*caller:*/ (callStatus) => {
+                return nativeModule().ubrn_uniffi_inward_core_fn_method_coreengine_list_checkins(uniffiTypeCoreEngineObjectFactory.clonePointer(this), 
+        FfiConverterString.lower(fromIso),
+        FfiConverterString.lower(toIso),
+                callStatus);
+            },
+            /*liftString:*/ FfiConverterString.lift,
+    ));
+    }
+    
+public listOnTheSpot(limit: /*u32*/number): Array<OnTheSpotEntry> /*throws*/ {
+    return FfiConverterArrayTypeOnTheSpotEntry.lift(
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeCoreError.lift.bind(FfiConverterTypeCoreError),
+            /*caller:*/ (callStatus) => {
+                return nativeModule().ubrn_uniffi_inward_core_fn_method_coreengine_list_on_the_spot(uniffiTypeCoreEngineObjectFactory.clonePointer(this), 
+        FfiConverterUInt32.lower(limit),
+                callStatus);
+            },
+            /*liftString:*/ FfiConverterString.lift,
+    ));
+    }
+    
+public listReflections(journalId: string | undefined): Array<Reflection> /*throws*/ {
+    return FfiConverterArrayTypeReflection.lift(
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeCoreError.lift.bind(FfiConverterTypeCoreError),
+            /*caller:*/ (callStatus) => {
+                return nativeModule().ubrn_uniffi_inward_core_fn_method_coreengine_list_reflections(uniffiTypeCoreEngineObjectFactory.clonePointer(this), 
+        FfiConverterOptionalString.lower(journalId),
+                callStatus);
+            },
+            /*liftString:*/ FfiConverterString.lift,
+    ));
+    }
+    
+public saveCheckin(input: CheckinInput): Checkin /*throws*/ {
+    return FfiConverterTypeCheckin.lift(
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeCoreError.lift.bind(FfiConverterTypeCoreError),
+            /*caller:*/ (callStatus) => {
+                return nativeModule().ubrn_uniffi_inward_core_fn_method_coreengine_save_checkin(uniffiTypeCoreEngineObjectFactory.clonePointer(this), 
+        FfiConverterTypeCheckinInput.lower(input),
+                callStatus);
+            },
+            /*liftString:*/ FfiConverterString.lift,
+    ));
+    }
+    
+public saveOnTheSpot(input: OnTheSpotInput): OnTheSpotEntry /*throws*/ {
+    return FfiConverterTypeOnTheSpotEntry.lift(
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeCoreError.lift.bind(FfiConverterTypeCoreError),
+            /*caller:*/ (callStatus) => {
+                return nativeModule().ubrn_uniffi_inward_core_fn_method_coreengine_save_on_the_spot(uniffiTypeCoreEngineObjectFactory.clonePointer(this), 
+        FfiConverterTypeOnTheSpotInput.lower(input),
+                callStatus);
+            },
+            /*liftString:*/ FfiConverterString.lift,
+    ));
+    }
+    
+public saveReflection(journalId: string, day: /*u32*/number, prompt: string, response: string): Reflection /*throws*/ {
+    return FfiConverterTypeReflection.lift(
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeCoreError.lift.bind(FfiConverterTypeCoreError),
+            /*caller:*/ (callStatus) => {
+                return nativeModule().ubrn_uniffi_inward_core_fn_method_coreengine_save_reflection(uniffiTypeCoreEngineObjectFactory.clonePointer(this), 
+        FfiConverterString.lower(journalId),
+        FfiConverterUInt32.lower(day),
+        FfiConverterString.lower(prompt),
+        FfiConverterString.lower(response),
+                callStatus);
+            },
+            /*liftString:*/ FfiConverterString.lift,
+    ));
+    }
+    
+public updateProfile(input: ProfileInput): Profile /*throws*/ {
+    return FfiConverterTypeProfile.lift(
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeCoreError.lift.bind(FfiConverterTypeCoreError),
+            /*caller:*/ (callStatus) => {
+                return nativeModule().ubrn_uniffi_inward_core_fn_method_coreengine_update_profile(uniffiTypeCoreEngineObjectFactory.clonePointer(this), 
+        FfiConverterTypeProfileInput.lower(input),
+                callStatus);
+            },
+            /*liftString:*/ FfiConverterString.lift,
+    ));
+    }
+    
+public updateSettings(input: AppSettingsInput): AppSettings /*throws*/ {
+    return FfiConverterTypeAppSettings.lift(
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeCoreError.lift.bind(FfiConverterTypeCoreError),
+            /*caller:*/ (callStatus) => {
+                return nativeModule().ubrn_uniffi_inward_core_fn_method_coreengine_update_settings(uniffiTypeCoreEngineObjectFactory.clonePointer(this), 
+        FfiConverterTypeAppSettingsInput.lower(input),
+                callStatus);
+            },
+            /*liftString:*/ FfiConverterString.lift,
+    ));
+    }
+    
+
+    /**
+     * {@inheritDoc uniffi-bindgen-react-native#UniffiAbstractObject.uniffiDestroy}
+     */
+    uniffiDestroy(): void {
+        const ptr = (this as any)[destructorGuardSymbol];
+        if (ptr !== undefined) {
+            const pointer = uniffiTypeCoreEngineObjectFactory.pointer(this);
+            uniffiTypeCoreEngineObjectFactory.freePointer(pointer);
+            uniffiTypeCoreEngineObjectFactory.unbless(ptr);
+            delete (this as any)[destructorGuardSymbol];
+        }
+    }
+
+    static instanceOf(obj: any): obj is CoreEngine {
+        return uniffiTypeCoreEngineObjectFactory.isConcreteType(obj);
+    }
+
+    
+}
+
+const uniffiTypeCoreEngineObjectFactory: UniffiObjectFactory<CoreEngineInterface> = (() => {
+    
+    return {
+    create(pointer: UnsafeMutableRawPointer): CoreEngineInterface {
+        const instance = Object.create(CoreEngine.prototype);
+        instance[pointerLiteralSymbol] = pointer;
+        instance[destructorGuardSymbol] = this.bless(pointer);
+        instance[uniffiTypeNameSymbol] = "CoreEngine";
+        return instance;
+    },
+
+    
+    bless(p: UnsafeMutableRawPointer): UniffiRustArcPtr {
+        return uniffiCaller.rustCall(
+            /*caller:*/ (status) =>
+                nativeModule().ubrn_uniffi_internal_fn_method_coreengine_ffi__bless_pointer(p, status),
+            /*liftString:*/ FfiConverterString.lift
+        );
+    },
+
+    unbless(ptr: UniffiRustArcPtr) {
+        ptr.markDestroyed();
+    },
+
+    pointer(obj: CoreEngineInterface): UnsafeMutableRawPointer {
+        if ((obj as any)[destructorGuardSymbol] === undefined) {
+            throw new UniffiInternalError.UnexpectedNullPointer();
+        }
+        return (obj as any)[pointerLiteralSymbol];
+    },
+
+    clonePointer(obj: CoreEngineInterface): UnsafeMutableRawPointer {
+        const pointer = this.pointer(obj);
+        return uniffiCaller.rustCall(
+            /*caller:*/ (callStatus) => nativeModule().ubrn_uniffi_inward_core_fn_clone_coreengine(pointer, callStatus),
+            /*liftString:*/ FfiConverterString.lift
+        );
+    },
+
+    freePointer(pointer: UnsafeMutableRawPointer): void {
+        uniffiCaller.rustCall(
+            /*caller:*/ (callStatus) => nativeModule().ubrn_uniffi_inward_core_fn_free_coreengine(pointer, callStatus),
+            /*liftString:*/ FfiConverterString.lift
+        );
+    },
+
+    isConcreteType(obj: any): obj is CoreEngineInterface {
+        return obj[destructorGuardSymbol] && obj[uniffiTypeNameSymbol] === "CoreEngine";
+    },
+}})();
+// FfiConverter for CoreEngineInterface
+const FfiConverterTypeCoreEngine =  new FfiConverterObject(uniffiTypeCoreEngineObjectFactory);
 
 
 // FfiConverter for Checkin | undefined
@@ -1577,6 +1988,66 @@ function uniffiEnsureInitialized() {
     if (nativeModule().ubrn_uniffi_inward_core_checksum_func_update_settings() !== 9592) {
         throw new UniffiInternalError.ApiChecksumMismatch("uniffi_inward_core_checksum_func_update_settings");
     }
+    if (nativeModule().ubrn_uniffi_inward_core_checksum_method_coreengine_complete_journal_day() !== 16290) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_inward_core_checksum_method_coreengine_complete_journal_day");
+    }
+    if (nativeModule().ubrn_uniffi_inward_core_checksum_method_coreengine_delete_all_data() !== 4284) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_inward_core_checksum_method_coreengine_delete_all_data");
+    }
+    if (nativeModule().ubrn_uniffi_inward_core_checksum_method_coreengine_export_all_data_json() !== 6164) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_inward_core_checksum_method_coreengine_export_all_data_json");
+    }
+    if (nativeModule().ubrn_uniffi_inward_core_checksum_method_coreengine_get_awareness_snapshot() !== 15685) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_inward_core_checksum_method_coreengine_get_awareness_snapshot");
+    }
+    if (nativeModule().ubrn_uniffi_inward_core_checksum_method_coreengine_get_journal_day() !== 33924) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_inward_core_checksum_method_coreengine_get_journal_day");
+    }
+    if (nativeModule().ubrn_uniffi_inward_core_checksum_method_coreengine_get_journal_progress() !== 39953) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_inward_core_checksum_method_coreengine_get_journal_progress");
+    }
+    if (nativeModule().ubrn_uniffi_inward_core_checksum_method_coreengine_get_profile() !== 64583) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_inward_core_checksum_method_coreengine_get_profile");
+    }
+    if (nativeModule().ubrn_uniffi_inward_core_checksum_method_coreengine_get_settings() !== 60274) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_inward_core_checksum_method_coreengine_get_settings");
+    }
+    if (nativeModule().ubrn_uniffi_inward_core_checksum_method_coreengine_get_streak() !== 55428) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_inward_core_checksum_method_coreengine_get_streak");
+    }
+    if (nativeModule().ubrn_uniffi_inward_core_checksum_method_coreengine_latest_checkin() !== 10742) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_inward_core_checksum_method_coreengine_latest_checkin");
+    }
+    if (nativeModule().ubrn_uniffi_inward_core_checksum_method_coreengine_list_badges() !== 36392) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_inward_core_checksum_method_coreengine_list_badges");
+    }
+    if (nativeModule().ubrn_uniffi_inward_core_checksum_method_coreengine_list_checkins() !== 61931) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_inward_core_checksum_method_coreengine_list_checkins");
+    }
+    if (nativeModule().ubrn_uniffi_inward_core_checksum_method_coreengine_list_on_the_spot() !== 51641) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_inward_core_checksum_method_coreengine_list_on_the_spot");
+    }
+    if (nativeModule().ubrn_uniffi_inward_core_checksum_method_coreengine_list_reflections() !== 35584) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_inward_core_checksum_method_coreengine_list_reflections");
+    }
+    if (nativeModule().ubrn_uniffi_inward_core_checksum_method_coreengine_save_checkin() !== 9378) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_inward_core_checksum_method_coreengine_save_checkin");
+    }
+    if (nativeModule().ubrn_uniffi_inward_core_checksum_method_coreengine_save_on_the_spot() !== 62708) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_inward_core_checksum_method_coreengine_save_on_the_spot");
+    }
+    if (nativeModule().ubrn_uniffi_inward_core_checksum_method_coreengine_save_reflection() !== 13321) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_inward_core_checksum_method_coreengine_save_reflection");
+    }
+    if (nativeModule().ubrn_uniffi_inward_core_checksum_method_coreengine_update_profile() !== 55414) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_inward_core_checksum_method_coreengine_update_profile");
+    }
+    if (nativeModule().ubrn_uniffi_inward_core_checksum_method_coreengine_update_settings() !== 17093) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_inward_core_checksum_method_coreengine_update_settings");
+    }
+    if (nativeModule().ubrn_uniffi_inward_core_checksum_constructor_coreengine_new() !== 6622) {
+        throw new UniffiInternalError.ApiChecksumMismatch("uniffi_inward_core_checksum_constructor_coreengine_new");
+    }
 
     }
 
@@ -1589,6 +2060,7 @@ export default Object.freeze({
     FfiConverterTypeBadge,
     FfiConverterTypeCheckin,
     FfiConverterTypeCheckinInput,
+    FfiConverterTypeCoreEngine,
     FfiConverterTypeCoreError,
     FfiConverterTypeJournalDay,
     FfiConverterTypeJournalProgress,

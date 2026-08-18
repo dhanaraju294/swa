@@ -133,6 +133,111 @@ extern "C" {
     uint64_t callback_data, 
     UniffiForeignFutureStructVoid result
     );
+    void * uniffi_inward_core_fn_clone_coreengine(
+        void * ptr, 
+        RustCallStatus *uniffi_out_err
+    );
+    void uniffi_inward_core_fn_free_coreengine(
+        void * ptr, 
+        RustCallStatus *uniffi_out_err
+    );
+    void * uniffi_inward_core_fn_constructor_coreengine_new(
+        RustBuffer db_path, 
+        RustCallStatus *uniffi_out_err
+    );
+    RustBuffer uniffi_inward_core_fn_method_coreengine_complete_journal_day(
+        void * ptr, 
+        RustBuffer journal_id, 
+        uint32_t day, 
+        RustCallStatus *uniffi_out_err
+    );
+    void uniffi_inward_core_fn_method_coreengine_delete_all_data(
+        void * ptr, 
+        RustCallStatus *uniffi_out_err
+    );
+    RustBuffer uniffi_inward_core_fn_method_coreengine_export_all_data_json(
+        void * ptr, 
+        RustCallStatus *uniffi_out_err
+    );
+    RustBuffer uniffi_inward_core_fn_method_coreengine_get_awareness_snapshot(
+        void * ptr, 
+        RustCallStatus *uniffi_out_err
+    );
+    RustBuffer uniffi_inward_core_fn_method_coreengine_get_journal_day(
+        void * ptr, 
+        RustBuffer journal_id, 
+        uint32_t day, 
+        RustCallStatus *uniffi_out_err
+    );
+    RustBuffer uniffi_inward_core_fn_method_coreengine_get_journal_progress(
+        void * ptr, 
+        RustBuffer journal_id, 
+        RustCallStatus *uniffi_out_err
+    );
+    RustBuffer uniffi_inward_core_fn_method_coreengine_get_profile(
+        void * ptr, 
+        RustCallStatus *uniffi_out_err
+    );
+    RustBuffer uniffi_inward_core_fn_method_coreengine_get_settings(
+        void * ptr, 
+        RustCallStatus *uniffi_out_err
+    );
+    RustBuffer uniffi_inward_core_fn_method_coreengine_get_streak(
+        void * ptr, 
+        RustCallStatus *uniffi_out_err
+    );
+    RustBuffer uniffi_inward_core_fn_method_coreengine_latest_checkin(
+        void * ptr, 
+        RustCallStatus *uniffi_out_err
+    );
+    RustBuffer uniffi_inward_core_fn_method_coreengine_list_badges(
+        void * ptr, 
+        RustCallStatus *uniffi_out_err
+    );
+    RustBuffer uniffi_inward_core_fn_method_coreengine_list_checkins(
+        void * ptr, 
+        RustBuffer from_iso, 
+        RustBuffer to_iso, 
+        RustCallStatus *uniffi_out_err
+    );
+    RustBuffer uniffi_inward_core_fn_method_coreengine_list_on_the_spot(
+        void * ptr, 
+        uint32_t limit, 
+        RustCallStatus *uniffi_out_err
+    );
+    RustBuffer uniffi_inward_core_fn_method_coreengine_list_reflections(
+        void * ptr, 
+        RustBuffer journal_id, 
+        RustCallStatus *uniffi_out_err
+    );
+    RustBuffer uniffi_inward_core_fn_method_coreengine_save_checkin(
+        void * ptr, 
+        RustBuffer input, 
+        RustCallStatus *uniffi_out_err
+    );
+    RustBuffer uniffi_inward_core_fn_method_coreengine_save_on_the_spot(
+        void * ptr, 
+        RustBuffer input, 
+        RustCallStatus *uniffi_out_err
+    );
+    RustBuffer uniffi_inward_core_fn_method_coreengine_save_reflection(
+        void * ptr, 
+        RustBuffer journal_id, 
+        uint32_t day, 
+        RustBuffer prompt, 
+        RustBuffer response, 
+        RustCallStatus *uniffi_out_err
+    );
+    RustBuffer uniffi_inward_core_fn_method_coreengine_update_profile(
+        void * ptr, 
+        RustBuffer input, 
+        RustCallStatus *uniffi_out_err
+    );
+    RustBuffer uniffi_inward_core_fn_method_coreengine_update_settings(
+        void * ptr, 
+        RustBuffer input, 
+        RustCallStatus *uniffi_out_err
+    );
     RustBuffer uniffi_inward_core_fn_func_complete_journal_day(
         RustBuffer journal_id, 
         uint32_t day, 
@@ -454,6 +559,46 @@ extern "C" {
     uint16_t uniffi_inward_core_checksum_func_update_profile(
     );
     uint16_t uniffi_inward_core_checksum_func_update_settings(
+    );
+    uint16_t uniffi_inward_core_checksum_method_coreengine_complete_journal_day(
+    );
+    uint16_t uniffi_inward_core_checksum_method_coreengine_delete_all_data(
+    );
+    uint16_t uniffi_inward_core_checksum_method_coreengine_export_all_data_json(
+    );
+    uint16_t uniffi_inward_core_checksum_method_coreengine_get_awareness_snapshot(
+    );
+    uint16_t uniffi_inward_core_checksum_method_coreengine_get_journal_day(
+    );
+    uint16_t uniffi_inward_core_checksum_method_coreengine_get_journal_progress(
+    );
+    uint16_t uniffi_inward_core_checksum_method_coreengine_get_profile(
+    );
+    uint16_t uniffi_inward_core_checksum_method_coreengine_get_settings(
+    );
+    uint16_t uniffi_inward_core_checksum_method_coreengine_get_streak(
+    );
+    uint16_t uniffi_inward_core_checksum_method_coreengine_latest_checkin(
+    );
+    uint16_t uniffi_inward_core_checksum_method_coreengine_list_badges(
+    );
+    uint16_t uniffi_inward_core_checksum_method_coreengine_list_checkins(
+    );
+    uint16_t uniffi_inward_core_checksum_method_coreengine_list_on_the_spot(
+    );
+    uint16_t uniffi_inward_core_checksum_method_coreengine_list_reflections(
+    );
+    uint16_t uniffi_inward_core_checksum_method_coreengine_save_checkin(
+    );
+    uint16_t uniffi_inward_core_checksum_method_coreengine_save_on_the_spot(
+    );
+    uint16_t uniffi_inward_core_checksum_method_coreengine_save_reflection(
+    );
+    uint16_t uniffi_inward_core_checksum_method_coreengine_update_profile(
+    );
+    uint16_t uniffi_inward_core_checksum_method_coreengine_update_settings(
+    );
+    uint16_t uniffi_inward_core_checksum_constructor_coreengine_new(
     );
     uint32_t ffi_inward_core_uniffi_contract_version(
     );
@@ -1999,6 +2144,182 @@ NativeInwardCore::NativeInwardCore(
             return this->cpp_uniffi_internal_fn_func_ffi__arraybuffer_to_string(rt, thisVal, args, count);
         }
     );
+    props["ubrn_uniffi_inward_core_fn_clone_coreengine"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_fn_clone_coreengine"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_fn_clone_coreengine(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_fn_free_coreengine"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_fn_free_coreengine"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_fn_free_coreengine(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_fn_constructor_coreengine_new"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_fn_constructor_coreengine_new"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_fn_constructor_coreengine_new(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_fn_method_coreengine_complete_journal_day"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_fn_method_coreengine_complete_journal_day"),
+        3,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_fn_method_coreengine_complete_journal_day(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_fn_method_coreengine_delete_all_data"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_fn_method_coreengine_delete_all_data"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_fn_method_coreengine_delete_all_data(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_fn_method_coreengine_export_all_data_json"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_fn_method_coreengine_export_all_data_json"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_fn_method_coreengine_export_all_data_json(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_fn_method_coreengine_get_awareness_snapshot"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_fn_method_coreengine_get_awareness_snapshot"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_fn_method_coreengine_get_awareness_snapshot(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_fn_method_coreengine_get_journal_day"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_fn_method_coreengine_get_journal_day"),
+        3,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_fn_method_coreengine_get_journal_day(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_fn_method_coreengine_get_journal_progress"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_fn_method_coreengine_get_journal_progress"),
+        2,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_fn_method_coreengine_get_journal_progress(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_fn_method_coreengine_get_profile"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_fn_method_coreengine_get_profile"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_fn_method_coreengine_get_profile(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_fn_method_coreengine_get_settings"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_fn_method_coreengine_get_settings"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_fn_method_coreengine_get_settings(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_fn_method_coreengine_get_streak"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_fn_method_coreengine_get_streak"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_fn_method_coreengine_get_streak(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_fn_method_coreengine_latest_checkin"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_fn_method_coreengine_latest_checkin"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_fn_method_coreengine_latest_checkin(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_fn_method_coreengine_list_badges"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_fn_method_coreengine_list_badges"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_fn_method_coreengine_list_badges(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_fn_method_coreengine_list_checkins"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_fn_method_coreengine_list_checkins"),
+        3,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_fn_method_coreengine_list_checkins(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_fn_method_coreengine_list_on_the_spot"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_fn_method_coreengine_list_on_the_spot"),
+        2,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_fn_method_coreengine_list_on_the_spot(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_fn_method_coreengine_list_reflections"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_fn_method_coreengine_list_reflections"),
+        2,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_fn_method_coreengine_list_reflections(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_fn_method_coreengine_save_checkin"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_fn_method_coreengine_save_checkin"),
+        2,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_fn_method_coreengine_save_checkin(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_fn_method_coreengine_save_on_the_spot"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_fn_method_coreengine_save_on_the_spot"),
+        2,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_fn_method_coreengine_save_on_the_spot(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_fn_method_coreengine_save_reflection"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_fn_method_coreengine_save_reflection"),
+        5,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_fn_method_coreengine_save_reflection(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_fn_method_coreengine_update_profile"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_fn_method_coreengine_update_profile"),
+        2,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_fn_method_coreengine_update_profile(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_fn_method_coreengine_update_settings"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_fn_method_coreengine_update_settings"),
+        2,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_fn_method_coreengine_update_settings(rt, thisVal, args, count);
+        }
+    );
     props["ubrn_uniffi_inward_core_fn_func_complete_journal_day"] = jsi::Function::createFromHostFunction(
         rt,
         jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_fn_func_complete_journal_day"),
@@ -2319,12 +2640,180 @@ NativeInwardCore::NativeInwardCore(
             return this->cpp_uniffi_inward_core_checksum_func_update_settings(rt, thisVal, args, count);
         }
     );
+    props["ubrn_uniffi_inward_core_checksum_method_coreengine_complete_journal_day"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_checksum_method_coreengine_complete_journal_day"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_checksum_method_coreengine_complete_journal_day(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_checksum_method_coreengine_delete_all_data"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_checksum_method_coreengine_delete_all_data"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_checksum_method_coreengine_delete_all_data(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_checksum_method_coreengine_export_all_data_json"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_checksum_method_coreengine_export_all_data_json"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_checksum_method_coreengine_export_all_data_json(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_checksum_method_coreengine_get_awareness_snapshot"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_checksum_method_coreengine_get_awareness_snapshot"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_checksum_method_coreengine_get_awareness_snapshot(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_checksum_method_coreengine_get_journal_day"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_checksum_method_coreengine_get_journal_day"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_checksum_method_coreengine_get_journal_day(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_checksum_method_coreengine_get_journal_progress"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_checksum_method_coreengine_get_journal_progress"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_checksum_method_coreengine_get_journal_progress(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_checksum_method_coreengine_get_profile"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_checksum_method_coreengine_get_profile"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_checksum_method_coreengine_get_profile(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_checksum_method_coreengine_get_settings"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_checksum_method_coreengine_get_settings"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_checksum_method_coreengine_get_settings(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_checksum_method_coreengine_get_streak"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_checksum_method_coreengine_get_streak"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_checksum_method_coreengine_get_streak(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_checksum_method_coreengine_latest_checkin"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_checksum_method_coreengine_latest_checkin"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_checksum_method_coreengine_latest_checkin(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_checksum_method_coreengine_list_badges"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_checksum_method_coreengine_list_badges"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_checksum_method_coreengine_list_badges(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_checksum_method_coreengine_list_checkins"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_checksum_method_coreengine_list_checkins"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_checksum_method_coreengine_list_checkins(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_checksum_method_coreengine_list_on_the_spot"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_checksum_method_coreengine_list_on_the_spot"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_checksum_method_coreengine_list_on_the_spot(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_checksum_method_coreengine_list_reflections"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_checksum_method_coreengine_list_reflections"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_checksum_method_coreengine_list_reflections(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_checksum_method_coreengine_save_checkin"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_checksum_method_coreengine_save_checkin"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_checksum_method_coreengine_save_checkin(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_checksum_method_coreengine_save_on_the_spot"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_checksum_method_coreengine_save_on_the_spot"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_checksum_method_coreengine_save_on_the_spot(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_checksum_method_coreengine_save_reflection"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_checksum_method_coreengine_save_reflection"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_checksum_method_coreengine_save_reflection(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_checksum_method_coreengine_update_profile"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_checksum_method_coreengine_update_profile"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_checksum_method_coreengine_update_profile(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_checksum_method_coreengine_update_settings"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_checksum_method_coreengine_update_settings"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_checksum_method_coreengine_update_settings(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_inward_core_checksum_constructor_coreengine_new"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_inward_core_checksum_constructor_coreengine_new"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_inward_core_checksum_constructor_coreengine_new(rt, thisVal, args, count);
+        }
+    );
     props["ubrn_ffi_inward_core_uniffi_contract_version"] = jsi::Function::createFromHostFunction(
         rt,
         jsi::PropNameID::forAscii(rt, "ubrn_ffi_inward_core_uniffi_contract_version"),
         0,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
             return this->cpp_ffi_inward_core_uniffi_contract_version(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_internal_fn_method_coreengine_ffi__bless_pointer"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_internal_fn_method_coreengine_ffi__bless_pointer"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_internal_fn_method_coreengine_ffi__bless_pointer(rt, thisVal, args, count);
         }
     );
 }
@@ -2379,9 +2868,239 @@ jsi::Value NativeInwardCore::cpp_uniffi_internal_fn_func_ffi__string_to_arraybuf
 
 jsi::Value NativeInwardCore::cpp_uniffi_internal_fn_func_ffi__arraybuffer_to_string(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
     return uniffi_jsi::Bridging<std::string>::arraybuffer_to_string(rt, args[0]);
+}jsi::Value NativeInwardCore::cpp_uniffi_internal_fn_method_coreengine_ffi__bless_pointer(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+    auto pointer = uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[0]);
+    auto static destructor = [](uint64_t p) {
+        auto pointer = reinterpret_cast<void *>(static_cast<uintptr_t>(p));
+        RustCallStatus status = {0};
+        uniffi_inward_core_fn_free_coreengine(pointer, &status);
+    };
+    auto ptrObj = std::make_shared<uniffi_jsi::DestructibleObject>(pointer, destructor);
+    auto obj = jsi::Object::createFromHostObject(rt, ptrObj);
+    return jsi::Value(rt, obj);
 }
 
 // Methods calling directly into the uniffi generated C API of the Rust crate.
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_fn_clone_coreengine(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::inward_core::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_inward_core_fn_clone_coreengine(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+            &status
+        );
+        uniffi::inward_core::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi_jsi::Bridging<void *>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_fn_free_coreengine(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::inward_core::Bridging<RustCallStatus>::rustSuccess(rt);
+        uniffi_inward_core_fn_free_coreengine(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+            &status
+        );
+        uniffi::inward_core::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return jsi::Value::undefined();
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_fn_constructor_coreengine_new(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::inward_core::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_inward_core_fn_constructor_coreengine_new(uniffi::inward_core::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[0]), 
+            &status
+        );
+        uniffi::inward_core::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi_jsi::Bridging<void *>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_fn_method_coreengine_complete_journal_day(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::inward_core::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_inward_core_fn_method_coreengine_complete_journal_day(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi::inward_core::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]), uniffi_jsi::Bridging<uint32_t>::fromJs(rt, callInvoker, args[2]), 
+            &status
+        );
+        uniffi::inward_core::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi::inward_core::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_fn_method_coreengine_delete_all_data(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::inward_core::Bridging<RustCallStatus>::rustSuccess(rt);
+        uniffi_inward_core_fn_method_coreengine_delete_all_data(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+            &status
+        );
+        uniffi::inward_core::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return jsi::Value::undefined();
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_fn_method_coreengine_export_all_data_json(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::inward_core::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_inward_core_fn_method_coreengine_export_all_data_json(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+            &status
+        );
+        uniffi::inward_core::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi::inward_core::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_fn_method_coreengine_get_awareness_snapshot(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::inward_core::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_inward_core_fn_method_coreengine_get_awareness_snapshot(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+            &status
+        );
+        uniffi::inward_core::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi::inward_core::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_fn_method_coreengine_get_journal_day(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::inward_core::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_inward_core_fn_method_coreengine_get_journal_day(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi::inward_core::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]), uniffi_jsi::Bridging<uint32_t>::fromJs(rt, callInvoker, args[2]), 
+            &status
+        );
+        uniffi::inward_core::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi::inward_core::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_fn_method_coreengine_get_journal_progress(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::inward_core::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_inward_core_fn_method_coreengine_get_journal_progress(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi::inward_core::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]), 
+            &status
+        );
+        uniffi::inward_core::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi::inward_core::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_fn_method_coreengine_get_profile(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::inward_core::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_inward_core_fn_method_coreengine_get_profile(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+            &status
+        );
+        uniffi::inward_core::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi::inward_core::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_fn_method_coreengine_get_settings(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::inward_core::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_inward_core_fn_method_coreengine_get_settings(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+            &status
+        );
+        uniffi::inward_core::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi::inward_core::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_fn_method_coreengine_get_streak(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::inward_core::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_inward_core_fn_method_coreengine_get_streak(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+            &status
+        );
+        uniffi::inward_core::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi::inward_core::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_fn_method_coreengine_latest_checkin(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::inward_core::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_inward_core_fn_method_coreengine_latest_checkin(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+            &status
+        );
+        uniffi::inward_core::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi::inward_core::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_fn_method_coreengine_list_badges(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::inward_core::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_inward_core_fn_method_coreengine_list_badges(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+            &status
+        );
+        uniffi::inward_core::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi::inward_core::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_fn_method_coreengine_list_checkins(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::inward_core::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_inward_core_fn_method_coreengine_list_checkins(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi::inward_core::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]), uniffi::inward_core::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[2]), 
+            &status
+        );
+        uniffi::inward_core::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi::inward_core::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_fn_method_coreengine_list_on_the_spot(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::inward_core::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_inward_core_fn_method_coreengine_list_on_the_spot(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi_jsi::Bridging<uint32_t>::fromJs(rt, callInvoker, args[1]), 
+            &status
+        );
+        uniffi::inward_core::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi::inward_core::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_fn_method_coreengine_list_reflections(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::inward_core::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_inward_core_fn_method_coreengine_list_reflections(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi::inward_core::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]), 
+            &status
+        );
+        uniffi::inward_core::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi::inward_core::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_fn_method_coreengine_save_checkin(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::inward_core::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_inward_core_fn_method_coreengine_save_checkin(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi::inward_core::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]), 
+            &status
+        );
+        uniffi::inward_core::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi::inward_core::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_fn_method_coreengine_save_on_the_spot(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::inward_core::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_inward_core_fn_method_coreengine_save_on_the_spot(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi::inward_core::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]), 
+            &status
+        );
+        uniffi::inward_core::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi::inward_core::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_fn_method_coreengine_save_reflection(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::inward_core::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_inward_core_fn_method_coreengine_save_reflection(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi::inward_core::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]), uniffi_jsi::Bridging<uint32_t>::fromJs(rt, callInvoker, args[2]), uniffi::inward_core::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[3]), uniffi::inward_core::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[4]), 
+            &status
+        );
+        uniffi::inward_core::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi::inward_core::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_fn_method_coreengine_update_profile(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::inward_core::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_inward_core_fn_method_coreengine_update_profile(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi::inward_core::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]), 
+            &status
+        );
+        uniffi::inward_core::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi::inward_core::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_fn_method_coreengine_update_settings(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::inward_core::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_inward_core_fn_method_coreengine_update_settings(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi::inward_core::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]), 
+            &status
+        );
+        uniffi::inward_core::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi::inward_core::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
+}
 jsi::Value NativeInwardCore::cpp_uniffi_inward_core_fn_func_complete_journal_day(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         RustCallStatus status = uniffi::inward_core::Bridging<RustCallStatus>::rustSuccess(rt);
         auto value = uniffi_inward_core_fn_func_complete_journal_day(uniffi::inward_core::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[0]), uniffi_jsi::Bridging<uint32_t>::fromJs(rt, callInvoker, args[1]), 
@@ -2709,6 +3428,146 @@ jsi::Value NativeInwardCore::cpp_uniffi_inward_core_checksum_func_update_profile
 }
 jsi::Value NativeInwardCore::cpp_uniffi_inward_core_checksum_func_update_settings(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         auto value = uniffi_inward_core_checksum_func_update_settings(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_checksum_method_coreengine_complete_journal_day(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_inward_core_checksum_method_coreengine_complete_journal_day(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_checksum_method_coreengine_delete_all_data(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_inward_core_checksum_method_coreengine_delete_all_data(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_checksum_method_coreengine_export_all_data_json(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_inward_core_checksum_method_coreengine_export_all_data_json(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_checksum_method_coreengine_get_awareness_snapshot(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_inward_core_checksum_method_coreengine_get_awareness_snapshot(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_checksum_method_coreengine_get_journal_day(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_inward_core_checksum_method_coreengine_get_journal_day(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_checksum_method_coreengine_get_journal_progress(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_inward_core_checksum_method_coreengine_get_journal_progress(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_checksum_method_coreengine_get_profile(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_inward_core_checksum_method_coreengine_get_profile(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_checksum_method_coreengine_get_settings(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_inward_core_checksum_method_coreengine_get_settings(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_checksum_method_coreengine_get_streak(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_inward_core_checksum_method_coreengine_get_streak(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_checksum_method_coreengine_latest_checkin(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_inward_core_checksum_method_coreengine_latest_checkin(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_checksum_method_coreengine_list_badges(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_inward_core_checksum_method_coreengine_list_badges(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_checksum_method_coreengine_list_checkins(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_inward_core_checksum_method_coreengine_list_checkins(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_checksum_method_coreengine_list_on_the_spot(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_inward_core_checksum_method_coreengine_list_on_the_spot(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_checksum_method_coreengine_list_reflections(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_inward_core_checksum_method_coreengine_list_reflections(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_checksum_method_coreengine_save_checkin(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_inward_core_checksum_method_coreengine_save_checkin(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_checksum_method_coreengine_save_on_the_spot(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_inward_core_checksum_method_coreengine_save_on_the_spot(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_checksum_method_coreengine_save_reflection(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_inward_core_checksum_method_coreengine_save_reflection(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_checksum_method_coreengine_update_profile(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_inward_core_checksum_method_coreengine_update_profile(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_checksum_method_coreengine_update_settings(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_inward_core_checksum_method_coreengine_update_settings(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeInwardCore::cpp_uniffi_inward_core_checksum_constructor_coreengine_new(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_inward_core_checksum_constructor_coreengine_new(
         );
 
         

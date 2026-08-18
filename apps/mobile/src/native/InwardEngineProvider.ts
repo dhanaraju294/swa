@@ -27,23 +27,24 @@ function probeNativeBridge(): { available: boolean; detail: string } {
   if (Platform.OS === 'web') {
     return { available: false, detail: 'Platform is web' };
   }
-  // Android: the C++ TurboModule bridge is not wired in this build. Only the
-  // prebuilt libinward_core.so is bundled; there is no CMake/externalNativeBuild
-  // compiling the JSI shim (cpp/inward-core.cpp + cpp/generated) and no
-  // Java/Kotlin registration of the `InwardCore` module. RN codegen still emits
-  // a stub `InwardCore` spec whose installRustCrate() aborts natively at launch,
-  // which surfaces as a white screen. Skip the native path entirely and use the
-  // in-memory mock engine until the Android native bridge is wired (phase 1.3).
-  if (Platform.OS === 'android') {
-    return {
-      available: false,
-      detail:
-        'Android native bridge not wired (no C++ TurboModule registration) — using mock engine (phase 1.3)',
-    };
-  }
+  // iOS/Android: both can run the real Rust engine once the `InwardCore`
+  // TurboModule is registered (the generated entry module installs the Rust
+  // crate into Hermes via that module). If the module is absent (Expo Go, web,
+  // or a dev client built before the Rust bridge was wired in) the require
+  // throws and we fall back to the in-memory mock engine.
   try {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     require('../native/generated');
+    // eslint-disable-next-line no-console
+    const g: any = (globalThis as any).NativeInwardCore;
+    console.log(
+      '[InwardEngine] DIAG NativeInwardCore global =',
+      typeof g,
+      '| initDb fn =',
+      typeof (g && g.ubrn_uniffi_inward_core_fn_func_init_db),
+      '| completeJournalDay fn =',
+      typeof (g && g.ubrn_uniffi_inward_core_fn_func_complete_journal_day),
+    );
     return { available: true, detail: 'InwardCore TurboModule resolved' };
   } catch (e) {
     return {

@@ -7,4 +7,4 @@ export interface Spec extends TurboModule {
   cleanupRustCrate(): boolean;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SwaMobile');
+export default TurboModuleRegistry.getEnforcing<Spec>('InwardCore');

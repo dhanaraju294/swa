@@ -2,18 +2,18 @@ rust:
   directory: ./rust/inward_core
   manifestPath: Cargo.toml
 bindings:
-  ts: ./app/src/native/generated
-  cpp: ./app/cpp/generated
+  ts: ./apps/mobile/src/native/generated
+  cpp: ./apps/mobile/cpp/generated
   uniffiToml: ./rust/inward_core/uniffi.toml
 ios:
   directory: ./app/ios
   frameworkName: InwardCore
 android:
-  directory: ./app/android
+  directory: ./apps/mobile/android
   library: inward_core
 turboModule:
-  cpp: ./app/cpp
-  ts: ./app/src/native/generated
+  cpp: ./apps/mobile/cpp
+  ts: ./apps/mobile/src/native/generated
   specName: InwardCore
   name: InwardCore
-  entrypoint: ./app/src/native/generated/index.tsx
+  entrypoint: ./apps/mobile/src/native/generated/index.tsx
