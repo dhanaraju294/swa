@@ -11,4 +11,16 @@
 -keep class com.swmansion.reanimated.** { *; }
 -keep class com.facebook.react.turbomodule.** { *; }
 
+# Rust / UniFFI JSI bridge — stripping these crashes release at launch.
+-keep class com.swamobile.** { *; }
+-keep class com.facebook.fbreact.specs.NativeInwardCoreSpec { *; }
+-keep class com.facebook.react.bridge.** { *; }
+-keep class uniffi.** { *; }
+-keepclassmembers class com.swamobile.SwaMobileModule {
+  native <methods>;
+  public *;
+}
+-dontwarn com.swamobile.**
+-dontwarn uniffi.**
+
 # Add any project specific keep options here:

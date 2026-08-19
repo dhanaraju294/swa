@@ -6,14 +6,46 @@ import { EyebrowLabel } from '../../design-system/EyebrowLabel';
 import { useCheckins } from '../../hooks/useCheckins';
 import { useReflections } from '../../hooks/useJournal';
 import { useAwarenessSnapshot } from '../../hooks/useAwareness';
+import { useDailyCatalog } from '../../hooks/useDailyJourney';
+import { useIsFocused } from '@react-navigation/native';
+import { useEffect } from 'react';
+
+function prettyReflection(prompt: string, response: string): { title: string; body: string } {
+  if (prompt !== 'session') {
+    return { title: prompt, body: response };
+  }
+  try {
+    const parsed = JSON.parse(response) as { part?: string; answers?: Record<string, string> };
+    const answers = parsed.answers || {};
+    const bits = Object.values(answers)
+      .filter((v) => v && v !== '__skip__')
+      .slice(0, 3);
+    return {
+      title: parsed.part ? `${parsed.part} session` : 'Session',
+      body: bits.length ? bits.join(' · ') : 'Completed, mostly skipped.',
+    };
+  } catch {
+    return { title: 'Session', body: 'Saved.' };
+  }
+}
 
 export default function InsightsScreen() {
-  const { data: checkins } = useCheckins();
-  const { data: reflections } = useReflections();
-  const { data: awareness } = useAwarenessSnapshot();
+  const isFocused = useIsFocused();
+  const { data: checkins, refresh: refreshCheckins } = useCheckins();
+  const { data: reflections, refresh: refreshReflections } = useReflections();
+  const { data: awareness, refresh: refreshAwareness } = useAwarenessSnapshot();
+  const { completedDays, statusByDay, unlockedDay, total, refresh: refreshPath } = useDailyCatalog();
+
+  useEffect(() => {
+    if (isFocused) {
+      refreshCheckins();
+      refreshReflections();
+      refreshAwareness();
+      refreshPath();
+    }
+  }, [isFocused, refreshAwareness, refreshCheckins, refreshPath, refreshReflections]);
 
   const last7 = checkins.slice(0, 7);
-  const last30 = checkins.slice(0, 30);
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -27,10 +59,26 @@ export default function InsightsScreen() {
           <Text style={styles.statLabel}>Total Check-ins</Text>
         </Card>
         <Card style={styles.statCard}>
-          <Text style={styles.statValue}>{reflections.length}</Text>
-          <Text style={styles.statLabel}>Reflections</Text>
+          <Text style={styles.statValue}>{completedDays.length}</Text>
+          <Text style={styles.statLabel}>Path days</Text>
         </Card>
       </View>
+
+      <Card style={styles.card}>
+        <EyebrowLabel label="THE LOOP" />
+        <Text style={styles.emptyText}>
+          Day {unlockedDay} of {total}. Morning, practice, and evening are counted only when you finish them — never as a grade.
+        </Text>
+        <View style={styles.loopRow}>
+          {(['morning', 'exercise', 'evening'] as const).map((part) => (
+            <View key={part} style={styles.loopChip}>
+              <Text style={styles.loopChipText}>
+                {part} · {statusByDay[unlockedDay]?.[part] ? 'done' : 'open'}
+              </Text>
+            </View>
+          ))}
+        </View>
+      </Card>
 
       {/* Recent check-ins */}
       <Card style={styles.card}>
@@ -79,18 +127,21 @@ export default function InsightsScreen() {
         <EyebrowLabel label="YOUR REFLECTIONS" />
         {reflections.length === 0 ? (
           <Text style={styles.emptyText}>
-            No reflections yet. Complete a journal day to write your first one.
+            No reflections yet. Finish a morning, practice, or evening to leave a trace.
           </Text>
         ) : (
-          reflections.slice(0, 10).map((r) => (
-            <View key={r.id} style={styles.reflectionItem}>
-              <Text style={styles.reflectionPrompt}>{r.prompt}</Text>
-              <Text style={styles.reflectionResponse}>{r.response}</Text>
-              <Text style={styles.reflectionDate}>
-                {new Date(r.createdAt).toLocaleDateString()}
-              </Text>
-            </View>
-          ))
+          reflections.slice(0, 12).map((r) => {
+            const pretty = prettyReflection(r.prompt, r.response);
+            return (
+              <View key={r.id} style={styles.reflectionItem}>
+                <Text style={styles.reflectionPrompt}>{pretty.title}</Text>
+                <Text style={styles.reflectionResponse}>{pretty.body}</Text>
+                <Text style={styles.reflectionDate}>
+                  {r.journalId} · day {r.dayNumber} · {new Date(r.createdAt).toLocaleDateString()}
+                </Text>
+              </View>
+            );
+          })
         )}
       </Card>
 
@@ -127,4 +178,7 @@ const styles = StyleSheet.create({
   reflectionPrompt: { fontFamily: 'Nunito', fontSize: 12, fontWeight: '700', color: colors.ink, marginBottom: 4 },
   reflectionResponse: { fontFamily: 'Nunito', fontSize: 12, color: colors.inkSoft, lineHeight: 17 },
   reflectionDate: { fontFamily: 'Nunito', fontSize: 10, color: colors.ghost, marginTop: 4 },
+  loopRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: spacing.md },
+  loopChip: { backgroundColor: '#F4EFE6', borderRadius: 999, paddingHorizontal: 10, paddingVertical: 6 },
+  loopChipText: { fontFamily: 'Nunito', fontSize: 11, fontWeight: '700', color: colors.ink, textTransform: 'capitalize' },
 });

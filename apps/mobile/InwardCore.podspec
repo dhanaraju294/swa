@@ -12,11 +12,17 @@ Pod::Spec.new do |s|
   s.license      = package["license"]
   s.authors      = package["author"]
 
-  s.platforms    = { :ios => min_ios_version_supported }
+  min_ios = defined?(min_ios_version_supported) ? min_ios_version_supported : "15.1"
+  s.platforms    = { :ios => min_ios }
   s.source       = { :git => "https://github.com/inward-journey/inward-core.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/InwardCore.{h,mm}", "cpp/**/*.{hpp,cpp,c,h}"
-  s.vendored_frameworks = "build/InwardCore.xcframework"
+  framework = File.join(__dir__, "build/InwardCore.xcframework")
+  if File.directory?(framework)
+    s.vendored_frameworks = "build/InwardCore.xcframework"
+  else
+    Pod::UI.warn "[InwardCore] build/InwardCore.xcframework is missing. Run ./scripts/build-ios.sh from the repo root."
+  end
   s.dependency    "uniffi-bindgen-react-native", "0.29.3-1"
 
   # Use install_modules_dependencies helper to install the dependencies if React Native version >=0.71.0.

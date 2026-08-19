@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Redirect } from 'expo-router';
-import * as SecureStore from 'expo-secure-store';
+import { getSecureFlag } from '../src/native/secureFlag';
 
 const ONBOARDING_KEY = 'inward-has-onboarded-v1';
 
@@ -9,7 +9,7 @@ export default function Index() {
 
   useEffect(() => {
     const timeout = setTimeout(() => setTarget('/onboarding'), 3000);
-    SecureStore.getItemAsync(ONBOARDING_KEY)
+    getSecureFlag(ONBOARDING_KEY)
       .then((value) => setTarget(value === 'true' ? '/(tabs)' : '/onboarding'))
       .catch(() => setTarget('/onboarding'))
       .finally(() => clearTimeout(timeout));

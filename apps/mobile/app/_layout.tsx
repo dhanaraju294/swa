@@ -1,20 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import { Stack } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import * as FileSystem from 'expo-file-system';
 import { getInwardEngine } from '../src/native/InwardEngineProvider';
 import { colors } from '../src/design-system/tokens';
 import { AppLockProvider } from '../src/navigation/AppLockContext';
 import AppLockGate from '../src/components/AppLockGate';
+import { parseReminders } from '../src/state/appStore';
+import {
+  configureNotificationHandler,
+  subscribeToReminderTaps,
+  syncReflectionReminders,
+} from '../src/notifications/reminders';
 
 export default function RootLayout() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    configureNotificationHandler();
     const initDatabase = async () => {
       try {
         const engine = await getInwardEngine();
         const appDocumentsDir = FileSystem.documentDirectory || '';
         await engine.initialize(appDocumentsDir);
+        const settings = await engine.getSettings();
+        await syncReflectionReminders(parseReminders(settings.reminderTime));
       } catch (e) {
         console.error('Failed to initialize database:', e);
       } finally {
@@ -22,6 +31,12 @@ export default function RootLayout() {
       }
     };
     initDatabase();
+  }, []);
+
+  useEffect(() => {
+    return subscribeToReminderTaps((part) => {
+      router.push({ pathname: '/session', params: { part } });
+    });
   }, []);
 
   if (!ready) return null;
@@ -37,6 +52,14 @@ export default function RootLayout() {
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="onboarding" />
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen
+          name="session"
+          options={{
+            headerShown: false,
+            presentation: 'card',
+            animation: 'slide_from_bottom',
+          }}
+        />
       </Stack>
       <AppLockGate />
     </AppLockProvider>

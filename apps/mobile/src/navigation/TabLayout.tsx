@@ -60,10 +60,11 @@ export default function TabLayout() {
       <Tabs.Screen
         name="journal"
         options={{
-          title: 'Journal',
-          headerTitle: 'Journal',
+          title: 'Path',
+          headerTitle: 'Your Path',
+          headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <Ionicons name={focused ? 'book' : 'book-outline'} size={22} color={focused ? ACTIVE_COLOR : INACTIVE_COLOR} />
+            <Ionicons name={focused ? 'map' : 'map-outline'} size={22} color={focused ? ACTIVE_COLOR : INACTIVE_COLOR} />
           ),
         }}
       />

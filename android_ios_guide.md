@@ -120,6 +120,8 @@ npm start          # expo start --dev-client
 
 ## 6. Notes / gotchas
 
+- **Never keep the repo in a folder with a space** (`Downloads/swa 2` is the usual one). CocoaPods treats the UniFFI podspec as a URI and crashes with `bad URI (is not URI?)`. Move it: `mv "$HOME/Downloads/swa 2" "$HOME/swa"`. Full steps are in `START.md`.
+
 - **Expo Go does not support native modules.** Use the dev client / custom build produced by `expo run:android` / `expo run:ios`. In Expo Go the app runs the mock engine.
 - **Android NDK**: only `27.3.13750724` works here; the SDK's default `30.x` is an empty stub.
 - **Architecture**: the app uses the New Architecture (TurboModules + JSI). The Rust crate is installed into Hermes at runtime via `installRustCrate()`.

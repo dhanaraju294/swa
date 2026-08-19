@@ -93,6 +93,15 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "0.1.0"
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+        }
+        externalNativeBuild {
+            cmake {
+                arguments '-DANDROID_STL=c++_shared', '-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON'
+                abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+            }
+        }
     }
     signingConfigs {
         debug {
@@ -101,25 +110,46 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            // Prefer a real upload keystore when provided; otherwise fall back
+            // to the debug key so local `assembleRelease` still installs.
+            def storePath = System.getenv('SWA_RELEASE_STORE_FILE') ?: findProperty('SWA_RELEASE_STORE_FILE')
+            if (storePath) {
+                storeFile file(storePath)
+                storePassword System.getenv('SWA_RELEASE_STORE_PASSWORD') ?: findProperty('SWA_RELEASE_STORE_PASSWORD') ?: ''
+                keyAlias System.getenv('SWA_RELEASE_KEY_ALIAS') ?: findProperty('SWA_RELEASE_KEY_ALIAS') ?: 'upload'
+                keyPassword System.getenv('SWA_RELEASE_KEY_PASSWORD') ?: findProperty('SWA_RELEASE_KEY_PASSWORD') ?: ''
+            } else {
+                storeFile file('debug.keystore')
+                storePassword 'android'
+                keyAlias 'androiddebugkey'
+                keyPassword 'android'
+            }
+        }
     }
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
+            minifyEnabled false
+            shrinkResources false
+            debuggable true
         }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             shrinkResources (findProperty('android.enableShrinkResourcesInReleaseBuilds')?.toBoolean() ?: false)
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             crunchPngs (findProperty('android.enablePngCrunchInReleaseBuilds')?.toBoolean() ?: true)
+            debuggable false
         }
     }
     packagingOptions {
         jniLibs {
-            useLegacyPackaging (findProperty('expo.useLegacyPackaging')?.toBoolean() ?: false)
+            useLegacyPackaging true
         }
+        pickFirst '**/libc++_shared.so'
+        pickFirst '**/libfbjni.so'
+        pickFirst '**/libjsi.so'
     }
     androidResources {
         ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~'
@@ -200,7 +230,9 @@ android {
 // Rust source (rust/inward_core) via cargo-ndk. The .a files are gitignored
 // and rebuilt on demand, so no ~740MB binaries are stored in git.
 // See scripts/build-android-static-libs.sh for the underlying command.
-def repoRoot = new File("${projectRoot}/..").absoluteFile
+// projectRoot is apps/mobile (rootDir's parent); the script lives two levels
+// up at the monorepo root.
+def repoRoot = new File("${projectRoot}/../..").absoluteFile
 tasks.register('buildRustCore', Exec) {
   workingDir repoRoot
   commandLine 'bash', 'scripts/build-android-static-libs.sh'

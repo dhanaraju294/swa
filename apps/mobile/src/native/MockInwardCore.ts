@@ -19,6 +19,8 @@ import type {
   Streak,
 } from './generated/inward_core';
 import type { InwardEngine } from './InwardEngine';
+import { seededJournalDay } from './seedContent';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -32,6 +34,19 @@ function isoToday(): string {
   return nowIso().slice(0, 10);
 }
 
+const MOCK_STORE_KEY = 'inward-mock-engine-v2';
+
+type PersistedMock = {
+  checkins: Checkin[];
+  onTheSpot: OnTheSpotEntry[];
+  reflections: Reflection[];
+  progress: Record<string, JournalProgress>;
+  streak: Streak;
+  profile: Profile;
+  settings: AppSettings;
+  badges: Badge[];
+};
+
 export class MockCoreEngine implements InwardEngine {
   private checkins: Checkin[] = [];
   private onTheSpot: OnTheSpotEntry[] = [];
@@ -40,9 +55,47 @@ export class MockCoreEngine implements InwardEngine {
   private streak: Streak = { currentStreak: 0, longestStreak: 0, lastActiveDate: undefined };
   private profile: Profile = { displayName: undefined, appLockEnabled: false, createdAt: nowIso() };
   private settings: AppSettings = { theme: 'default', reminderTime: undefined, exportFormatPref: 'json' };
+  private badges: Badge[] = [];
+
+  private persistTimer: ReturnType<typeof setTimeout> | null = null;
+
+  private schedulePersist(): void {
+    if (this.persistTimer) clearTimeout(this.persistTimer);
+    this.persistTimer = setTimeout(() => {
+      this.persist().catch(() => undefined);
+    }, 40);
+  }
+
+  private async persist(): Promise<void> {
+    const payload: PersistedMock = {
+      checkins: this.checkins,
+      onTheSpot: this.onTheSpot,
+      reflections: this.reflections,
+      progress: this.progress,
+      streak: this.streak,
+      profile: this.profile,
+      settings: this.settings,
+      badges: this.badges,
+    };
+    await AsyncStorage.setItem(MOCK_STORE_KEY, JSON.stringify(payload));
+  }
 
   async initialize(_documentsDir: string): Promise<void> {
-    // In-memory only — nothing to open.
+    try {
+      const raw = await AsyncStorage.getItem(MOCK_STORE_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw) as PersistedMock;
+      this.checkins = saved.checkins ?? [];
+      this.onTheSpot = saved.onTheSpot ?? [];
+      this.reflections = saved.reflections ?? [];
+      this.progress = saved.progress ?? {};
+      this.streak = saved.streak ?? this.streak;
+      this.profile = saved.profile ?? this.profile;
+      this.settings = saved.settings ?? this.settings;
+      this.badges = saved.badges ?? [];
+    } catch {
+      // Ignore corrupt preview storage and start clean.
+    }
   }
 
   async saveCheckin(input: CheckinInput): Promise<Checkin> {
@@ -62,6 +115,7 @@ export class MockCoreEngine implements InwardEngine {
     this.checkins.push(checkin);
     // Showing up for a check-in counts toward the streak.
     this.recordActivity();
+    this.schedulePersist();
     return checkin;
   }
 
@@ -87,6 +141,7 @@ export class MockCoreEngine implements InwardEngine {
     this.onTheSpot.push(entry);
     // An on-the-spot reflection also counts as showing up today.
     this.recordActivity();
+    this.schedulePersist();
     return entry;
   }
 
@@ -97,13 +152,7 @@ export class MockCoreEngine implements InwardEngine {
   }
 
   async getJournalDay(journalId: string, day: number): Promise<JournalDay> {
-    return {
-      journalId,
-      dayNumber: day,
-      title: `Day ${day}`,
-      subtitle: undefined,
-      contentJson: '{}',
-    };
+    return seededJournalDay(journalId, day);
   }
 
   async getJournalProgress(journalId: string): Promise<JournalProgress> {
@@ -136,16 +185,28 @@ export class MockCoreEngine implements InwardEngine {
       };
     };
 
-    // The first 7 days of the 21-day journal ARE the 7-day journal, so
-    // completing a shared day in either journal completes it in both.
     mark(journalId);
-    if (day <= 7) {
+    if (day <= 7 && (journalId === 'seven-day' || journalId === 'twenty-one-day')) {
       const other = journalId === 'seven-day' ? 'twenty-one-day' : 'seven-day';
       mark(other);
+    }
+    if (journalId === 'daily-path') {
+      const awards: Array<[string, number]> = [
+        ['path-notice', 7],
+        ['path-understand', 14],
+        ['path-choose', 21],
+        ['path-live', 30],
+      ];
+      for (const [key, threshold] of awards) {
+        if (day >= threshold && !this.badges.some((b) => b.key === key)) {
+          this.badges.push({ key, earnedAt: nowIso() });
+        }
+      }
     }
 
     // Completing a journal day counts as showing up today (once per day).
     this.recordActivity();
+    this.schedulePersist();
     return this.getJournalProgress(journalId);
   }
 
@@ -180,6 +241,7 @@ export class MockCoreEngine implements InwardEngine {
       createdAt: nowIso(),
     };
     this.reflections.push(reflection);
+    this.schedulePersist();
     return reflection;
   }
 
@@ -195,7 +257,7 @@ export class MockCoreEngine implements InwardEngine {
   }
 
   async listBadges(): Promise<Badge[]> {
-    return [];
+    return [...this.badges];
   }
 
   async getAwarenessSnapshot(): Promise<AwarenessDimensionScore[]> {
@@ -208,6 +270,7 @@ export class MockCoreEngine implements InwardEngine {
 
   async updateProfile(input: ProfileInput): Promise<Profile> {
     this.profile = { ...this.profile, ...input };
+    this.schedulePersist();
     return { ...this.profile };
   }
 
@@ -217,6 +280,7 @@ export class MockCoreEngine implements InwardEngine {
 
   async updateSettings(input: AppSettingsInput): Promise<AppSettings> {
     this.settings = { ...input };
+    this.schedulePersist();
     return { ...this.settings };
   }
 
@@ -229,9 +293,10 @@ export class MockCoreEngine implements InwardEngine {
         streak: this.streak,
         checkins: this.checkins,
         on_the_spot_entries: this.onTheSpot,
-        badges: [],
+        badges: this.badges,
         reflections: this.reflections,
         awareness_scores: [],
+        daily_path: this.progress['daily-path'] ?? null,
       },
       null,
       2,
@@ -243,8 +308,10 @@ export class MockCoreEngine implements InwardEngine {
     this.onTheSpot = [];
     this.reflections = [];
     this.progress = {};
+    this.badges = [];
     this.streak = { currentStreak: 0, longestStreak: 0, lastActiveDate: undefined };
     this.profile = { displayName: undefined, appLockEnabled: false, createdAt: nowIso() };
     this.settings = { theme: 'default', reminderTime: undefined, exportFormatPref: 'json' };
+    await AsyncStorage.removeItem(MOCK_STORE_KEY).catch(() => undefined);
   }
 }

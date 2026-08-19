@@ -213,6 +213,69 @@ fn awareness_snapshot() {
 }
 
 #[test]
+fn daily_path_content_is_seeded_from_backend() {
+    let engine = setup_test_engine();
+    let catalog = engine.get_journal_day("daily-path".into(), 0).unwrap();
+    assert_eq!(catalog.journal_id, "daily-path");
+    assert_eq!(catalog.day_number, 0);
+    let catalog_json: serde_json::Value = serde_json::from_str(&catalog.content_json).unwrap();
+    assert_eq!(catalog_json["kind"], "catalog");
+    assert_eq!(catalog_json["totalDays"], 30);
+    assert_eq!(catalog_json["days"].as_array().unwrap().len(), 30);
+
+    let day1 = engine.get_journal_day("daily-path".into(), 1).unwrap();
+    assert_eq!(day1.title, "Pause & Notice");
+    let day_json: serde_json::Value = serde_json::from_str(&day1.content_json).unwrap();
+    assert_eq!(day_json["kind"], "daily-day");
+    assert!(day_json["morning"]["steps"].as_array().unwrap().len() >= 2);
+    assert!(day_json["exercise"]["steps"].as_array().unwrap().len() >= 2);
+    assert!(day_json["evening"]["steps"].as_array().unwrap().len() >= 2);
+
+    let day21 = engine.get_journal_day("daily-path".into(), 21).unwrap();
+    assert_eq!(day21.title, "Coming Home");
+    let day30 = engine.get_journal_day("daily-path".into(), 30).unwrap();
+    assert_eq!(day30.title, "The Path Keeps Going");
+}
+
+#[test]
+fn daily_path_completion_does_not_sync_legacy_journals() {
+    let engine = setup_test_engine();
+    engine.complete_journal_day("daily-path".into(), 1).unwrap();
+    let seven = engine.get_journal_progress("seven-day".into()).unwrap();
+    assert!(seven.completed_days.is_empty());
+    let path = engine.get_journal_progress("daily-path".into()).unwrap();
+    assert_eq!(path.completed_days, vec![1]);
+}
+
+#[test]
+fn daily_path_awards_unit_badge() {
+    let engine = setup_test_engine();
+    for day in 1..=7u32 {
+        engine.complete_journal_day("daily-path".into(), day).unwrap();
+    }
+    let badges = engine.list_badges().unwrap();
+    assert!(badges.iter().any(|b| b.key == "path-notice"));
+}
+
+#[test]
+fn delete_all_data_keeps_seeded_content() {
+    let engine = setup_test_engine();
+    engine
+        .save_reflection(
+            "morning".into(),
+            1,
+            "session".into(),
+            "{\"ok\":true}".into(),
+        )
+        .unwrap();
+    engine.delete_all_data().unwrap();
+    let day1 = engine.get_journal_day("daily-path".into(), 1).unwrap();
+    assert_eq!(day1.title, "Pause & Notice");
+    let reflections = engine.list_reflections(None).unwrap();
+    assert!(reflections.is_empty());
+}
+
+#[test]
 fn complete_journal_day_streak_update() {
     let engine = setup_test_engine();
     let progress = engine.complete_journal_day("seven-day".into(), 1).unwrap();

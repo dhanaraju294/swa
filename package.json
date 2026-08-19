@@ -9,13 +9,13 @@
     "generate:ios": "if command -v ubrn >/dev/null 2>&1; then ubrn build ios --and-generate --config ubrn.config.yaml && sed -i '' 's#\"apps/[^\"]*mobile/cpp/generated/inward_core.hpp\"#\"generated/inward_core.hpp\"#' apps/mobile/cpp/swa-mobile.cpp; else echo 'ubrn CLI not found. Skipping native binding generation and using existing bindings or JS fallback.'; fi",
     "generate:android": "if command -v ubrn >/dev/null 2>&1; then ubrn build android --and-generate --config ubrn.config.yaml && sed -i '' 's#\"apps/[^\"]*mobile/cpp/generated/inward_core.hpp\"#\"generated/inward_core.hpp\"#' apps/mobile/cpp/swa-mobile.cpp; else echo 'ubrn CLI not found. Skipping native binding generation and using existing bindings or JS fallback.'; fi",
     "generate": "npm run generate:android && npm run generate:ios",
-    "prebuild": "npm run generate && npm run --workspace app prebuild",
-    "ios": "npm run generate:ios && npm run --workspace app ios",
-    "android": "npm run generate:android && npm run --workspace app android",
-    "start": "npm run --workspace app start",
+    "prebuild": "npm run generate && npm run --workspace inward-journey prebuild",
+    "ios": "npm run generate:ios && npm run --workspace inward-journey ios",
+    "android": "npm run generate:android && npm run --workspace inward-journey android",
+    "start": "npm run --workspace inward-journey start",
     "test:rust": "cd rust/inward_core && cargo test",
-    "test:app": "npm run --workspace app test",
-    "typecheck": "npm run --workspace app typecheck"
+    "test:app": "npm run --workspace inward-journey test",
+    "typecheck": "npm run --workspace inward-journey typecheck"
   },
   "devDependencies": {
     "uniffi-bindgen-react-native": "^0.29.3-1"

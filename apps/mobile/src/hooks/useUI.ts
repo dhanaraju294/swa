@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
+import { getSecureFlag, setSecureFlag } from '../native/secureFlag';
 
 type UIState = {
   currentTab: string;
@@ -42,23 +44,31 @@ const defaultOnTheSpot = {
   note: '',
 };
 
+const isWeb = Platform.OS === 'web';
+
 const secureStorage = createJSONStorage(() => ({
   getItem: async (name: string) => {
-    try {
-      return await SecureStore.getItemAsync(name);
-    } catch (error) {
-      console.warn('[UI storage] getItem failed', error);
-      return null;
-    }
+    return getSecureFlag(name);
   },
   setItem: async (name: string, value: string) => {
-    try {
-      await SecureStore.setItemAsync(name, value);
-    } catch (error) {
-      console.warn('[UI storage] setItem failed', error);
+    await setSecureFlag(name, value);
+    if (isWeb) {
+      try {
+        if (typeof localStorage !== 'undefined') localStorage.setItem(name, value);
+      } catch {
+        /* non-fatal */
+      }
     }
   },
   removeItem: async (name: string) => {
+    if (isWeb) {
+      try {
+        if (typeof localStorage !== 'undefined') localStorage.removeItem(name);
+      } catch {
+        /* non-fatal */
+      }
+      return;
+    }
     try {
       await SecureStore.deleteItemAsync(name);
     } catch (error) {

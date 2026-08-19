@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, Switch } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Alert, Switch, TouchableOpacity } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import { colors, spacing } from '../../design-system/tokens';
 import { Card } from '../../design-system/Card';
 import { EyebrowLabel } from '../../design-system/EyebrowLabel';
@@ -7,27 +8,46 @@ import { Button } from '../../design-system/Button';
 import { WritingLineInput } from '../../design-system/WritingLineInput';
 import { useProfile, useSettings, useExportData, useDeleteAllData } from '../../hooks/useProfile';
 import { useAppLockContext } from '../../navigation/AppLockContext';
+import {
+  DEFAULT_REMINDERS,
+  joinTime,
+  parseReminders,
+  serializeReminders,
+  splitTime,
+  type ReminderPrefs,
+  type ReminderSlot,
+} from '../../state/appStore';
+import { requestReminderPermission, syncReflectionReminders } from '../../notifications/reminders';
 
 type PasscodeMode = 'create' | 'verify' | null;
 
 export default function SettingsScreen() {
-  const { data: profile, update: updateProfile } = useProfile();
-  const { data: settings, update: updateSettings } = useSettings();
+  const isFocused = useIsFocused();
+  const { data: profile, update: updateProfile, refresh: refreshProfile } = useProfile();
+  const { data: settings, update: updateSettings, refresh: refreshSettings } = useSettings();
   const { exportData, loading: exporting } = useExportData();
   const { deleteAll, loading: deleting } = useDeleteAllData();
   const { enabled: lockEnabled, hasPasscode, enableAppLock, disableAppLock, verify } =
     useAppLockContext();
 
   const [displayName, setDisplayName] = useState(profile?.displayName || '');
-  // Keep the name field in sync with the persisted profile (async-loaded),
-  // e.g. after reopening settings or after onboarding set the name.
-  const syncedName = React.useRef<string | null | undefined>(undefined);
+  const [reminders, setReminders] = useState<ReminderPrefs>(parseReminders(settings?.reminderTime));
+  const [savingReminders, setSavingReminders] = useState(false);
+
   useEffect(() => {
-    if (profile && profile.displayName !== syncedName.current) {
-      syncedName.current = profile.displayName;
-      setDisplayName(profile.displayName ?? '');
+    if (isFocused) {
+      refreshProfile();
+      refreshSettings();
     }
-  }, [profile]);
+  }, [isFocused, refreshProfile, refreshSettings]);
+
+  useEffect(() => {
+    setDisplayName(profile?.displayName ?? '');
+  }, [profile?.displayName]);
+
+  useEffect(() => {
+    setReminders(parseReminders(settings?.reminderTime));
+  }, [settings?.reminderTime]);
 
   const [passcodeMode, setPasscodeMode] = useState<PasscodeMode>(null);
   const [passcode, setPasscode] = useState('');
@@ -36,7 +56,7 @@ export default function SettingsScreen() {
 
   const handleExport = async () => {
     try {
-      const json = await exportData();
+      await exportData();
       Alert.alert('Export Ready', 'Your data has been exported. In a real app, this would open the share sheet.', [
         { text: 'OK' },
       ]);
@@ -56,6 +76,7 @@ export default function SettingsScreen() {
           style: 'destructive',
           onPress: async () => {
             await deleteAll();
+            await syncReflectionReminders(DEFAULT_REMINDERS);
             Alert.alert('Deleted', 'All data has been cleared.');
           },
         },
@@ -64,11 +85,53 @@ export default function SettingsScreen() {
   };
 
   const handleSaveName = async () => {
-    await updateProfile({
-      displayName: displayName || undefined,
-      appLockEnabled: lockEnabled,
-    });
-    Alert.alert('Saved', 'Profile updated.');
+    try {
+      await updateProfile({
+        displayName: displayName.trim() || undefined,
+        appLockEnabled: lockEnabled,
+      });
+      Alert.alert('Saved', 'Your name is on this device now.');
+    } catch (e) {
+      Alert.alert('Could not save', 'Please try again in a moment.');
+    }
+  };
+
+  const persistReminders = async (next: ReminderPrefs) => {
+    setReminders(next);
+    setSavingReminders(true);
+    try {
+      if (next.morning.enabled || next.evening.enabled) {
+        const allowed = await requestReminderPermission();
+        if (!allowed) {
+          Alert.alert(
+            'Notifications are off',
+            'Allow notifications in system settings so morning and evening reminders can reach you.',
+          );
+          const disabled = {
+            morning: { ...next.morning, enabled: false },
+            evening: { ...next.evening, enabled: false },
+          };
+          setReminders(disabled);
+          await updateSettings({
+            theme: settings?.theme || 'default',
+            reminderTime: serializeReminders(disabled),
+            exportFormatPref: settings?.exportFormatPref || 'json',
+          });
+          await syncReflectionReminders(disabled);
+          return;
+        }
+      }
+      await updateSettings({
+        theme: settings?.theme || 'default',
+        reminderTime: serializeReminders(next),
+        exportFormatPref: settings?.exportFormatPref || 'json',
+      });
+      await syncReflectionReminders(next);
+    } catch (e) {
+      Alert.alert('Could not save reminders', 'Please try again.');
+    } finally {
+      setSavingReminders(false);
+    }
   };
 
   const handleLockToggle = (next: boolean) => {
@@ -119,7 +182,6 @@ export default function SettingsScreen() {
       <Text style={styles.title}>Settings</Text>
       <Text style={styles.subtitle}>Your space, your rules.</Text>
 
-      {/* Profile */}
       <Card style={styles.card}>
         <EyebrowLabel label="PROFILE" />
         <Text style={styles.label}>Display Name</Text>
@@ -138,7 +200,6 @@ export default function SettingsScreen() {
         />
       </Card>
 
-      {/* App Lock */}
       <Card style={styles.card}>
         <EyebrowLabel label="PRIVACY" />
         <View style={styles.row}>
@@ -154,29 +215,27 @@ export default function SettingsScreen() {
         </View>
       </Card>
 
-      {/* Reminder */}
       <Card style={styles.card}>
         <EyebrowLabel label="REMINDERS" />
-        <Text style={styles.label}>Daily Reminder Time</Text>
         <Text style={styles.rowDesc}>
-          {settings?.reminderTime || 'No reminder set'}
+          A daily tap on the shoulder. You choose the times. Nothing is required when it arrives.
         </Text>
-        <Button
-          title={settings?.reminderTime ? 'Clear Reminder' : 'Set Reminder (9:00 AM)'}
-          onPress={() =>
-            updateSettings({
-              theme: settings?.theme || 'default',
-              reminderTime: settings?.reminderTime ? undefined : '09:00',
-              exportFormatPref: settings?.exportFormatPref || 'json',
-            })
-          }
-          variant="secondary"
-          color={colors.gold}
-          style={{ marginTop: spacing.md }}
+        <ReminderRow
+          title="Morning reflection"
+          subtitle="Arrive before the day runs you"
+          slot={reminders.morning}
+          disabled={savingReminders}
+          onChange={(slot) => persistReminders({ ...reminders, morning: slot })}
+        />
+        <ReminderRow
+          title="Evening reflection"
+          subtitle="Look back before sleep"
+          slot={reminders.evening}
+          disabled={savingReminders}
+          onChange={(slot) => persistReminders({ ...reminders, evening: slot })}
         />
       </Card>
 
-      {/* Export */}
       <Card style={styles.card}>
         <EyebrowLabel label="DATA" />
         <Text style={styles.rowDesc}>
@@ -191,7 +250,6 @@ export default function SettingsScreen() {
         />
       </Card>
 
-      {/* Delete */}
       <Card style={styles.card}>
         <EyebrowLabel label="DANGER ZONE" />
         <Text style={styles.rowDesc}>
@@ -206,17 +264,12 @@ export default function SettingsScreen() {
         />
       </Card>
 
-      {/* About */}
       <Card style={styles.card}>
         <EyebrowLabel label="ABOUT" />
         <Text style={styles.aboutTitle}>The Inward Journey</Text>
         <Text style={styles.aboutBody}>
-          A calm, offline self-awareness companion. Everything stays on your device.
-          No account, no cloud, no analytics. Your reflections are sacred, private spaces.
-        </Text>
-        <Text style={styles.aboutBody}>
-          This app has no backend server and no network permission. The only way data
-          leaves your device is through the explicit export function.
+          A calm, offline self-awareness companion. Each day is a morning arrival,
+          one tiny practice, and an evening look-back. Everything stays on your device.
         </Text>
         <Text style={styles.version}>Version 0.1.0</Text>
       </Card>
@@ -288,6 +341,84 @@ export default function SettingsScreen() {
   );
 }
 
+function ReminderRow({
+  title,
+  subtitle,
+  slot,
+  disabled,
+  onChange,
+}: {
+  title: string;
+  subtitle: string;
+  slot: ReminderSlot;
+  disabled?: boolean;
+  onChange: (slot: ReminderSlot) => void;
+}) {
+  const { hour, minute } = splitTime(slot.time);
+  return (
+    <View style={styles.reminderBlock}>
+      <View style={styles.row}>
+        <View style={styles.rowInfo}>
+          <Text style={styles.rowLabel}>{title}</Text>
+          <Text style={styles.rowDesc}>{subtitle}</Text>
+        </View>
+        <Switch
+          value={slot.enabled}
+          disabled={disabled}
+          onValueChange={(enabled) => onChange({ ...slot, enabled })}
+          trackColor={{ true: colors.gold, false: '#E0DAD0' }}
+        />
+      </View>
+      <View style={styles.timeRow}>
+        <TimeChip
+          label={String(hour).padStart(2, '0')}
+          hint="hour"
+          disabled={disabled || !slot.enabled}
+          onDec={() => onChange({ ...slot, time: joinTime(hour - 1, minute) })}
+          onInc={() => onChange({ ...slot, time: joinTime(hour + 1, minute) })}
+        />
+        <Text style={styles.timeColon}>:</Text>
+        <TimeChip
+          label={String(minute).padStart(2, '0')}
+          hint="min"
+          disabled={disabled || !slot.enabled}
+          onDec={() => onChange({ ...slot, time: joinTime(hour, minute - 5) })}
+          onInc={() => onChange({ ...slot, time: joinTime(hour, minute + 5) })}
+        />
+      </View>
+    </View>
+  );
+}
+
+function TimeChip({
+  label,
+  hint,
+  disabled,
+  onDec,
+  onInc,
+}: {
+  label: string;
+  hint: string;
+  disabled?: boolean;
+  onDec: () => void;
+  onInc: () => void;
+}) {
+  return (
+    <View style={[styles.timeChip, disabled && styles.timeChipOff]}>
+      <TouchableOpacity onPress={onDec} disabled={disabled} hitSlop={8} style={styles.timeBtn}>
+        <Text style={styles.timeBtnText}>−</Text>
+      </TouchableOpacity>
+      <View>
+        <Text style={styles.timeValue}>{label}</Text>
+        <Text style={styles.timeHint}>{hint}</Text>
+      </View>
+      <TouchableOpacity onPress={onInc} disabled={disabled} hitSlop={8} style={styles.timeBtn}>
+        <Text style={styles.timeBtnText}>+</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.cream },
   content: { padding: spacing.lg, paddingBottom: 100 },
@@ -299,6 +430,23 @@ const styles = StyleSheet.create({
   rowInfo: { flex: 1, marginRight: spacing.md },
   rowLabel: { fontFamily: 'Nunito', fontSize: 14, fontWeight: '700', color: colors.ink },
   rowDesc: { fontFamily: 'Nunito', fontSize: 12, color: colors.inkSoft, lineHeight: 17, marginTop: 4 },
+  reminderBlock: { marginTop: spacing.lg },
+  timeRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: spacing.md },
+  timeColon: { fontFamily: 'Fraunces', fontSize: 24, color: colors.ink, marginBottom: 12 },
+  timeChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: '#F4EFE6',
+    borderRadius: 16,
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+  },
+  timeChipOff: { opacity: 0.45 },
+  timeBtn: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' },
+  timeBtnText: { fontFamily: 'Nunito', fontSize: 20, fontWeight: '700', color: colors.ink },
+  timeValue: { fontFamily: 'Fraunces', fontSize: 22, fontWeight: '600', color: colors.ink, textAlign: 'center', minWidth: 36 },
+  timeHint: { fontFamily: 'Nunito', fontSize: 10, color: colors.inkSoft, textAlign: 'center' },
   aboutTitle: { fontFamily: 'Fraunces', fontSize: 18, fontWeight: '600', color: colors.ink, marginBottom: spacing.sm },
   aboutBody: { fontFamily: 'Nunito', fontSize: 12, color: colors.inkSoft, lineHeight: 17, marginBottom: spacing.sm },
   version: { fontFamily: 'Nunito', fontSize: 11, color: colors.ghost, marginTop: spacing.md },

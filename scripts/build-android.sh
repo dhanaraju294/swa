@@ -33,6 +33,27 @@ Install the Android NDK and point ANDROID_NDK_HOME at it." >&2
   exit 1
 fi
 
+# cargo-ndk 4.x cannot parse NDK 30+ version metadata ("Error detecting NDK
+# version"). When ANDROID_NDK_HOME is unset, prefer the newest installed NDK
+# that cargo-ndk can handle instead of letting cargo-ndk pick a broken one.
+if [[ -z "${ANDROID_NDK_HOME:-}" ]]; then
+  ndk_root="${ANDROID_HOME:-$HOME/Library/Android/sdk}/ndk"
+  if [[ -d "$ndk_root" ]]; then
+    for candidate in "$ndk_root"/*/; do
+      rev=""
+      if [[ -f "$candidate/source.properties" ]]; then
+        rev="$(grep -E '^Pkg\.Revision' "$candidate/source.properties" 2>/dev/null | sed 's/.*= *//' | cut -d. -f1)"
+      fi
+      # cargo-ndk 4.x fails on NDKs whose revision it cannot parse (e.g. NDK 30
+      # ships without a Pkg.Revision in source.properties). Skip those.
+      [[ -z "$rev" || "$rev" == "30" ]] && continue
+      ANDROID_NDK_HOME="$(cd "$candidate" && pwd)"
+    done
+  fi
+  echo "==> Auto-detected ANDROID_NDK_HOME=$ANDROID_NDK_HOME"
+fi
+export ANDROID_NDK_HOME
+
 mkdir -p "$OUT_DIR"
 
 echo "==> Building .so libraries for ABIs: ${ABIS[*]}"

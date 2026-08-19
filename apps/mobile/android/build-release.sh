@@ -1,17 +1,41 @@
 #!/bin/bash
+set -euo pipefail
 
-# Set Java environment
-export JAVA_HOME=/opt/homebrew/opt/openjdk@17
-export PATH="$JAVA_HOME/bin:$PATH"
+# Portable release builder. Override JAVA_HOME / ANDROID_HOME if your machine
+# does not use the Homebrew paths below.
+if [[ -z "${JAVA_HOME:-}" ]]; then
+  if [[ -d /opt/homebrew/opt/openjdk@17 ]]; then
+    export JAVA_HOME=/opt/homebrew/opt/openjdk@17
+  elif [[ -d /usr/lib/jvm/java-17-openjdk-amd64 ]]; then
+    export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+  fi
+  if [[ -n "${JAVA_HOME:-}" ]]; then
+    export PATH="$JAVA_HOME/bin:$PATH"
+  fi
+fi
 
-# Set Android SDK environment
-export ANDROID_HOME=/opt/homebrew/share/android-commandlinetools
-export ANDROID_SDK_ROOT=/opt/homebrew/share/android-commandlinetools
+if [[ -z "${ANDROID_HOME:-}" ]]; then
+  if [[ -d /opt/homebrew/share/android-commandlinetools ]]; then
+    export ANDROID_HOME=/opt/homebrew/share/android-commandlinetools
+  elif [[ -d "$HOME/Android/Sdk" ]]; then
+    export ANDROID_HOME="$HOME/Android/Sdk"
+  fi
+  if [[ -n "${ANDROID_HOME:-}" ]]; then
+    export ANDROID_SDK_ROOT="$ANDROID_HOME"
+  fi
+fi
 
-# Verify Java is available
 echo "Java version:"
-java -version
+java -version || true
 
 echo ""
-echo "Building release APK..."
-./gradlew assembleRelease --build-cache --parallel -Dorg.gradle.workers.max=4
+echo "Building debug APK (dev client)…"
+./gradlew :app:assembleDebug --build-cache
+
+echo ""
+echo "Building release APK…"
+./gradlew :app:assembleRelease --build-cache
+
+echo ""
+echo "APKs:"
+find app/build/outputs/apk -name '*.apk' -print

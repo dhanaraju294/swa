@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TextInput, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import * as SecureStore from 'expo-secure-store';
 import { colors, typography, spacing, radius } from '../../design-system/tokens';
 import { Button } from '../../design-system/Button';
 import { PetalMark } from '../../design-system/PetalMark';
 import { useProfile } from '../../hooks/useProfile';
+import { setSecureFlag } from '../../native/secureFlag';
 
 const ONBOARDING_KEY = 'inward-has-onboarded-v1';
 
@@ -25,7 +25,7 @@ const STEPS = [
   {
     eyebrow: 'GET STARTED',
     title: 'Begin\nWhenever',
-    body: 'Start with a quick check-in, or dive into a guided journal. There is no wrong way to begin.',
+    body: 'Each day is three small doors: a morning arrival, one tiny practice, an evening look-back. Skip anything. Nothing is homework.',
     quote: '"What you notice, you can change."',
   },
 ];
@@ -50,10 +50,11 @@ export default function OnboardingScreen() {
       console.log('[Onboarding] profile saved successfully');
     } catch (e) {
       console.warn('Failed to save profile during onboarding:', e);
+      // Still continue — the name is also backed up locally by useProfile.
     } finally {
       try {
         console.log('[Onboarding] writing onboarding flag');
-        await SecureStore.setItemAsync(ONBOARDING_KEY, 'true');
+        await setSecureFlag(ONBOARDING_KEY, 'true');
         console.log('[Onboarding] navigating to tabs screen');
         router.replace('/(tabs)');
       } catch (e) {

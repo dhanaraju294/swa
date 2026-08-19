@@ -1,4 +1,4 @@
 import React from 'react';
-import JournalScreen from '../../src/screens/journal/JournalScreen';
+import PathScreen from '../../src/screens/path/PathScreen';
 
-export default JournalScreen;
+export default PathScreen;

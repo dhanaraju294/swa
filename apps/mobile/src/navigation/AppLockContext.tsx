@@ -6,33 +6,52 @@ import React, {
   useState,
   useCallback,
 } from 'react';
-import { AppState } from 'react-native';
+import { AppState, Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { useProfile } from '../hooks/useProfile';
+import { getSecureFlag, setSecureFlag } from '../native/secureFlag';
 
 const PASSCODE_KEY = 'inward-applock-passcode';
 
+const isWeb = Platform.OS === 'web';
+
 async function loadPasscode(): Promise<string | null> {
-  try {
-    return await SecureStore.getItemAsync(PASSCODE_KEY);
-  } catch {
-    return null;
-  }
+  return getSecureFlag(PASSCODE_KEY);
 }
 
 async function savePasscode(code: string): Promise<void> {
-  try {
-    await SecureStore.setItemAsync(PASSCODE_KEY, code);
-  } catch {
-    /* non-fatal: storage may be unavailable (e.g. web preview) */
-  }
+  await setSecureFlag(PASSCODE_KEY, code);
 }
 
 async function clearPasscode(): Promise<void> {
+  if (isWeb) {
+    try {
+      if (typeof localStorage !== 'undefined') localStorage.removeItem(PASSCODE_KEY);
+    } catch {
+      /* non-fatal */
+    }
+    return;
+  }
   try {
     await SecureStore.deleteItemAsync(PASSCODE_KEY);
   } catch {
     /* non-fatal */
+  }
+}
+
+async function storeHasKey(key: string): Promise<boolean> {
+  if (isWeb) {
+    try {
+      return typeof localStorage !== 'undefined' && localStorage.getItem(key) !== null;
+    } catch {
+      return false;
+    }
+  }
+  try {
+    const val = await SecureStore.getItemAsync(key);
+    return val !== null && val !== undefined;
+  } catch {
+    return false;
   }
 }
 
@@ -97,11 +116,11 @@ export function AppLockProvider({ children }: { children: React.ReactNode }) {
       sessionUnlocked.current = true;
       setLocked(false);
       await update({
-        displayName: profile?.displayName || undefined,
+        displayName: profile?.displayName,
         appLockEnabled: true,
       });
     },
-    [profile, update],
+    [profile?.displayName, update],
   );
 
   const disableAppLock = useCallback(
@@ -111,11 +130,11 @@ export function AppLockProvider({ children }: { children: React.ReactNode }) {
       sessionUnlocked.current = true;
       setLocked(false);
       await update({
-        displayName: profile?.displayName || undefined,
+        displayName: profile?.displayName,
         appLockEnabled: false,
       });
     },
-    [profile, update],
+    [profile?.displayName, update],
   );
 
   const unlock = useCallback(() => {

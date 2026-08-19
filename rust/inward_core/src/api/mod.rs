@@ -187,8 +187,9 @@ impl CoreApi {
 
         // The first 7 days of the 21-day journal ARE the 7-day journal, so
         // completing a shared day in either journal completes it in both.
+        // The continuous daily path is its own journey and never cross-writes.
         let mut journals_to_update = vec![journal_id.to_string()];
-        if day <= 7 {
+        if day <= 7 && (journal_id == "seven-day" || journal_id == "twenty-one-day") {
             let other = if journal_id == "seven-day" {
                 "twenty-one-day"
             } else {
@@ -203,10 +204,32 @@ impl CoreApi {
 
         // Completing a journal day counts as showing up today (once per day).
         CoreApi::record_activity(&tx)?;
+        if journal_id == crate::content::JOURNEY_ID {
+            CoreApi::maybe_award_path_badges(&tx, day)?;
+        }
 
         tx.commit()?;
 
         CoreApi::get_journal_progress(conn, journal_id)
+    }
+
+    fn maybe_award_path_badges(conn: &Connection, day: u32) -> Result<()> {
+        let now = now_iso();
+        let awards: &[(&str, u32)] = &[
+            ("path-notice", 7),
+            ("path-understand", 14),
+            ("path-choose", 21),
+            ("path-live", 30),
+        ];
+        for (key, threshold) in awards {
+            if day >= *threshold {
+                conn.execute(
+                    "INSERT OR IGNORE INTO badges (key, earned_at) VALUES (?1, ?2)",
+                    rusqlite::params![key, now],
+                )?;
+            }
+        }
+        Ok(())
     }
 
     /// Idempotently record that `day` of `journal_id` is complete. Reads the
@@ -364,9 +387,17 @@ impl CoreApi {
         let streak = CoreApi::get_streak(conn)?;
         let seven_day_progress = CoreApi::get_journal_progress(conn, "seven-day")?;
         let twenty_one_day_progress = CoreApi::get_journal_progress(conn, "twenty-one-day")?;
+        let daily_path = CoreApi::get_journal_progress(conn, crate::content::JOURNEY_ID)?;
 
-        let journal_7day_completed = seven_day_progress.completed_days.len() as u32;
-        let journal_21day_completed = twenty_one_day_progress.completed_days.len() as u32;
+        let journal_7day_completed = seven_day_progress
+            .completed_days
+            .len()
+            .max(daily_path.completed_days.iter().filter(|d| **d <= 7).count())
+            as u32;
+        let journal_21day_completed = twenty_one_day_progress
+            .completed_days
+            .len()
+            .max(daily_path.completed_days.len()) as u32;
 
         // A fresh app has no meaningful awareness history yet. Generating baseline
         // scores in that state makes the snapshot look populated before users have
@@ -414,27 +445,45 @@ impl CoreApi {
     }
 
     pub fn get_profile(conn: &Connection) -> Result<Profile> {
-        let mut stmt = conn.prepare(
+        let row = conn.query_row(
             "SELECT display_name, app_lock_enabled, created_at FROM profile WHERE id = 1",
-        )?;
-        let mut rows = stmt.query_map([], |row| {
-            Ok(Profile {
-                display_name: row.get(0)?,
-                app_lock_enabled: row.get(1)?,
-                created_at: row.get(2)?,
-            })
-        })?;
-        match rows.next() {
-            Some(Ok(p)) => Ok(p),
-            Some(Err(e)) => Err(CoreError::Database(e.to_string())),
-            None => Err(CoreError::NotFound("Profile not found".into())),
+            [],
+            |row| {
+                let lock: i64 = row.get(1)?;
+                Ok(Profile {
+                    display_name: row.get(0)?,
+                    app_lock_enabled: lock != 0,
+                    created_at: row.get(2)?,
+                })
+            },
+        );
+        match row {
+            Ok(p) => Ok(p),
+            Err(rusqlite::Error::QueryReturnedNoRows) => {
+                let created = now_iso();
+                conn.execute(
+                    "INSERT OR IGNORE INTO profile (id, display_name, app_lock_enabled, created_at) VALUES (1, NULL, 0, ?1)",
+                    rusqlite::params![created],
+                )?;
+                Ok(Profile {
+                    display_name: None,
+                    app_lock_enabled: false,
+                    created_at: created,
+                })
+            }
+            Err(e) => Err(CoreError::Database(e.to_string())),
         }
     }
 
     pub fn update_profile(conn: &Connection, input: ProfileInput) -> Result<Profile> {
+        let created = now_iso();
         conn.execute(
-            "UPDATE profile SET display_name = ?1, app_lock_enabled = ?2 WHERE id = 1",
-            rusqlite::params![input.display_name, input.app_lock_enabled as i32],
+            "INSERT INTO profile (id, display_name, app_lock_enabled, created_at)
+             VALUES (1, ?1, ?2, ?3)
+             ON CONFLICT(id) DO UPDATE SET
+               display_name = excluded.display_name,
+               app_lock_enabled = excluded.app_lock_enabled",
+            rusqlite::params![input.display_name, input.app_lock_enabled as i32, created],
         )?;
         CoreApi::get_profile(conn)
     }
@@ -474,9 +523,10 @@ impl CoreApi {
         let badges = CoreApi::list_badges(conn)?;
         let reflections = CoreApi::list_reflections(conn, None)?;
         let awareness = CoreApi::get_awareness_snapshot(conn)?;
+        let daily_path = CoreApi::get_journal_progress(conn, crate::content::JOURNEY_ID)?;
 
         let export = serde_json::json!({
-            "version": "1.0",
+            "version": "1.1",
             "profile": profile,
             "settings": settings,
             "streak": streak,
@@ -485,6 +535,7 @@ impl CoreApi {
             "badges": badges,
             "reflections": reflections,
             "awareness_scores": awareness,
+            "daily_path": daily_path,
         });
 
         serde_json::to_string_pretty(&export).map_err(CoreError::from)

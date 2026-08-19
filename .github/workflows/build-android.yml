@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-android:
-    name: Build Android Release APK
+    name: Build Android Debug + Release APKs
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -20,8 +20,6 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
-      # Installs all workspace deps (root + apps/mobile). The React Native Gradle
-      # plugin bundles the JS via the Expo CLI, so node_modules must be present.
       - name: Install JavaScript dependencies
         run: npm ci
 
@@ -34,15 +32,29 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      # compileSdk 35, build-tools 35.0.0, and the NDK pinned in android/build.gradle.
       - name: Install Android SDK packages and NDK
         run: |
           yes | sdkmanager --licenses
           sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0" "ndk;27.3.13750724"
 
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi,x86_64-linux-android,i686-linux-android
+
+      - name: Install cargo-ndk
+        run: cargo install cargo-ndk --locked
+
       - name: Make Gradle wrapper executable
         working-directory: apps/mobile/android
         run: chmod +x gradlew
+
+      - name: Build Debug APK
+        working-directory: apps/mobile/android
+        run: ./gradlew assembleDebug --no-daemon --build-cache
+        env:
+          GRADLE_OPTS: "-Xmx3072m -XX:MaxMetaspaceSize=512m"
+          ANDROID_NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.3.13750724
 
       - name: Build Release APK
         working-directory: apps/mobile/android
@@ -51,9 +63,11 @@ jobs:
           GRADLE_OPTS: "-Xmx3072m -XX:MaxMetaspaceSize=512m"
           ANDROID_NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.3.13750724
 
-      - name: Upload APK artifact
+      - name: Upload APK artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: app-release-apk
-          path: apps/mobile/android/app/build/outputs/apk/release/app-release.apk
+          name: swa-android-apks
+          path: |
+            apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk
+            apps/mobile/android/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error

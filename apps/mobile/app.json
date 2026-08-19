@@ -17,7 +17,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.inwardjourney.app",
       "infoPlist": {
-        "NSFaceIDUsageDescription": "Use Face ID to unlock your private reflections"
+        "NSFaceIDUsageDescription": "Use Face ID to unlock your private reflections",
+        "UIBackgroundModes": ["fetch"]
       }
     },
     "android": {
@@ -26,7 +27,14 @@
         "backgroundColor": "#FDF6EC"
       },
       "package": "com.inwardjourney.app",
-      "allowBackup": false
+      "allowBackup": false,
+      "permissions": [
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.VIBRATE",
+        "android.permission.SCHEDULE_EXACT_ALARM",
+        "android.permission.USE_EXACT_ALARM"
+      ]
     },
     "plugins": [
       "expo-router",
@@ -34,6 +42,15 @@
         "expo-local-authentication",
         {
           "faceIDPermission": "Allow The Inward Journey to use Face ID"
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#F6C453",
+          "defaultChannel": "swa-reminders",
+          "sounds": []
         }
       ],
       "./plugins/withRustCore.js"

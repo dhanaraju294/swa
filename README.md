@@ -17,11 +17,11 @@ A private, on-device mindfulness and self-awareness app. The mobile UI is built 
 
 ### Features
 
-- Daily check-ins (mood, energy, stress, sleep, confidence, one-word).
+- Daily loop: **morning reflection**, one **micro-exercise**, **evening reflection**.
+- Duolingo-style path of **30 authored days** — each with morning reflection, micro-exercise, and evening reflection (content lives in the Rust/SQLite backend, not the UI).
 - On-the-spot feeling/intensity logging.
-- Guided journals: **7-day** and **21-day** journeys with per-day reflections (`apps/mobile/src/content/`).
 - Insights: awareness dimension scores, streaks, badges.
-- Settings: display name, optional Face ID app lock (`expo-local-authentication`), reminder time, data export/delete.
+- Settings: display name, optional Face ID app lock (`expo-local-authentication`), morning/evening push reminders, data export/delete.
 
 ## Project structure
 
@@ -30,9 +30,10 @@ A private, on-device mindfulness and self-awareness app. The mobile UI is built 
 │   └── mobile/                # Expo / React Native app
 │       ├── app/               # expo-router routes (index, onboarding, tabs)
 │       ├── src/
-│       │   ├── content/       # 7-day & 21-day journal content
+│       │   ├── content/       # legacy journal copy (no longer used by the UI)
+│       │   ├── journey/       # daily-path types + helpers (no exercise copy)
 │       │   ├── design-system/ # reusable UI components + tokens
-│       │   ├── hooks/         # data hooks (check-ins, journal, profile, …)
+│       │   ├── hooks/         # data hooks (check-ins, daily journey, profile, …)
 │       │   ├── native/        # native bridge layer
 │       │   │   ├── InwardEngine.ts          # shared engine interface
 │       │   │   ├── InwardEngineProvider.ts  # native-or-mock resolution
@@ -98,6 +99,8 @@ Rust entry points live in `rust/inward_core/src/lib.rs`. The free functions ther
 - For Android builds: `cargo-ndk` (`cargo install cargo-ndk`), the Android NDK (`ANDROID_NDK_HOME` set), and the Android targets (`rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android`)
 - Optional: [`ubrn`](https://github.com/yankeeguo/ubrn) to regenerate the native bindings from Rust
 
+**First time on a Mac?** Read **[START.md](./START.md)** — especially if `pod install` failed with `bad URI` from a folder named `swa 2`. CocoaPods cannot install this project from a path that contains a space.
+
 ## Running the project
 
 ### 1. Rust backend (tests & build)
@@ -143,20 +146,19 @@ ubrn gen
 ### 4. React Native app
 
 ```bash
-cd apps/mobile
+# from the repo root — the folder name must NOT contain a space
 npm install
 
-# Expo Go / quick preview (uses the in-memory JS fallback for the Rust core)
-npm start
+cd apps/mobile
 
-# iOS simulator (native Rust bridge available when using the dev client / custom build)
-npm run ios
+# Expo Go / quick preview (in-memory JS fallback for the Rust core)
+npx expo start --go
 
-# Android (requires the android project to be generated first)
-npm run android
+# iOS simulator (custom dev client). Delete ios/ first if a previous pod install failed.
+npx expo run:ios
 
-# Web preview (JS fallback only)
-npm run web
+# Android (NDK 27.3.13750724 required)
+npx expo run:android
 ```
 
 > Note: Expo Go does not support custom native modules like the generated Rust TurboModule. To use the real Rust backend on iOS, run the app with `npm run ios` from the `apps/mobile` folder so the native module can be built into the app. `npx expo prebuild` is safe to run any time — the `withRustCore` config plugin re-applies the Rust linking (Podfile pods, iOS bridge sources, Android `jniLibs` source set) idempotently.

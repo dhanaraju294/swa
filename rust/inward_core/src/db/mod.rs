@@ -93,6 +93,7 @@ CREATE TABLE IF NOT EXISTS _migrations_meta (
 ";
 
 pub fn open_or_create(db_path: &str) -> Result<Connection> {
+    crate::logging::info("inward_core.db", &format!("open_or_create({})", db_path));
     // Clean file:// URI prefix if passed from JS
     let clean_path = db_path.trim_start_matches("file://");
     let path = std::path::Path::new(clean_path);
@@ -100,6 +101,7 @@ pub fn open_or_create(db_path: &str) -> Result<Connection> {
         CoreError::Validation("DB path must include a parent directory".to_string())
     })?;
     std::fs::create_dir_all(parent).map_err(|e| {
+        crate::logging::error("inward_core.db", &format!("mkdir failed: {}", e));
         CoreError::Migration(format!("Failed to create DB directory: {}", e))
     })?;
 
@@ -112,6 +114,7 @@ pub fn open_or_create(db_path: &str) -> Result<Connection> {
 
     let migrations = Migrations::new(vec![M::up(MIGRATIONS)]);
     migrations.to_latest(&mut conn).map_err(|e| {
+        crate::logging::error("inward_core.db", &format!("migration failed: {}", e));
         CoreError::Migration(format!("Migration failed: {}", e))
     })?;
 
@@ -124,6 +127,16 @@ pub fn open_or_create(db_path: &str) -> Result<Connection> {
         "INSERT OR IGNORE INTO journals (id, total_days) VALUES ('twenty-one-day', 21)",
         [],
     )?;
+    // The daily journey's three daily parts are stored as reflections under
+    // their own journal ids (see apps/mobile/src/journey/types.ts). They must
+    // exist so the reflections table's FK never rejects a morning/evening/
+    // exercise save.
+    for part in ["morning", "exercise", "evening"] {
+        conn.execute(
+            "INSERT OR IGNORE INTO journals (id, total_days) VALUES (?1, 1)",
+            [part],
+        )?;
+    }
     conn.execute(
         "INSERT OR IGNORE INTO profile (id, display_name, app_lock_enabled, created_at) VALUES (1, NULL, 0, ?)",
         [crate::models::now_iso()],
@@ -136,7 +149,15 @@ pub fn open_or_create(db_path: &str) -> Result<Connection> {
         "INSERT OR IGNORE INTO app_settings (id, theme, reminder_time, export_format_pref) VALUES (1, 'default', NULL, 'json')",
         [],
     )?;
+    conn.execute(
+        "INSERT INTO journals (id, total_days) VALUES ('daily-path', 30)
+         ON CONFLICT(id) DO UPDATE SET total_days = excluded.total_days",
+        [],
+    )?;
 
+    crate::content::seed_daily_journey(&conn)?;
+
+    crate::logging::info("inward_core.db", "open_or_create -> ok");
     Ok(conn)
 }
 
