@@ -1,37 +1,50 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { AppState } from 'react-native';
+import { usePathname } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ExpoDynamicAppIcon from '@variant-systems/expo-dynamic-app-icon';
+import { useStreak } from './useAwareness';
 import { useDailyCatalog } from './useDailyJourney';
-import { allPartsComplete, type PartStatus } from '../journey/types';
+import { iconForState, isStreakMaintained, nextBoundary, showedUpToday } from './appIcon';
+import type { AppIconName } from './appIcon';
 
-// The home-screen icon is a quiet mirror of the day's practice.
-//   nothing done yet      -> "irregular"  (off the path, not practising)
-//   practice begun         -> "morning"   (the day has been entered)
-//   all three parts done   -> "evening"   (settled, the loop is closed)
-export type AppIconName = 'morning' | 'evening' | 'irregular';
+export type { AppIconName };
 
 const STORAGE_KEY = 'swa:appIcon';
 
-export function iconForStatus(status: PartStatus | undefined): AppIconName {
-  if (!status) return 'irregular';
-  if (allPartsComplete(status)) return 'evening';
-  if (status.morning || status.exercise || status.evening) return 'morning';
-  return 'irregular';
-}
-
 export function useDynamicAppIcon() {
-  const { statusByDay, unlockedDay, refresh } = useDailyCatalog();
-  const target = iconForStatus(statusByDay[unlockedDay]);
+  const { data: streak, loading: streakLoading, refresh: refreshStreak } = useStreak();
+  const {
+    reflections,
+    unlockedDay,
+    loading: catalogLoading,
+    refresh: refreshCatalog,
+  } = useDailyCatalog();
+  const [now, setNow] = useState(() => new Date());
+  const pathname = usePathname();
   const applied = useRef<AppIconName | null>(null);
   const pending = useRef(false);
 
+  const activeToday = useMemo(
+    () => showedUpToday(reflections, unlockedDay, now),
+    [reflections, unlockedDay, now],
+  );
+
+  // Don't apply anything until the data is loaded — otherwise every launch
+  // would flash "irregular" for a moment and, on iOS, pop a needless system
+  // alert when the real target arrives.
+  const target =
+    streakLoading || catalogLoading
+      ? null
+      : iconForState(isStreakMaintained(streak, now) || activeToday, now);
+
   useEffect(() => {
-    if (applied.current === target || pending.current) return;
+    if (!target || applied.current === target || pending.current) return;
     pending.current = true;
     let active = true;
     AsyncStorage.getItem(STORAGE_KEY)
       .then((stored) => {
+        if (!active) return;
         // Skip the native call if the OS icon already matches — iOS pops a
         // system alert on every real change, so we never re-apply needlessly.
         if (stored === target) {
@@ -43,22 +56,41 @@ export function useDynamicAppIcon() {
         AsyncStorage.setItem(STORAGE_KEY, target).catch(() => {});
       })
       .catch(() => {
-        applied.current = target;
+        if (active) applied.current = target;
       })
       .finally(() => {
         if (active) pending.current = false;
       });
     return () => {
       active = false;
+      pending.current = false;
     };
   }, [target]);
 
-  // Re-evaluate when the app returns to the foreground so the icon updates
-  // after a reflection is saved in another tab or the session screen.
+  // Cross the morning/evening boundary while the app stays open so the icon
+  // flips at 17:00 (and back at midnight) without waiting for a foregrounding.
+  useEffect(() => {
+    const delay = Math.max(1000, nextBoundary(now).getTime() - now.getTime());
+    const timer = setTimeout(() => setNow(new Date()), delay);
+    return () => clearTimeout(timer);
+  }, [now]);
+
+  // Re-evaluate on every navigation (e.g. returning from a saved session) and
+  // when the app returns to the foreground, so the icon follows fresh data.
+  useEffect(() => {
+    setNow(new Date());
+    refreshStreak();
+    refreshCatalog();
+  }, [pathname, refreshStreak, refreshCatalog]);
+
   useEffect(() => {
     const sub = AppState.addEventListener('change', (state) => {
-      if (state === 'active') refresh();
+      if (state === 'active') {
+        setNow(new Date());
+        refreshStreak();
+        refreshCatalog();
+      }
     });
     return () => sub.remove();
-  }, [refresh]);
+  }, [refreshStreak, refreshCatalog]);
 }
