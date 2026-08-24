@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-android:
-    name: Build Android Debug + Release APKs
+    name: Build Android Release APK
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -49,13 +49,6 @@ jobs:
         working-directory: apps/mobile/android
         run: chmod +x gradlew
 
-      - name: Build Debug APK
-        working-directory: apps/mobile/android
-        run: ./gradlew assembleDebug --no-daemon --build-cache
-        env:
-          GRADLE_OPTS: "-Xmx3072m -XX:MaxMetaspaceSize=512m"
-          ANDROID_NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.3.13750724
-
       - name: Build Release APK
         working-directory: apps/mobile/android
         run: ./gradlew assembleRelease --no-daemon --build-cache
@@ -66,8 +59,6 @@ jobs:
       - name: Upload APK artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: swa-android-apks
-          path: |
-            apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk
-            apps/mobile/android/app/build/outputs/apk/release/app-release.apk
+          name: swa-android-apk
+          path: apps/mobile/android/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
