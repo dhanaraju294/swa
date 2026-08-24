@@ -51,7 +51,12 @@ export function useDynamicAppIcon() {
           applied.current = target;
           return;
         }
-        ExpoDynamicAppIcon.setAppIcon(target);
+        try {
+          ExpoDynamicAppIcon.setAppIcon(target);
+        } catch (e) {
+          // A native icon failure must never take the app down with it.
+          console.warn('Failed to set app icon:', e);
+        }
         applied.current = target;
         AsyncStorage.setItem(STORAGE_KEY, target).catch(() => {});
       })

@@ -5,6 +5,7 @@ import { getInwardEngine } from '../src/native/InwardEngineProvider';
 import { colors } from '../src/design-system/tokens';
 import { AppLockProvider } from '../src/navigation/AppLockContext';
 import AppLockGate from '../src/components/AppLockGate';
+import ErrorBoundary from '../src/components/ErrorBoundary';
 import { parseReminders } from '../src/state/appStore';
 import {
   configureNotificationHandler,
@@ -44,7 +45,8 @@ export default function RootLayout() {
   if (!ready) return null;
 
   return (
-    <AppLockProvider>
+    <ErrorBoundary>
+      <AppLockProvider>
       <Stack
         screenOptions={{
           headerShown: false,
@@ -64,7 +66,8 @@ export default function RootLayout() {
           }}
         />
       </Stack>
-      <AppLockGate />
-    </AppLockProvider>
+        <AppLockGate />
+      </AppLockProvider>
+    </ErrorBoundary>
   );
 }

@@ -16,6 +16,7 @@
 const {
   withPodfile,
   withAppBuildGradle,
+  withAndroidManifest,
   withDangerousMod,
   createRunOncePlugin,
 } = require('@expo/config-plugins');
@@ -248,11 +249,39 @@ android {
     return config;
   });
 
+// Export writes JSON to the public Download/swa folder. On Android <= 10 that
+// uses the legacy storage path (WRITE_EXTERNAL_STORAGE + requestLegacyExternal
+// Storage); on 11+ the app falls back to the Storage Access Framework instead.
+const withRustCoreAndroidManifest = (config) =>
+  withAndroidManifest(config, (config) => {
+    const manifest = config.modResults.manifest;
+    const perms = manifest['uses-permission'] || (manifest['uses-permission'] = []);
+    const write = perms.find(
+      (p) => p.$['android:name'] === 'android.permission.WRITE_EXTERNAL_STORAGE',
+    );
+    if (write) {
+      write.$['android:maxSdkVersion'] = '29';
+    } else {
+      perms.push({
+        $: {
+          'android:name': 'android.permission.WRITE_EXTERNAL_STORAGE',
+          'android:maxSdkVersion': '29',
+        },
+      });
+    }
+    const app = manifest.application?.[0];
+    if (app) {
+      app.$['android:requestLegacyExternalStorage'] = 'true';
+    }
+    return config;
+  });
+
 const withRustCore = (config) => {
   config = withRustCoreIOS(config);
   config = withRustCoreIOSBridge(config);
   config = withRustCoreAndroid(config);
+  config = withRustCoreAndroidManifest(config);
   return config;
 };
 
-module.exports = createRunOncePlugin(withRustCore, 'withRustCore', '1.1.0');
+module.exports = createRunOncePlugin(withRustCore, 'withRustCore', '1.2.0');

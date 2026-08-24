@@ -7,7 +7,7 @@ import { Card } from '../../design-system/Card';
 import { Button } from '../../design-system/Button';
 import { EyebrowLabel } from '../../design-system/EyebrowLabel';
 import { useDailyCatalog } from '../../hooks/useDailyJourney';
-import { allPartsComplete, partOfDay } from '../../journey/types';
+import { allPartsComplete } from '../../journey/types';
 import { PathMap } from './PathMap';
 
 export default function PathScreen() {
@@ -28,19 +28,13 @@ export default function PathScreen() {
     if (focused) refresh();
   }, [focused, refresh]);
 
+  // The path is about the daily practice: tapping a node opens exactly the
+  // exercise session, never the morning/evening reflections.
   const openDay = useCallback(
     (day: number) => {
-      const status = statusByDay[day];
-      const suggested = !status?.morning
-        ? 'morning'
-        : !status?.exercise
-          ? 'exercise'
-          : !status?.evening
-            ? 'evening'
-            : partOfDay();
-      router.push({ pathname: '/session', params: { day: String(day), part: suggested } });
+      router.push({ pathname: '/session', params: { day: String(day), part: 'exercise' } });
     },
-    [router, statusByDay],
+    [router],
   );
 
   if (loading && !catalog) {
@@ -84,13 +78,9 @@ export default function PathScreen() {
               : 'A quiet practice, one node at a time.'}
         </Text>
         <View style={styles.pips}>
-          {(['morning', 'exercise', 'evening'] as const).map((part) => (
-            <View key={part} style={[styles.pip, status?.[part] && styles.pipOn]}>
-              <Text style={[styles.pipText, status?.[part] && styles.pipTextOn]}>
-                {part === 'exercise' ? 'Practice' : part[0].toUpperCase() + part.slice(1)}
-              </Text>
-            </View>
-          ))}
+          <View style={[styles.pip, status?.exercise && styles.pipOn]}>
+            <Text style={[styles.pipText, status?.exercise && styles.pipTextOn]}>Practice</Text>
+          </View>
         </View>
         <Button
           title={doneToday ? 'Revisit today' : 'Continue today'}
