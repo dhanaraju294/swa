@@ -20,6 +20,8 @@ import type {
   Profile,
   ProfileInput,
   Reflection,
+  SpotCheckin,
+  SpotCheckinInput,
   Streak,
 } from './generated/inward_core';
 import type { InwardEngine } from './InwardEngine';
@@ -83,6 +85,21 @@ export class NativeInwardEngine implements InwardEngine {
   async listOnTheSpot(limit: number): Promise<OnTheSpotEntry[]> {
     await this.ready();
     return offload(() => loadBindings().listOnTheSpot(limit));
+  }
+
+  async saveSpotCheckin(input: SpotCheckinInput): Promise<SpotCheckin> {
+    await this.ready();
+    return offload(() => loadBindings().saveSpotCheckin(input));
+  }
+
+  async latestSpotCheckin(): Promise<SpotCheckin | null> {
+    await this.ready();
+    return offload(() => loadBindings().latestSpotCheckin() ?? null);
+  }
+
+  async listSpotCheckins(limit: number): Promise<SpotCheckin[]> {
+    await this.ready();
+    return offload(() => loadBindings().listSpotCheckins(limit));
   }
 
   async getJournalDay(journalId: string, day: number): Promise<JournalDay> {

@@ -2072,3 +2072,321 @@ export default Object.freeze({
     FfiConverterTypeStreak,
   }
 });
+// ----------------------------------------------------------------------------
+// Spot check-in (the "first inward check-in" shown once after onboarding).
+// These entries mirror what `npm run generate` (uniffi-bindgen-react-native)
+// emits for the Rust `spot_checkins` API in rust/inward_core; they are checked
+// in so the app typechecks and runs before the next native regeneration.
+// ----------------------------------------------------------------------------
+
+export type SpotCheckinInput = {
+    presentMoment: string,
+    difficultyFirst: string,
+    selfTrust: /*u32*/number,
+    selfTrustLift: string,
+    mindStory: string,
+    storyKind: string,
+    emotionNeed: string,
+    stressPattern: string,
+    valueSuccessVsPeace: string,
+    valueRecognitionVsPride: string,
+    valueSecurityVsExploration: string,
+    valueDifficult: string,
+    misunderstoodReaction: string,
+    relationshipsTry: string,
+    distractionTrigger: string,
+    distractionNext: string,
+    futureFeeling: string,
+    futureNeed: string,
+    selfCompassionFirst: string,
+    friendAdvice: string,
+    tinyExperiment: string
+}
+
+/**
+ * Generated factory for {@link SpotCheckinInput} record objects.
+ */
+export const SpotCheckinInput = (() => {
+    const defaults = () => ({
+    });
+    const create = (() => {
+        return uniffiCreateRecord<SpotCheckinInput, ReturnType<typeof defaults>>(defaults);
+    })();
+    return Object.freeze({
+        /**
+         * Create a frozen instance of {@link SpotCheckinInput}, with defaults specified
+         * in Rust, in the {@link inward_core} crate.
+         */
+        create,
+
+        /**
+         * Create a frozen instance of {@link SpotCheckinInput}, with defaults specified
+         * in Rust, in the {@link inward_core} crate.
+         */
+        new: create,
+
+        /**
+         * Defaults specified in the {@link inward_core} crate.
+         */
+        defaults: () => Object.freeze(defaults()) as Partial<SpotCheckinInput>,
+    });
+})();
+
+const FfiConverterTypeSpotCheckinInput = (() => {
+    type TypeName = SpotCheckinInput;
+    class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
+        read(from: RustBuffer): TypeName {
+            return {
+                presentMoment: FfiConverterString.read(from), 
+                difficultyFirst: FfiConverterString.read(from), 
+                selfTrust: FfiConverterUInt32.read(from), 
+                selfTrustLift: FfiConverterString.read(from), 
+                mindStory: FfiConverterString.read(from), 
+                storyKind: FfiConverterString.read(from), 
+                emotionNeed: FfiConverterString.read(from), 
+                stressPattern: FfiConverterString.read(from), 
+                valueSuccessVsPeace: FfiConverterString.read(from), 
+                valueRecognitionVsPride: FfiConverterString.read(from), 
+                valueSecurityVsExploration: FfiConverterString.read(from), 
+                valueDifficult: FfiConverterString.read(from), 
+                misunderstoodReaction: FfiConverterString.read(from), 
+                relationshipsTry: FfiConverterString.read(from), 
+                distractionTrigger: FfiConverterString.read(from), 
+                distractionNext: FfiConverterString.read(from), 
+                futureFeeling: FfiConverterString.read(from), 
+                futureNeed: FfiConverterString.read(from), 
+                selfCompassionFirst: FfiConverterString.read(from), 
+                friendAdvice: FfiConverterString.read(from), 
+                tinyExperiment: FfiConverterString.read(from)
+            };
+        }
+        write(value: TypeName, into: RustBuffer): void {
+            FfiConverterString.write(value.presentMoment, into);
+            FfiConverterString.write(value.difficultyFirst, into);
+            FfiConverterUInt32.write(value.selfTrust, into);
+            FfiConverterString.write(value.selfTrustLift, into);
+            FfiConverterString.write(value.mindStory, into);
+            FfiConverterString.write(value.storyKind, into);
+            FfiConverterString.write(value.emotionNeed, into);
+            FfiConverterString.write(value.stressPattern, into);
+            FfiConverterString.write(value.valueSuccessVsPeace, into);
+            FfiConverterString.write(value.valueRecognitionVsPride, into);
+            FfiConverterString.write(value.valueSecurityVsExploration, into);
+            FfiConverterString.write(value.valueDifficult, into);
+            FfiConverterString.write(value.misunderstoodReaction, into);
+            FfiConverterString.write(value.relationshipsTry, into);
+            FfiConverterString.write(value.distractionTrigger, into);
+            FfiConverterString.write(value.distractionNext, into);
+            FfiConverterString.write(value.futureFeeling, into);
+            FfiConverterString.write(value.futureNeed, into);
+            FfiConverterString.write(value.selfCompassionFirst, into);
+            FfiConverterString.write(value.friendAdvice, into);
+            FfiConverterString.write(value.tinyExperiment, into);
+        }
+        allocationSize(value: TypeName): number {
+            return FfiConverterString.allocationSize(value.presentMoment) + 
+            FfiConverterString.allocationSize(value.difficultyFirst) + 
+            FfiConverterUInt32.allocationSize(value.selfTrust) + 
+            FfiConverterString.allocationSize(value.selfTrustLift) + 
+            FfiConverterString.allocationSize(value.mindStory) + 
+            FfiConverterString.allocationSize(value.storyKind) + 
+            FfiConverterString.allocationSize(value.emotionNeed) + 
+            FfiConverterString.allocationSize(value.stressPattern) + 
+            FfiConverterString.allocationSize(value.valueSuccessVsPeace) + 
+            FfiConverterString.allocationSize(value.valueRecognitionVsPride) + 
+            FfiConverterString.allocationSize(value.valueSecurityVsExploration) + 
+            FfiConverterString.allocationSize(value.valueDifficult) + 
+            FfiConverterString.allocationSize(value.misunderstoodReaction) + 
+            FfiConverterString.allocationSize(value.relationshipsTry) + 
+            FfiConverterString.allocationSize(value.distractionTrigger) + 
+            FfiConverterString.allocationSize(value.distractionNext) + 
+            FfiConverterString.allocationSize(value.futureFeeling) + 
+            FfiConverterString.allocationSize(value.futureNeed) + 
+            FfiConverterString.allocationSize(value.selfCompassionFirst) + 
+            FfiConverterString.allocationSize(value.friendAdvice) + 
+            FfiConverterString.allocationSize(value.tinyExperiment);
+            
+        }
+    };
+    return new FFIConverter();
+})();
+
+export type SpotCheckin = {
+    id: string,
+    createdAt: string,
+    presentMoment: string,
+    difficultyFirst: string,
+    selfTrust: /*u32*/number,
+    selfTrustLift: string,
+    mindStory: string,
+    storyKind: string,
+    emotionNeed: string,
+    stressPattern: string,
+    valueSuccessVsPeace: string,
+    valueRecognitionVsPride: string,
+    valueSecurityVsExploration: string,
+    valueDifficult: string,
+    misunderstoodReaction: string,
+    relationshipsTry: string,
+    distractionTrigger: string,
+    distractionNext: string,
+    futureFeeling: string,
+    futureNeed: string,
+    selfCompassionFirst: string,
+    friendAdvice: string,
+    tinyExperiment: string
+}
+
+/**
+ * Generated factory for {@link SpotCheckin} record objects.
+ */
+export const SpotCheckin = (() => {
+    const defaults = () => ({
+    });
+    const create = (() => {
+        return uniffiCreateRecord<SpotCheckin, ReturnType<typeof defaults>>(defaults);
+    })();
+    return Object.freeze({
+        /**
+         * Create a frozen instance of {@link SpotCheckin}, with defaults specified
+         * in Rust, in the {@link inward_core} crate.
+         */
+        create,
+
+        /**
+         * Create a frozen instance of {@link SpotCheckin}, with defaults specified
+         * in Rust, in the {@link inward_core} crate.
+         */
+        new: create,
+
+        /**
+         * Defaults specified in the {@link inward_core} crate.
+         */
+        defaults: () => Object.freeze(defaults()) as Partial<SpotCheckin>,
+    });
+})();
+
+const FfiConverterTypeSpotCheckin = (() => {
+    type TypeName = SpotCheckin;
+    class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
+        read(from: RustBuffer): TypeName {
+            return {
+                id: FfiConverterString.read(from), 
+                createdAt: FfiConverterString.read(from), 
+                presentMoment: FfiConverterString.read(from), 
+                difficultyFirst: FfiConverterString.read(from), 
+                selfTrust: FfiConverterUInt32.read(from), 
+                selfTrustLift: FfiConverterString.read(from), 
+                mindStory: FfiConverterString.read(from), 
+                storyKind: FfiConverterString.read(from), 
+                emotionNeed: FfiConverterString.read(from), 
+                stressPattern: FfiConverterString.read(from), 
+                valueSuccessVsPeace: FfiConverterString.read(from), 
+                valueRecognitionVsPride: FfiConverterString.read(from), 
+                valueSecurityVsExploration: FfiConverterString.read(from), 
+                valueDifficult: FfiConverterString.read(from), 
+                misunderstoodReaction: FfiConverterString.read(from), 
+                relationshipsTry: FfiConverterString.read(from), 
+                distractionTrigger: FfiConverterString.read(from), 
+                distractionNext: FfiConverterString.read(from), 
+                futureFeeling: FfiConverterString.read(from), 
+                futureNeed: FfiConverterString.read(from), 
+                selfCompassionFirst: FfiConverterString.read(from), 
+                friendAdvice: FfiConverterString.read(from), 
+                tinyExperiment: FfiConverterString.read(from)
+            };
+        }
+        write(value: TypeName, into: RustBuffer): void {
+            FfiConverterString.write(value.id, into);
+            FfiConverterString.write(value.createdAt, into);
+            FfiConverterString.write(value.presentMoment, into);
+            FfiConverterString.write(value.difficultyFirst, into);
+            FfiConverterUInt32.write(value.selfTrust, into);
+            FfiConverterString.write(value.selfTrustLift, into);
+            FfiConverterString.write(value.mindStory, into);
+            FfiConverterString.write(value.storyKind, into);
+            FfiConverterString.write(value.emotionNeed, into);
+            FfiConverterString.write(value.stressPattern, into);
+            FfiConverterString.write(value.valueSuccessVsPeace, into);
+            FfiConverterString.write(value.valueRecognitionVsPride, into);
+            FfiConverterString.write(value.valueSecurityVsExploration, into);
+            FfiConverterString.write(value.valueDifficult, into);
+            FfiConverterString.write(value.misunderstoodReaction, into);
+            FfiConverterString.write(value.relationshipsTry, into);
+            FfiConverterString.write(value.distractionTrigger, into);
+            FfiConverterString.write(value.distractionNext, into);
+            FfiConverterString.write(value.futureFeeling, into);
+            FfiConverterString.write(value.futureNeed, into);
+            FfiConverterString.write(value.selfCompassionFirst, into);
+            FfiConverterString.write(value.friendAdvice, into);
+            FfiConverterString.write(value.tinyExperiment, into);
+        }
+        allocationSize(value: TypeName): number {
+            return FfiConverterString.allocationSize(value.id) + 
+            FfiConverterString.allocationSize(value.createdAt) + 
+            FfiConverterString.allocationSize(value.presentMoment) + 
+            FfiConverterString.allocationSize(value.difficultyFirst) + 
+            FfiConverterUInt32.allocationSize(value.selfTrust) + 
+            FfiConverterString.allocationSize(value.selfTrustLift) + 
+            FfiConverterString.allocationSize(value.mindStory) + 
+            FfiConverterString.allocationSize(value.storyKind) + 
+            FfiConverterString.allocationSize(value.emotionNeed) + 
+            FfiConverterString.allocationSize(value.stressPattern) + 
+            FfiConverterString.allocationSize(value.valueSuccessVsPeace) + 
+            FfiConverterString.allocationSize(value.valueRecognitionVsPride) + 
+            FfiConverterString.allocationSize(value.valueSecurityVsExploration) + 
+            FfiConverterString.allocationSize(value.valueDifficult) + 
+            FfiConverterString.allocationSize(value.misunderstoodReaction) + 
+            FfiConverterString.allocationSize(value.relationshipsTry) + 
+            FfiConverterString.allocationSize(value.distractionTrigger) + 
+            FfiConverterString.allocationSize(value.distractionNext) + 
+            FfiConverterString.allocationSize(value.futureFeeling) + 
+            FfiConverterString.allocationSize(value.futureNeed) + 
+            FfiConverterString.allocationSize(value.selfCompassionFirst) + 
+            FfiConverterString.allocationSize(value.friendAdvice) + 
+            FfiConverterString.allocationSize(value.tinyExperiment);
+            
+        }
+    };
+    return new FFIConverter();
+})();
+
+const FfiConverterOptionalTypeSpotCheckin = new FfiConverterOptional(FfiConverterTypeSpotCheckin);
+
+const FfiConverterArrayTypeSpotCheckin = new FfiConverterArray(FfiConverterTypeSpotCheckin);
+
+export function saveSpotCheckin(input: SpotCheckinInput): SpotCheckin /*throws*/ {
+    return FfiConverterTypeSpotCheckin.lift(
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeCoreError.lift.bind(FfiConverterTypeCoreError),
+            /*caller:*/ (callStatus) => {
+                return nativeModule().ubrn_uniffi_inward_core_fn_func_save_spot_checkin(
+        FfiConverterTypeSpotCheckinInput.lower(input),
+                callStatus);
+            },
+            /*liftString:*/ FfiConverterString.lift,
+    ));
+    }
+export function latestSpotCheckin(): SpotCheckin | undefined /*throws*/ {
+    return FfiConverterOptionalTypeSpotCheckin.lift(
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeCoreError.lift.bind(FfiConverterTypeCoreError),
+            /*caller:*/ (callStatus) => {
+                return nativeModule().ubrn_uniffi_inward_core_fn_func_latest_spot_checkin(
+                callStatus);
+            },
+            /*liftString:*/ FfiConverterString.lift,
+    ));
+    }
+export function listSpotCheckins(limit: /*u32*/number): Array<SpotCheckin> /*throws*/ {
+    return FfiConverterArrayTypeSpotCheckin.lift(
+        uniffiCaller.rustCallWithError(
+            /*liftError:*/ FfiConverterTypeCoreError.lift.bind(FfiConverterTypeCoreError),
+            /*caller:*/ (callStatus) => {
+                return nativeModule().ubrn_uniffi_inward_core_fn_func_list_spot_checkins(
+        FfiConverterUInt32.lower(limit),
+                callStatus);
+            },
+            /*liftString:*/ FfiConverterString.lift,
+    ));
+    }

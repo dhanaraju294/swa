@@ -55,8 +55,10 @@ export default function OnboardingScreen() {
       try {
         console.log('[Onboarding] writing onboarding flag');
         await setSecureFlag(ONBOARDING_KEY, 'true');
-        console.log('[Onboarding] navigating to tabs screen');
-        router.replace('/(tabs)');
+        console.log('[Onboarding] navigating to the first spot check-in');
+        // First launch continues into the one-time spot check-in; the tabs
+        // open afterwards (and directly on every later launch).
+        router.replace('/spot-checkin');
       } catch (e) {
         console.warn('Failed to finalize onboarding transition:', e);
       }

@@ -121,6 +121,30 @@ pub fn list_on_the_spot(limit: u32) -> Result<Vec<OnTheSpotEntry>> {
 }
 
 #[uniffi::export]
+pub fn save_spot_checkin(input: SpotCheckinInput) -> Result<SpotCheckin> {
+    logged_call(
+        "save_spot_checkin",
+        &format!(
+            "present_moment={} self_trust={} tiny_experiment={}",
+            input.present_moment, input.self_trust, input.tiny_experiment
+        ),
+        || engine()?.save_spot_checkin(input),
+    )
+}
+
+#[uniffi::export]
+pub fn latest_spot_checkin() -> Result<Option<SpotCheckin>> {
+    logged_call("latest_spot_checkin", "", || engine()?.latest_spot_checkin())
+}
+
+#[uniffi::export]
+pub fn list_spot_checkins(limit: u32) -> Result<Vec<SpotCheckin>> {
+    logged_call("list_spot_checkins", &format!("limit={}", limit), || {
+        engine()?.list_spot_checkins(limit)
+    })
+}
+
+#[uniffi::export]
 pub fn get_journal_day(journal_id: String, day: u32) -> Result<JournalDay> {
     logged_call(
         "get_journal_day",

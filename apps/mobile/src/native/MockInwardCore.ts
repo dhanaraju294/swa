@@ -16,6 +16,8 @@ import type {
   Profile,
   ProfileInput,
   Reflection,
+  SpotCheckin,
+  SpotCheckinInput,
   Streak,
 } from './generated/inward_core';
 import type { InwardEngine } from './InwardEngine';
@@ -39,6 +41,7 @@ const MOCK_STORE_KEY = 'inward-mock-engine-v2';
 type PersistedMock = {
   checkins: Checkin[];
   onTheSpot: OnTheSpotEntry[];
+  spotCheckins: SpotCheckin[];
   reflections: Reflection[];
   progress: Record<string, JournalProgress>;
   streak: Streak;
@@ -50,6 +53,7 @@ type PersistedMock = {
 export class MockCoreEngine implements InwardEngine {
   private checkins: Checkin[] = [];
   private onTheSpot: OnTheSpotEntry[] = [];
+  private spotCheckins: SpotCheckin[] = [];
   private reflections: Reflection[] = [];
   private progress: Record<string, JournalProgress> = {};
   private streak: Streak = { currentStreak: 0, longestStreak: 0, lastActiveDate: undefined };
@@ -70,6 +74,7 @@ export class MockCoreEngine implements InwardEngine {
     const payload: PersistedMock = {
       checkins: this.checkins,
       onTheSpot: this.onTheSpot,
+      spotCheckins: this.spotCheckins,
       reflections: this.reflections,
       progress: this.progress,
       streak: this.streak,
@@ -87,6 +92,7 @@ export class MockCoreEngine implements InwardEngine {
       const saved = JSON.parse(raw) as PersistedMock;
       this.checkins = saved.checkins ?? [];
       this.onTheSpot = saved.onTheSpot ?? [];
+      this.spotCheckins = saved.spotCheckins ?? [];
       this.reflections = saved.reflections ?? [];
       this.progress = saved.progress ?? {};
       this.streak = saved.streak ?? this.streak;
@@ -147,6 +153,29 @@ export class MockCoreEngine implements InwardEngine {
 
   async listOnTheSpot(limit: number): Promise<OnTheSpotEntry[]> {
     return [...this.onTheSpot]
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+      .slice(0, limit);
+  }
+
+  async saveSpotCheckin(input: SpotCheckinInput): Promise<SpotCheckin> {
+    if (input.selfTrust < 1 || input.selfTrust > 5) {
+      throw new Error(`selfTrust must be 1-5, got ${input.selfTrust}`);
+    }
+    const entry: SpotCheckin = { id: newId(), createdAt: nowIso(), ...input };
+    this.spotCheckins.push(entry);
+    // Completing the first check-in counts as showing up today.
+    this.recordActivity();
+    this.schedulePersist();
+    return entry;
+  }
+
+  async latestSpotCheckin(): Promise<SpotCheckin | null> {
+    if (this.spotCheckins.length === 0) return null;
+    return [...this.spotCheckins].sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
+  }
+
+  async listSpotCheckins(limit: number): Promise<SpotCheckin[]> {
+    return [...this.spotCheckins]
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
       .slice(0, limit);
   }
@@ -306,6 +335,7 @@ export class MockCoreEngine implements InwardEngine {
   async deleteAllData(): Promise<void> {
     this.checkins = [];
     this.onTheSpot = [];
+    this.spotCheckins = [];
     this.reflections = [];
     this.progress = {};
     this.badges = [];
