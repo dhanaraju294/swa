@@ -21,7 +21,7 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
   }
 }
 
-rootProject.name = 'The Inward Journey'
+rootProject.name = 'swa'
 
 dependencyResolutionManagement {
   versionCatalogs {

@@ -9,7 +9,7 @@
     "newArchEnabled": true,
     "scheme": "inward-journey",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/morning.png",
       "resizeMode": "contain",
       "backgroundColor": "#FDF6EC"
     },
@@ -53,7 +53,15 @@
           "sounds": []
         }
       ],
-      "./plugins/withRustCore.js"
+      "./plugins/withRustCore.js",
+      [
+        "@variant-systems/expo-dynamic-app-icon",
+        {
+          "morning": { "image": "./assets/morning.png" },
+          "evening": { "image": "./assets/evening.png" },
+          "irregular": { "image": "./assets/irregular.png" }
+        }
+      ]
     ]
   }
 }

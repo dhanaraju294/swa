@@ -11,9 +11,11 @@ import {
   subscribeToReminderTaps,
   syncReflectionReminders,
 } from '../src/notifications/reminders';
+import { useDynamicAppIcon } from '../src/hooks/useDynamicAppIcon';
 
 export default function RootLayout() {
   const [ready, setReady] = useState(false);
+  useDynamicAppIcon();
 
   useEffect(() => {
     configureNotificationHandler();
