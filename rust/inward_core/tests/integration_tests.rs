@@ -346,3 +346,72 @@ fn free_functions_delegate_to_singleton() {
     // A check-in counts as showing up, so the streak starts at 1.
     assert_eq!(streak.current_streak, 1);
 }
+
+fn sample_spot_input() -> SpotCheckinInput {
+    SpotCheckinInput {
+        present_moment: "Calm".into(),
+        difficulty_first: "Dive in and just start".into(),
+        self_trust: 3,
+        self_trust_lift: "Starting smaller".into(),
+        mind_story: "I can handle this.".into(),
+        story_kind: "A prediction".into(),
+        emotion_need: "Rest & downtime".into(),
+        stress_pattern: "I overthink everything".into(),
+        value_success_vs_peace: "Inner Peace".into(),
+        value_recognition_vs_pride: "Inner Pride".into(),
+        value_security_vs_exploration: "Exploration".into(),
+        value_difficult: "None were difficult".into(),
+        misunderstood_reaction: "Explain myself immediately".into(),
+        relationships_try: "Pausing before I respond".into(),
+        distraction_trigger: "I felt bored".into(),
+        distraction_next: "Close the app immediately".into(),
+        future_feeling: "Curiosity".into(),
+        future_need: "My very next small step".into(),
+        self_compassion_first: "I'll figure out what went wrong and try again.".into(),
+        friend_advice: "One result doesn't define you.".into(),
+        tiny_experiment: "Pause before reacting".into(),
+    }
+}
+
+#[test]
+fn spot_checkin_round_trip() {
+    let engine = setup_test_engine();
+    assert!(engine.latest_spot_checkin().unwrap().is_none());
+
+    let saved = engine.save_spot_checkin(sample_spot_input()).unwrap();
+    let latest = engine.latest_spot_checkin().unwrap().expect("saved spot check-in");
+    assert_eq!(latest.id, saved.id);
+    assert_eq!(latest.present_moment, "Calm");
+    assert_eq!(latest.self_trust, 3);
+    assert_eq!(latest.value_security_vs_exploration, "Exploration");
+    assert_eq!(latest.tiny_experiment, "Pause before reacting");
+
+    let list = engine.list_spot_checkins(10).unwrap();
+    assert_eq!(list.len(), 1);
+    assert_eq!(list[0].id, saved.id);
+}
+
+#[test]
+fn spot_checkin_validation_rejects_bad_scale() {
+    let engine = setup_test_engine();
+    let mut input = sample_spot_input();
+    input.self_trust = 6;
+    assert!(engine.save_spot_checkin(input).is_err());
+}
+
+#[test]
+fn spot_checkin_records_activity() {
+    let engine = setup_test_engine();
+    engine.save_spot_checkin(sample_spot_input()).unwrap();
+    let streak = engine.get_streak().unwrap();
+    // Completing the first check-in counts as showing up.
+    assert_eq!(streak.current_streak, 1);
+}
+
+#[test]
+fn delete_all_data_clears_spot_checkins() {
+    let engine = setup_test_engine();
+    engine.save_spot_checkin(sample_spot_input()).unwrap();
+    engine.delete_all_data().unwrap();
+    assert!(engine.latest_spot_checkin().unwrap().is_none());
+}

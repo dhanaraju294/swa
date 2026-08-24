@@ -100,6 +100,116 @@ impl CoreApi {
         }
     }
 
+    pub fn save_spot_checkin(conn: &Connection, input: SpotCheckinInput) -> Result<SpotCheckin> {
+        let s = SpotCheckin::new(input);
+        s.validate()?;
+        conn.execute(
+            "INSERT INTO spot_checkins (
+                id, created_at,
+                present_moment, difficulty_first, self_trust, self_trust_lift,
+                mind_story, story_kind, emotion_need, stress_pattern,
+                value_success_vs_peace, value_recognition_vs_pride,
+                value_security_vs_exploration, value_difficult,
+                misunderstood_reaction, relationships_try,
+                distraction_trigger, distraction_next,
+                future_feeling, future_need,
+                self_compassion_first, friend_advice, tiny_experiment
+             )
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23)",
+            rusqlite::params![
+                s.id,
+                s.created_at,
+                s.present_moment,
+                s.difficulty_first,
+                s.self_trust,
+                s.self_trust_lift,
+                s.mind_story,
+                s.story_kind,
+                s.emotion_need,
+                s.stress_pattern,
+                s.value_success_vs_peace,
+                s.value_recognition_vs_pride,
+                s.value_security_vs_exploration,
+                s.value_difficult,
+                s.misunderstood_reaction,
+                s.relationships_try,
+                s.distraction_trigger,
+                s.distraction_next,
+                s.future_feeling,
+                s.future_need,
+                s.self_compassion_first,
+                s.friend_advice,
+                s.tiny_experiment
+            ],
+        )?;
+        // Completing the first check-in counts as showing up today.
+        CoreApi::record_activity(conn)?;
+        Ok(s)
+    }
+
+    fn spot_checkin_from_row(row: &rusqlite::Row<'_>) -> rusqlite::Result<SpotCheckin> {
+        Ok(SpotCheckin {
+            id: row.get(0)?,
+            created_at: row.get(1)?,
+            present_moment: row.get(2)?,
+            difficulty_first: row.get(3)?,
+            self_trust: row.get(4)?,
+            self_trust_lift: row.get(5)?,
+            mind_story: row.get(6)?,
+            story_kind: row.get(7)?,
+            emotion_need: row.get(8)?,
+            stress_pattern: row.get(9)?,
+            value_success_vs_peace: row.get(10)?,
+            value_recognition_vs_pride: row.get(11)?,
+            value_security_vs_exploration: row.get(12)?,
+            value_difficult: row.get(13)?,
+            misunderstood_reaction: row.get(14)?,
+            relationships_try: row.get(15)?,
+            distraction_trigger: row.get(16)?,
+            distraction_next: row.get(17)?,
+            future_feeling: row.get(18)?,
+            future_need: row.get(19)?,
+            self_compassion_first: row.get(20)?,
+            friend_advice: row.get(21)?,
+            tiny_experiment: row.get(22)?,
+        })
+    }
+
+    const SPOT_CHECKIN_COLUMNS: &'static str = "id, created_at,
+        present_moment, difficulty_first, self_trust, self_trust_lift,
+        mind_story, story_kind, emotion_need, stress_pattern,
+        value_success_vs_peace, value_recognition_vs_pride,
+        value_security_vs_exploration, value_difficult,
+        misunderstood_reaction, relationships_try,
+        distraction_trigger, distraction_next,
+        future_feeling, future_need,
+        self_compassion_first, friend_advice, tiny_experiment";
+
+    pub fn latest_spot_checkin(conn: &Connection) -> Result<Option<SpotCheckin>> {
+        let sql = format!(
+            "SELECT {} FROM spot_checkins ORDER BY created_at DESC LIMIT 1",
+            Self::SPOT_CHECKIN_COLUMNS
+        );
+        let mut stmt = conn.prepare(&sql)?;
+        let mut rows = stmt.query_map([], Self::spot_checkin_from_row)?;
+        match rows.next() {
+            Some(Ok(s)) => Ok(Some(s)),
+            Some(Err(e)) => Err(CoreError::Database(e.to_string())),
+            None => Ok(None),
+        }
+    }
+
+    pub fn list_spot_checkins(conn: &Connection, limit: u32) -> Result<Vec<SpotCheckin>> {
+        let sql = format!(
+            "SELECT {} FROM spot_checkins ORDER BY created_at DESC LIMIT ?",
+            Self::SPOT_CHECKIN_COLUMNS
+        );
+        let mut stmt = conn.prepare(&sql)?;
+        let rows = stmt.query_map([limit], Self::spot_checkin_from_row)?;
+        rows.collect::<std::result::Result<Vec<_>, _>>()
+            .map_err(|e| CoreError::Database(e.to_string()))
+    }
+
     pub fn save_on_the_spot(conn: &Connection, input: OnTheSpotInput) -> Result<OnTheSpotEntry> {
         let e = OnTheSpotEntry::new(input);
         e.validate()?;
@@ -524,14 +634,16 @@ impl CoreApi {
         let reflections = CoreApi::list_reflections(conn, None)?;
         let awareness = CoreApi::get_awareness_snapshot(conn)?;
         let daily_path = CoreApi::get_journal_progress(conn, crate::content::JOURNEY_ID)?;
+        let spot_checkins = CoreApi::list_spot_checkins(conn, 10000)?;
 
         let export = serde_json::json!({
-            "version": "1.1",
+            "version": "1.2",
             "profile": profile,
             "settings": settings,
             "streak": streak,
             "checkins": checkins,
             "on_the_spot_entries": on_the_spot,
+            "spot_checkins": spot_checkins,
             "badges": badges,
             "reflections": reflections,
             "awareness_scores": awareness,
@@ -544,6 +656,7 @@ impl CoreApi {
     pub fn delete_all_data(conn: &Connection) -> Result<()> {
         conn.execute("DELETE FROM daily_checkins", [])?;
         conn.execute("DELETE FROM on_the_spot_entries", [])?;
+        conn.execute("DELETE FROM spot_checkins", [])?;
         conn.execute("DELETE FROM journal_progress", [])?;
         conn.execute("DELETE FROM reflections", [])?;
         conn.execute("DELETE FROM badges", [])?;

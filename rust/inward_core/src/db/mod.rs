@@ -92,6 +92,37 @@ CREATE TABLE IF NOT EXISTS _migrations_meta (
 );
 ";
 
+// v2: the first inward check-in ("spot check-in") shown once after
+// onboarding. Kept as its own migration so databases created before the
+// feature existed still grow the table on upgrade.
+const MIGRATIONS_V2: &str = "
+CREATE TABLE IF NOT EXISTS spot_checkins (
+  id TEXT PRIMARY KEY,
+  created_at TEXT NOT NULL,
+  present_moment TEXT NOT NULL,
+  difficulty_first TEXT NOT NULL,
+  self_trust INTEGER NOT NULL CHECK (self_trust BETWEEN 1 AND 5),
+  self_trust_lift TEXT NOT NULL,
+  mind_story TEXT NOT NULL,
+  story_kind TEXT NOT NULL,
+  emotion_need TEXT NOT NULL,
+  stress_pattern TEXT NOT NULL,
+  value_success_vs_peace TEXT NOT NULL,
+  value_recognition_vs_pride TEXT NOT NULL,
+  value_security_vs_exploration TEXT NOT NULL,
+  value_difficult TEXT NOT NULL,
+  misunderstood_reaction TEXT NOT NULL,
+  relationships_try TEXT NOT NULL,
+  distraction_trigger TEXT NOT NULL,
+  distraction_next TEXT NOT NULL,
+  future_feeling TEXT NOT NULL,
+  future_need TEXT NOT NULL,
+  self_compassion_first TEXT NOT NULL,
+  friend_advice TEXT NOT NULL,
+  tiny_experiment TEXT NOT NULL
+);
+";
+
 pub fn open_or_create(db_path: &str) -> Result<Connection> {
     crate::logging::info("inward_core.db", &format!("open_or_create({})", db_path));
     // Clean file:// URI prefix if passed from JS
@@ -112,7 +143,7 @@ pub fn open_or_create(db_path: &str) -> Result<Connection> {
     conn.pragma_update(None, "journal_mode", "WAL")?;
     conn.execute("PRAGMA foreign_keys = ON", [])?;
 
-    let migrations = Migrations::new(vec![M::up(MIGRATIONS)]);
+    let migrations = Migrations::new(vec![M::up(MIGRATIONS), M::up(MIGRATIONS_V2)]);
     migrations.to_latest(&mut conn).map_err(|e| {
         crate::logging::error("inward_core.db", &format!("migration failed: {}", e));
         CoreError::Migration(format!("Migration failed: {}", e))

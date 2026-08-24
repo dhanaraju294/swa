@@ -15,6 +15,8 @@ import type {
   Profile,
   ProfileInput,
   Reflection,
+  SpotCheckin,
+  SpotCheckinInput,
   Streak,
 } from './generated/inward_core';
 
@@ -32,6 +34,8 @@ export type {
   Profile,
   ProfileInput,
   Reflection,
+  SpotCheckin,
+  SpotCheckinInput,
   Streak,
 };
 
@@ -52,6 +56,9 @@ export interface InwardEngine {
     response: string,
   ): Promise<Reflection>;
   listReflections(journalId?: string): Promise<Reflection[]>;
+  saveSpotCheckin(input: SpotCheckinInput): Promise<SpotCheckin>;
+  latestSpotCheckin(): Promise<SpotCheckin | null>;
+  listSpotCheckins(limit: number): Promise<SpotCheckin[]>;
   getStreak(): Promise<Streak>;
   listBadges(): Promise<Badge[]>;
   getAwarenessSnapshot(): Promise<AwarenessDimensionScore[]>;

@@ -208,6 +208,101 @@ pub struct AppSettings {
     pub export_format_pref: String,
 }
 
+/// Answers to the first inward check-in ("spot check-in") shown once right
+/// after onboarding. Field order is part of the FFI contract — the generated
+/// bindings serialise records in declaration order.
+#[derive(Debug, Clone, Serialize, Deserialize, uniffi::Record)]
+pub struct SpotCheckinInput {
+    pub present_moment: String,
+    pub difficulty_first: String,
+    pub self_trust: u32,
+    pub self_trust_lift: String,
+    pub mind_story: String,
+    pub story_kind: String,
+    pub emotion_need: String,
+    pub stress_pattern: String,
+    pub value_success_vs_peace: String,
+    pub value_recognition_vs_pride: String,
+    pub value_security_vs_exploration: String,
+    pub value_difficult: String,
+    pub misunderstood_reaction: String,
+    pub relationships_try: String,
+    pub distraction_trigger: String,
+    pub distraction_next: String,
+    pub future_feeling: String,
+    pub future_need: String,
+    pub self_compassion_first: String,
+    pub friend_advice: String,
+    pub tiny_experiment: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, uniffi::Record)]
+pub struct SpotCheckin {
+    pub id: String,
+    pub created_at: String,
+    pub present_moment: String,
+    pub difficulty_first: String,
+    pub self_trust: u32,
+    pub self_trust_lift: String,
+    pub mind_story: String,
+    pub story_kind: String,
+    pub emotion_need: String,
+    pub stress_pattern: String,
+    pub value_success_vs_peace: String,
+    pub value_recognition_vs_pride: String,
+    pub value_security_vs_exploration: String,
+    pub value_difficult: String,
+    pub misunderstood_reaction: String,
+    pub relationships_try: String,
+    pub distraction_trigger: String,
+    pub distraction_next: String,
+    pub future_feeling: String,
+    pub future_need: String,
+    pub self_compassion_first: String,
+    pub friend_advice: String,
+    pub tiny_experiment: String,
+}
+
+impl SpotCheckin {
+    pub fn new(input: SpotCheckinInput) -> Self {
+        SpotCheckin {
+            id: Uuid::new_v4().to_string(),
+            created_at: now_iso(),
+            present_moment: input.present_moment,
+            difficulty_first: input.difficulty_first,
+            self_trust: input.self_trust,
+            self_trust_lift: input.self_trust_lift,
+            mind_story: input.mind_story,
+            story_kind: input.story_kind,
+            emotion_need: input.emotion_need,
+            stress_pattern: input.stress_pattern,
+            value_success_vs_peace: input.value_success_vs_peace,
+            value_recognition_vs_pride: input.value_recognition_vs_pride,
+            value_security_vs_exploration: input.value_security_vs_exploration,
+            value_difficult: input.value_difficult,
+            misunderstood_reaction: input.misunderstood_reaction,
+            relationships_try: input.relationships_try,
+            distraction_trigger: input.distraction_trigger,
+            distraction_next: input.distraction_next,
+            future_feeling: input.future_feeling,
+            future_need: input.future_need,
+            self_compassion_first: input.self_compassion_first,
+            friend_advice: input.friend_advice,
+            tiny_experiment: input.tiny_experiment,
+        }
+    }
+
+    pub fn validate(&self) -> Result<(), super::error::CoreError> {
+        if !(1..=5).contains(&self.self_trust) {
+            return Err(super::error::CoreError::Validation(format!(
+                "self_trust must be 1-5, got {}",
+                self.self_trust
+            )));
+        }
+        Ok(())
+    }
+}
+
 pub mod models {
     pub use super::*;
 }

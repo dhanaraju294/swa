@@ -53,6 +53,9 @@ interface NativeModuleInterface {
     ubrn_uniffi_inward_core_fn_func_list_reflections(journalId: Uint8Array, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
     ubrn_uniffi_inward_core_fn_func_save_checkin(input: Uint8Array, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
     ubrn_uniffi_inward_core_fn_func_save_on_the_spot(input: Uint8Array, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
+    ubrn_uniffi_inward_core_fn_func_save_spot_checkin(input: Uint8Array, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
+    ubrn_uniffi_inward_core_fn_func_latest_spot_checkin(uniffi_out_err: UniffiRustCallStatus): Uint8Array;
+    ubrn_uniffi_inward_core_fn_func_list_spot_checkins(limit: number, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
     ubrn_uniffi_inward_core_fn_func_save_reflection(journalId: Uint8Array, day: number, prompt: Uint8Array, response: Uint8Array, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
     ubrn_uniffi_inward_core_fn_func_update_profile(input: Uint8Array, uniffi_out_err: UniffiRustCallStatus): Uint8Array;
     ubrn_uniffi_inward_core_fn_func_update_settings(input: Uint8Array, uniffi_out_err: UniffiRustCallStatus): Uint8Array;

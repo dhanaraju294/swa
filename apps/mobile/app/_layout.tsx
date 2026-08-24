@@ -53,6 +53,7 @@ export default function RootLayout() {
       >
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="onboarding" />
+        <Stack.Screen name="spot-checkin" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen
           name="session"

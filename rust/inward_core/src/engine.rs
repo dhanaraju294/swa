@@ -67,6 +67,18 @@ impl CoreEngine {
         self.with_conn(|conn| CoreApi::list_on_the_spot(conn, limit))
     }
 
+    pub fn save_spot_checkin(&self, input: SpotCheckinInput) -> Result<SpotCheckin> {
+        self.with_conn(|conn| CoreApi::save_spot_checkin(conn, input))
+    }
+
+    pub fn latest_spot_checkin(&self) -> Result<Option<SpotCheckin>> {
+        self.with_conn(CoreApi::latest_spot_checkin)
+    }
+
+    pub fn list_spot_checkins(&self, limit: u32) -> Result<Vec<SpotCheckin>> {
+        self.with_conn(|conn| CoreApi::list_spot_checkins(conn, limit))
+    }
+
     pub fn get_journal_day(&self, journal_id: String, day: u32) -> Result<JournalDay> {
         self.with_conn(|conn| CoreApi::get_journal_day(conn, &journal_id, day))
     }
