@@ -139,7 +139,8 @@ export function PathMap({ catalog, unlockedDay, completedDays, statusByDay, onPr
         const current = node.day === unlockedDay;
         const locked = node.day > unlockedDay;
         const status = statusByDay[node.day];
-        const partial = !done && (status?.morning || status?.exercise || status?.evening);
+        // The path tracks the daily practice only.
+        const partial = !done && Boolean(status?.exercise);
         const catalogDay = catalog.days.find((d) => d.day === node.day);
         const fill = done ? '#B7CDBA' : current ? '#F6C453' : partial ? '#F4A896' : '#EFE8DC';
         const ring = current ? '#E8B23C' : done ? '#8FA992' : '#D8CFC0';

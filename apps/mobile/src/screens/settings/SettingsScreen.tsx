@@ -6,7 +6,8 @@ import { Card } from '../../design-system/Card';
 import { EyebrowLabel } from '../../design-system/EyebrowLabel';
 import { Button } from '../../design-system/Button';
 import { WritingLineInput } from '../../design-system/WritingLineInput';
-import { useProfile, useSettings, useExportData, useDeleteAllData } from '../../hooks/useProfile';
+import { useProfile, useSettings, useDeleteAllData } from '../../hooks/useProfile';
+import { useExportData } from '../../hooks/useExport';
 import { useAppLockContext } from '../../navigation/AppLockContext';
 import {
   DEFAULT_REMINDERS,
@@ -56,10 +57,18 @@ export default function SettingsScreen() {
 
   const handleExport = async () => {
     try {
-      await exportData();
-      Alert.alert('Export Ready', 'Your data has been exported. In a real app, this would open the share sheet.', [
-        { text: 'OK' },
-      ]);
+      const result = await exportData();
+      const where = result.locations.length
+        ? `\n\nSaved to ${result.locations.join(', ')} — you can also send it from a file manager.`
+        : '\n\nA copy is saved inside the app.';
+      Alert.alert(
+        result.shared ? 'Export Shared' : 'Export Ready',
+        (result.shared
+          ? 'Your data was passed to the share sheet — choose WhatsApp (or any app) to send it.'
+          : 'The share sheet could not be opened. Send the saved file from a file manager instead.') +
+          where,
+        [{ text: 'OK' }],
+      );
     } catch (e) {
       Alert.alert('Error', 'Export failed.');
     }
@@ -239,7 +248,8 @@ export default function SettingsScreen() {
       <Card style={styles.card}>
         <EyebrowLabel label="DATA" />
         <Text style={styles.rowDesc}>
-          Export all your data as a JSON file. This is the only way data leaves your device.
+          Export all your data as a JSON file to Download/swa and share it (e.g. via
+          WhatsApp). This is the only way data leaves your device.
         </Text>
         <Button
           title={exporting ? 'Exporting...' : 'Export All Data'}

@@ -125,3 +125,7 @@ Thumbs.db
 # Tooling
 # ============================================================
 .guildly/
+
+# Vendored expo-dynamic-app-icon ships its compiled output (runtime main + prebuild plugin)
+!apps/mobile/vendor/expo-dynamic-app-icon/build/
+!apps/mobile/vendor/expo-dynamic-app-icon/plugin/build/

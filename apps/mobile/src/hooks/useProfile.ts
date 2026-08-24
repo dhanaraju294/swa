@@ -120,22 +120,6 @@ export function useSettings() {
   return { data: settings, loading, refresh, update };
 }
 
-export function useExportData() {
-  const [loading, setLoading] = useState(false);
-
-  const exportData = useCallback(async () => {
-    setLoading(true);
-    try {
-      const engine = await getInwardEngine();
-      return await engine.exportAllDataJson();
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  return { exportData, loading };
-}
-
 export function useDeleteAllData() {
   const [loading, setLoading] = useState(false);
 

@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -37,12 +37,11 @@ export default function SessionScreen() {
   const requestedDay = parseInt(Array.isArray(params.day) ? params.day[0] : params.day || '', 10);
   const day = Number.isFinite(requestedDay) && requestedDay > 0 ? requestedDay : unlockedDay;
   const partParam = Array.isArray(params.part) ? params.part[0] : params.part;
-  const initialPart = (PARTS.includes(partParam as JourneyPart) ? partParam : 'morning') as JourneyPart;
+  const part = (PARTS.includes(partParam as JourneyPart) ? partParam : 'morning') as JourneyPart;
 
   const { content, loading, error } = useDailyDay(day);
   const { savePart, saving } = useSaveJourneyPart();
 
-  const [part, setPart] = useState<JourneyPart>(initialPart);
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [done, setDone] = useState(false);
@@ -108,12 +107,13 @@ export default function SessionScreen() {
     }
   }, [session, content, step, stepIndex, steps.length, savePart, day, part]);
 
-  const openPart = (next: JourneyPart) => {
-    setPart(next);
+  // Opening a different part (or day) starts that session fresh — the screen
+  // intentionally shows only the part the user tapped, never the other two.
+  useEffect(() => {
     setStepIndex(0);
     setAnswers({});
     setDone(false);
-  };
+  }, [part, day]);
 
   if ((loading || catalogLoading) && !content) {
     return (
@@ -150,14 +150,6 @@ export default function SessionScreen() {
           <View style={{ width: 48 }} />
         </View>
 
-        <View style={styles.tabs}>
-          {PARTS.map((p) => (
-            <TouchableOpacity key={p} onPress={() => openPart(p)} style={[styles.tab, part === p && styles.tabOn]}>
-              <Text style={[styles.tabText, part === p && styles.tabTextOn]}>{PART_META[p].label}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
         <View style={styles.barTrack}>
           <View style={[styles.barFill, { width: `${Math.round((done ? 1 : progressValue) * 100)}%`, backgroundColor: meta.soft }]} />
         </View>
@@ -170,13 +162,6 @@ export default function SessionScreen() {
               You showed up for {meta.label.toLowerCase()}. Nothing else is required.
             </Text>
             <View style={{ height: spacing.xl }} />
-            {part !== 'evening' && (
-              <Button
-                title={part === 'morning' ? "Today's practice" : 'Evening look-back'}
-                onPress={() => openPart(part === 'morning' ? 'exercise' : 'evening')}
-                color={colors.gold}
-              />
-            )}
             <Button title="Back to the path" variant="ghost" onPress={() => router.back()} />
           </View>
         ) : (
@@ -320,11 +305,6 @@ const styles = StyleSheet.create({
   },
   close: { fontFamily: 'Nunito', fontSize: 14, fontWeight: '700', color: colors.ink },
   headerTitle: { fontFamily: 'Nunito', fontSize: 13, fontWeight: '700', color: colors.inkSoft },
-  tabs: { flexDirection: 'row', gap: 8, paddingHorizontal: spacing.lg, marginBottom: spacing.sm },
-  tab: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, backgroundColor: 'rgba(255,255,255,0.45)' },
-  tabOn: { backgroundColor: '#fff' },
-  tabText: { fontFamily: 'Nunito', fontSize: 12, fontWeight: '700', color: colors.inkSoft },
-  tabTextOn: { color: colors.ink },
   barTrack: { height: 6, backgroundColor: 'rgba(255,255,255,0.55)', marginHorizontal: spacing.lg, borderRadius: 99 },
   barFill: { height: 6, borderRadius: 99 },
   scroll: { padding: spacing.lg, paddingBottom: 80 },
