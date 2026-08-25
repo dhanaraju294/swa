@@ -36,6 +36,11 @@ export default function SpotCheckinScreen() {
   const screenComplete = (index: number) =>
     SPOT_SCREENS[index].questions.every((q) => draft[q.field] !== undefined);
 
+  const screenProgress = (index: number) => {
+    const qs = SPOT_SCREENS[index].questions;
+    return qs.filter((q) => draft[q.field] !== undefined).length + '/' + qs.length;
+  };
+
   const finish = async () => {
     const missing = SPOT_FIELDS.filter((f) => draft[f] === undefined);
     if (missing.length > 0) return;
@@ -134,6 +139,11 @@ export default function SpotCheckinScreen() {
             color={colors.gold}
             style={styles.cta}
           />
+          {!done ? (
+            <Text style={styles.progressHint}>
+              {screenProgress(phase.index)} answered — answer all questions to continue
+            </Text>
+          ) : null}
         </Card>
       </ScrollView>
     </SafeAreaView>
@@ -179,6 +189,8 @@ function QuestionBlock({
   if (question.kind === 'this-or-that') {
     return (
       <View style={styles.question}>
+        <Text style={styles.questionTitle}>{question.prompt}</Text>
+        <Text style={styles.thisOrThatHint}>Choose the one that feels more meaningful</Text>
         <View style={styles.pairRow}>
           {[question.left, question.right].map((opt) => (
             <TouchableOpacity
@@ -235,6 +247,20 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   cta: { marginTop: spacing.xxl, alignSelf: 'stretch' },
+  progressHint: {
+    fontFamily: 'Nunito',
+    fontSize: 13,
+    color: colors.inkSoft,
+    textAlign: 'center',
+    marginTop: spacing.md,
+  },
+  thisOrThatHint: {
+    fontFamily: 'Nunito',
+    fontSize: 13,
+    color: colors.inkSoft,
+    marginBottom: spacing.md,
+    marginTop: -spacing.sm,
+  },
   card: { padding: spacing.xl },
   intro: {
     fontFamily: 'Nunito',

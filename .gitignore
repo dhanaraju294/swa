@@ -129,3 +129,8 @@ Thumbs.db
 # Vendored expo-dynamic-app-icon ships its compiled output (runtime main + prebuild plugin)
 !apps/mobile/vendor/expo-dynamic-app-icon/build/
 !apps/mobile/vendor/expo-dynamic-app-icon/plugin/build/
+
+# opencode session artifacts
+.opencode/
+# vendor gradle build cache
+apps/mobile/vendor/**/android/.gradle/

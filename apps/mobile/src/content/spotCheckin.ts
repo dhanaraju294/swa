@@ -9,7 +9,7 @@ export type SpotField = keyof SpotCheckinInput;
 export type SpotQuestion =
   | { kind: 'choice'; field: SpotField; title: string; options: string[] }
   | { kind: 'scale'; field: 'selfTrust'; title: string; low: string; high: string }
-  | { kind: 'this-or-that'; field: SpotField; left: string; right: string };
+  | { kind: 'this-or-that'; field: SpotField; prompt: string; left: string; right: string };
 
 export type SpotScreenDef = {
   exercise: number;
@@ -169,18 +169,21 @@ export const SPOT_SCREENS: SpotScreenDef[] = [
       {
         kind: 'this-or-that',
         field: 'valueSuccessVsPeace',
+        prompt: 'First choice',
         left: 'Success',
         right: 'Inner Peace',
       },
       {
         kind: 'this-or-that',
         field: 'valueRecognitionVsPride',
+        prompt: 'Second choice',
         left: 'Recognition',
         right: 'Inner Pride',
       },
       {
         kind: 'this-or-that',
         field: 'valueSecurityVsExploration',
+        prompt: 'Third choice',
         left: 'Security',
         right: 'Exploration',
       },
