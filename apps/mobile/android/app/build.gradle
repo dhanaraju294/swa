@@ -19,6 +19,11 @@ react {
     cliFile = new File(["node", "--print", "require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })"].execute(null, rootDir).text.trim())
     bundleCommand = "export:embed"
 
+    // InwardCore TurboModule: put the RN Codegen abstract spec
+    // (NativeInwardCoreSpec) in the app package so InwardCoreModule.kt can
+    // extend it without an extra import.
+    codegenJavaPackageName = "com.inwardjourney.app"
+
     /* Folders */
      //   The root of your project, i.e. where "package.json" lives. Default is '../..'
     // root = file("../../")
@@ -93,6 +98,15 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "0.1.0"
+        // The React Native Gradle plugin adds the ABI filters and the
+        // -DANDROID_STL / -DPROJECT_BUILD_DIR / -DREACT_ANDROID_DIR flags for
+        // New Architecture apps; keep the explicit -DANDROID_STL here so the
+        // CMake build is also self-describing when invoked standalone.
+        externalNativeBuild {
+            cmake {
+                arguments "-DANDROID_STL=c++_shared"
+            }
+        }
     }
     signingConfigs {
         debug {
@@ -123,6 +137,16 @@ android {
     }
     androidResources {
         ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~'
+    }
+    // InwardCore TurboModule: compile the Rust <-> Hermes C++ shim and expose
+    // the prefab ReactAndroid/fbjni packages consumed by app/CMakeLists.txt.
+    buildFeatures {
+        prefab true
+    }
+    externalNativeBuild {
+        cmake {
+            path "src/main/cpp/CMakeLists.txt"
+        }
     }
 }
 
