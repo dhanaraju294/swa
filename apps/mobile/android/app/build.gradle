@@ -220,3 +220,36 @@ android {
     pickFirst '**/libfbjni.so'
   }
 }
+
+// withRustCore: build the Rust core before the CMake/JNI step
+//
+// app/CMakeLists.txt links libinward_core.so from
+// app/src/main/jniLibs/<abi>/; that shared library is produced by
+// scripts/build-android.sh (cargo-ndk). Hook it into preBuild so
+// `assembleRelease` / `expo run:android` never fail on a missing .so, even
+// when CI is run from the older branch workflow that does not build Rust
+// separately. If the script is absent (e.g. a source tarball without it),
+// the native CMake target will fail later with an explicit missing file
+// error instead of being silently skipped.
+def rustAndroidBuildScript = new File(rootDir, "../../../scripts/build-android.sh")
+
+tasks.register("buildRustCoreAndroid", Exec) {
+    group = "build"
+    description = "Cross-compile the Rust inward_core library for all Android ABIs (scripts/build-android.sh)."
+    onlyIf {
+        rustAndroidBuildScript.exists()
+    }
+    commandLine "bash", rustAndroidBuildScript.absolutePath
+    def androidHome = System.getenv("ANDROID_HOME")
+    def androidNdkHome = System.getenv("ANDROID_NDK_HOME")
+    if (androidHome != null) {
+        environment "ANDROID_HOME", androidHome
+    }
+    if (androidNdkHome != null) {
+        environment "ANDROID_NDK_HOME", androidNdkHome
+    }
+}
+
+tasks.named("preBuild").configure {
+    dependsOn tasks.named("buildRustCoreAndroid")
+}
