@@ -181,7 +181,7 @@ pub fn open_or_create(db_path: &str) -> Result<Connection> {
         [],
     )?;
     conn.execute(
-        "INSERT INTO journals (id, total_days) VALUES ('daily-path', 30)
+        "INSERT INTO journals (id, total_days) VALUES ('daily-path', 28)
          ON CONFLICT(id) DO UPDATE SET total_days = excluded.total_days",
         [],
     )?;

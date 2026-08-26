@@ -12,7 +12,7 @@ use serde_json::{json, Value};
 use crate::error::{CoreError, Result};
 
 pub const JOURNEY_ID: &str = "daily-path";
-pub const TOTAL_DAYS: u32 = 30;
+pub const TOTAL_DAYS: u32 = 28;
 pub const CATALOG_DAY: u32 = 0;
 
 const RAW: &str = include_str!("daily_journey.json");
@@ -72,6 +72,12 @@ pub fn seed_daily_journey(conn: &Connection) -> Result<()> {
             .and_then(|v| v.as_str());
         upsert_day(conn, number, title, subtitle, &day)?;
     }
+    // Remove stale days from previous 30-day packs (e.g., days 29-30 after the
+    // 28-day update).
+    conn.execute(
+        "DELETE FROM journal_days WHERE journal_id = ?1 AND day_number > ?2",
+        rusqlite::params![JOURNEY_ID, TOTAL_DAYS],
+    )?;
 
     Ok(())
 }
@@ -103,10 +109,10 @@ mod tests {
     #[test]
     fn pack_parses_and_has_30_days() {
         let pack: Value = serde_json::from_str(RAW).unwrap();
-        assert_eq!(pack["totalDays"], 30);
-        assert_eq!(pack["days"].as_array().unwrap().len(), 30);
+        assert_eq!(pack["totalDays"], 28);
+        assert_eq!(pack["days"].as_array().unwrap().len(), 28);
         assert_eq!(pack["days"][0]["day"], 1);
-        assert_eq!(pack["days"][29]["day"], 30);
+        assert_eq!(pack["days"][27]["day"], 28);
         assert!(pack["days"][0]["morning"]["steps"].as_array().unwrap().len() >= 2);
         assert!(pack["days"][0]["exercise"]["steps"].as_array().unwrap().len() >= 2);
         assert!(pack["days"][0]["evening"]["steps"].as_array().unwrap().len() >= 2);

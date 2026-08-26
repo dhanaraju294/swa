@@ -329,7 +329,7 @@ impl CoreApi {
             ("path-notice", 7),
             ("path-understand", 14),
             ("path-choose", 21),
-            ("path-live", 30),
+            ("path-live", 28),
         ];
         for (key, threshold) in awards {
             if day >= *threshold {

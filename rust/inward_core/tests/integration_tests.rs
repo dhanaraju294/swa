@@ -220,11 +220,11 @@ fn daily_path_content_is_seeded_from_backend() {
     assert_eq!(catalog.day_number, 0);
     let catalog_json: serde_json::Value = serde_json::from_str(&catalog.content_json).unwrap();
     assert_eq!(catalog_json["kind"], "catalog");
-    assert_eq!(catalog_json["totalDays"], 30);
-    assert_eq!(catalog_json["days"].as_array().unwrap().len(), 30);
+    assert_eq!(catalog_json["totalDays"], 28);
+    assert_eq!(catalog_json["days"].as_array().unwrap().len(), 28);
 
     let day1 = engine.get_journal_day("daily-path".into(), 1).unwrap();
-    assert_eq!(day1.title, "Pause & Notice");
+    assert_eq!(day1.title, "Set Your Compass");
     let day_json: serde_json::Value = serde_json::from_str(&day1.content_json).unwrap();
     assert_eq!(day_json["kind"], "daily-day");
     assert!(day_json["morning"]["steps"].as_array().unwrap().len() >= 2);
@@ -232,9 +232,9 @@ fn daily_path_content_is_seeded_from_backend() {
     assert!(day_json["evening"]["steps"].as_array().unwrap().len() >= 2);
 
     let day21 = engine.get_journal_day("daily-path".into(), 21).unwrap();
-    assert_eq!(day21.title, "Coming Home");
-    let day30 = engine.get_journal_day("daily-path".into(), 30).unwrap();
-    assert_eq!(day30.title, "The Path Keeps Going");
+    assert_eq!(day21.title, "Week 3 · Day 7");
+    let day28 = engine.get_journal_day("daily-path".into(), 28).unwrap();
+    assert_eq!(day28.title, "Action Engine Integration");
 }
 
 #[test]
@@ -270,7 +270,7 @@ fn delete_all_data_keeps_seeded_content() {
         .unwrap();
     engine.delete_all_data().unwrap();
     let day1 = engine.get_journal_day("daily-path".into(), 1).unwrap();
-    assert_eq!(day1.title, "Pause & Notice");
+    assert_eq!(day1.title, "Set Your Compass");
     let reflections = engine.list_reflections(None).unwrap();
     assert!(reflections.is_empty());
 }

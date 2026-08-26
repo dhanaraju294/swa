@@ -81,7 +81,7 @@ export function useDailyCatalog() {
     refresh();
   }, [refresh]);
 
-  const total = catalog?.totalDays ?? 30;
+  const total = catalog?.totalDays ?? 28;
   const completedDays = progress?.completedDays ?? [];
   const unlockedDay = unlockedDayOf(completedDays, progress?.updatedAt, total);
 
