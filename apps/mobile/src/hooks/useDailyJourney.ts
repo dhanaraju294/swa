@@ -19,6 +19,31 @@ import {
 
 const SESSION_PROMPT = 'session';
 
+/**
+ * Minimal module-level pub/sub: the moment a part is saved (which can also
+ * flip a day to completed and unlock the next one), every screen showing
+ * journey state — the home rhythm card, the path map — refreshes. Relying on
+ * tab refocus alone left the map stale after a submission on some routes.
+ */
+type JourneyListener = () => void;
+const journeyListeners = new Set<JourneyListener>();
+
+export function emitJourneyChanged(): void {
+  journeyListeners.forEach((l) => l());
+}
+
+function useJourneyChangeRefresh(refresh: () => void | Promise<unknown>): void {
+  useEffect(() => {
+    const listener: JourneyListener = () => {
+      void refresh();
+    };
+    journeyListeners.add(listener);
+    return () => {
+      journeyListeners.delete(listener);
+    };
+  }, [refresh]);
+}
+
 // The Rust backend never seeds its `journal_days` table, so on a real device
 // `getJournalDay` throws NotFound for every row. Day copy is static and
 // authored in the bundled seed, so fall back to it whenever the engine cannot
@@ -82,6 +107,9 @@ export function useDailyCatalog() {
   useEffect(() => {
     refresh();
   }, [refresh]);
+
+  // Refresh immediately when any part is saved (also from other tabs).
+  useJourneyChangeRefresh(refresh);
 
   const total = catalog?.totalDays ?? 28;
   const completedDays = progress?.completedDays ?? [];
@@ -211,6 +239,10 @@ export function useSaveJourneyPart() {
         if (allPartsComplete(status) && !alreadyDay) {
           await engine.completeJournalDay(JOURNEY_ID, day);
         }
+        // Tell every mounted journey view (home card, path map) to re-read
+        // its state right now — the save above may have completed the day
+        // and unlocked the next one.
+        emitJourneyChanged();
         return { status, error: null };
       } catch (e) {
         const message = e instanceof Error ? e.message : 'Failed to save your reflection.';

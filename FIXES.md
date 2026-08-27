@@ -246,6 +246,43 @@ presentation layer re-skin on top of the same engine hooks.
    checks for Check-In / My Path / My Path Map / Insights and streak
    reset/re-accrual after "Delete All Data").
 
+## Map-only My Path + live map updates (2026-08-27)
+
+1. **My Path is now the roadmap only.** The Day/Week/Month segment row is
+   gone; the tab opens straight on the winding map ("The whole journey,
+   one winding road") with the "N of 28 days lived" footer and the
+   next-day card below it. The week view's part rows and the month's unit
+   cards are removed from `PathScreen.tsx` (the part rows live on Today,
+   the units live on the map itself).
+
+2. **The map stayed stale after submitting a part.** `PathScreen` only
+   re-read its state when the tab regained focus, so a save made from a
+   session did not reliably reach the mounted map. **Fix:** a small
+   module-level pub/sub in `useDailyJourney.ts` — `emitJourneyChanged()`
+   is called at the end of `savePart` (after a day may have flipped to
+   complete and unlocked the next one), and every `useDailyCatalog`
+   consumer (the home rhythm card and the path map) subscribes via
+   `useJourneyChangeRefresh(refresh)` and re-reads immediately. The
+   focus-based refresh is kept as a second path.
+
+3. **The map now shows progress per part, not just per day.** Before, a
+   day only became visible on the map once all three parts were done, so
+   "I submitted the exercise" produced no visible change. The current
+   day's node now wears an "n/3" badge (ink pill at the bottom-right of
+   the disc, opposite the petal character) as soon as any part is saved,
+   deepens its gold
+   while in progress, and flips to the sage ✓ + "N of 28 days lived"
+   footer + "Day N begins tomorrow" card when the day completes.
+   `PathMap` also dropped the unused `Circle` import and now counts all
+   three parts for its `partial` state (it previously only looked at the
+   exercise part).
+
+4. **Verification.** The jsdom end-to-end run now passes **44 checks**,
+   including the stale-map regressions: after two parts the map shows the
+   2/3 badge with "0 of 28 days lived"; after the third it shows "1 of 28
+   days lived", the day-1 check, and "Day 2 begins tomorrow", and the
+   badge disappears. `typecheck` 0 errors, jest 14/14, lint 0 errors.
+
 ## How to build (from the repo root)
 
 ```bash
