@@ -43,12 +43,29 @@ export class NativeInwardEngine implements InwardEngine {
 
   initialize(documentsDir: string): Promise<void> {
     if (!this.initialized) {
-      this.initialized = (async () => {
-        const Native = loadBindings();
-        await offload(() => Native.initDb(documentsDir));
-      })();
+      this.initialized = this.runInit(documentsDir);
     }
     return this.initialized;
+  }
+
+  private async runInit(documentsDir: string): Promise<void> {
+    try {
+      if (!documentsDir) {
+        throw new Error(
+          'Cannot initialize the Inward engine: the app documents directory is empty. ' +
+            'This should not happen on a real device; the app cannot store data until it is resolved.',
+        );
+      }
+      const Native = loadBindings();
+      await offload(() => Native.initDb(documentsDir));
+    } catch (e) {
+      // Do NOT cache a failed init: the previous behaviour kept the rejected
+      // promise forever, so a single failed start (transient storage error,
+      // a stale native bundle, ...) silently broke every persisted feature
+      // until the app was restarted. Retry on the next call instead.
+      this.initialized = null;
+      throw e;
+    }
   }
 
   /** Guarantee `init_db` has run before any native call so the process-wide
@@ -59,6 +76,14 @@ export class NativeInwardEngine implements InwardEngine {
   private async ready(): Promise<void> {
     if (this.initialized) {
       await this.initialized;
+    } else {
+      // Never initialized (or a previous init failed): refuse clearly instead
+      // of letting Rust fall back to the /tmp database, where everything the
+      // user writes would be invisible to the rest of the app and wiped on
+      // restart.
+      throw new Error(
+        'The Inward engine is not initialized. Call initialize(documentsDir) at startup before saving or reading data.',
+      );
     }
   }
 

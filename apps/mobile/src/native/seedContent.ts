@@ -1,14 +1,14 @@
 // Static content for the daily path.
 //
-// The Rust backend intentionally does NOT store day copy: the `journal_days`
-// SQLite table is never seeded, so `get_journal_day` returns NotFound for
-// every row on a real device (the mock engine sidesteps this by serving the
-// bundled JSON). Content is therefore authored once, here, and served
-// identically everywhere:
-//   - the in-memory mock engine (Expo Go / web previews), and
-//   - as a fallback in the JS hooks when the native engine reports NotFound.
+// The Rust backend seeds the same pack into `journal_days` on open (see
+// rust/inward_core/src/content/mod.rs), but the JS hook still falls back to
+// this bundled copy whenever the engine cannot serve the row (e.g. a
+// pre-seed database or any NotFound), so day content is always available and
+// never gates the app behind a database row. The mock engine serves it
+// directly.
 //
-// Only progress and reflections (real user data) round-trip through Rust.
+// Only progress and reflections (real user data) round-trip through the
+// engine.
 import type { JournalDay } from './InwardEngine';
 import seedPack from './seed/daily_journey.json';
 

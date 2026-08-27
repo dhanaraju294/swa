@@ -68,6 +68,90 @@ feature.
    the missing `app/babel.config.js` — without it, `react-native-reanimated`'s Babel
    plugin (required for any of its animations, e.g. `BreathingSquare`) is never applied.
 
+## Second pass (2026-08-27): "Delete All Data" and its collisions
+
+Reported as: *"when I click delete all data then the inward path sections which
+opens every day about the question is not saved … errors show … some
+interaction between delete all data and other app functionalities are
+colliding and make the app lose its functionalities."*
+
+Root causes found & fixed:
+
+10. **"Delete All Data" was a silent no-op on web, and the "save" errors were
+    invisible everywhere.** The confirmation used `Alert.alert`, and
+    `react-native-web` implements `Alert.alert` as an empty function — on
+    web the button did literally nothing, and "Could not save" alerts in the
+    session screen were swallowed too. **Fix:** the delete flow now uses an
+    in-app confirm modal (cancel/delete, inline error, success notice) in
+    `SettingsScreen`, and session save errors render in an inline error box
+    (`SessionScreen`) instead of relying on `Alert` alone.
+
+11. **The mock engine's delete raced its own persistence.** The in-memory
+    engine (the one that runs in Expo Go / web) persisted on a 40 ms debounce.
+    "Delete All Data" called `removeItem` without cancelling the pending
+    timer, so a write queued before the delete could land *after* it and
+    resurrect deleted data. The 40 ms window also meant killing the app right
+    after saving a day lost that save — matching the "not saved" complaint.
+    **Fix:** `MockInwardCore` now persists write-through on a microtask chain
+    (durable as soon as the current tick ends, coalesced to one write per
+    tick), and `deleteAllData` first flushes the chain, clears state, then
+    persists the cleared snapshot through the *same* chain — so no stale
+    write can ever land after the deletion.
+
+12. **A failed native init permanently broke every persisted feature.**
+    `NativeInwardEngine.initialize` cached its promise forever, including the
+    rejected one: one failed `init_db` (e.g. empty documents dir) meant every
+    later save/read failed silently until the app was restarted, and with no
+    documents dir Rust would have opened a DB in the current working directory
+    (or failed outright on iOS). **Fix:** a failed init is no longer cached
+    (the next `initialize` retries), an empty documents dir throws a clear
+    error, `ready()` throws instead of letting calls hit an uninitialized
+    engine, and `app/_layout.tsx` now shows a readable "Try again" screen on
+    startup failure instead of rendering a broken app with errors only in the
+    console.
+
+13. **Re-saving a daily-path part stacked duplicate rows.** `save_reflection`
+    only `INSERT`ed, so re-doing a part of the day created extra rows and
+    bloated the reflections list/export. **Fix:** upsert semantics in both
+    engines — the Rust API deletes the existing row for the same
+    (journal, day, prompt) before inserting; the mock engine replaces it in
+    place.
+
+14. **"Delete All Data" didn't delete everything, and its failure was
+    invisible.** The personal display name, in-progress drafts
+    (`inward-ui-v1`) and the app-lock passcode live outside the engine and
+    survived the delete; and the hook swallowed errors, so a failed delete
+    reset the in-memory UI *anyway*, leaving storage and UI out of sync.
+    **Fix:** `useDeleteAllData.deleteAll` now throws on failure, resets the
+    in-memory store only after the engine delete succeeds, and removes the
+    name backup, UI drafts, and passcode (SecureStore on native,
+    localStorage on web) afterwards.
+
+15. **The Rust `delete_all_data` was not atomic.** The 8 deletes ran outside
+    a transaction, so a failure mid-way could leave a mixed state (some
+    tables wiped, others not). **Fix:** all statements now run in one
+    transaction (`unchecked_transaction`, same pattern as
+    `complete_journal_day`).
+
+16. **One genuine hooks-order bug:** `JournalScreen`'s `BlockRenderer` called
+    `useUI`/`useState` after an early `return null` guard, violating the rules
+    of hooks. **Fix:** the guard now sits after the hook declarations.
+
+17. **The `lint` script was broken (no ESLint config existed) and the repo
+    wasn't clean.** **Fix:** added `apps/mobile/eslint.config.js` (ESLint 9
+    flat config on Expo's `eslint-config-universe` preset; vendored,
+    generated, and build directories ignored; the two experimental
+    react-hooks v6 rules that flag this codebase's established data-loading /
+    ref patterns are warnings, not errors). `npm run lint` now passes with 0
+    errors. Also added regression tests: `apps/mobile/__tests__/mockEngine.test.ts`
+    (persistence across restart, kill-after-save durability, delete atomicity
+    vs. the write queue, no resurrection, start-again-after-delete, upsert)
+    and `apps/mobile/__tests__/appStore.test.ts` (reminder time helpers),
+    with an AsyncStorage test mock in `apps/mobile/__mocks__/`.
+    `npm run test:app` runs them. Cleaned up: stray empty `apps/mobile/ntg.`
+    file deleted, stale comments in `seedContent.ts` and
+    `MockInwardCore.ts` corrected.
+
 ## How to build (from the repo root)
 
 ```bash

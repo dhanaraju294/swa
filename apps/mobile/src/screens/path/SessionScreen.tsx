@@ -47,7 +47,7 @@ export default function SessionScreen() {
   const part = (PARTS.includes(partParam as JourneyPart) ? partParam : 'morning') as JourneyPart;
 
   const { content, loading, error } = useDailyDay(day);
-  const { savePart, saving } = useSaveJourneyPart();
+  const { savePart, saving, error: saveError, clearError: clearSaveError } = useSaveJourneyPart();
 
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -95,9 +95,12 @@ export default function SessionScreen() {
 
     const finalAnswers = answersRef.current;
     savingRef.current = true;
+    clearSaveError();
     try {
       const result = await savePart(day, part, finalAnswers);
       if (result.error) {
+        // Alert is a no-op on web, so the error is also rendered inline in the
+        // UI (see saveError below) — it must never be the only feedback.
         Alert.alert('Could not save', result.error);
         return;
       }
@@ -114,7 +117,8 @@ export default function SessionScreen() {
     setStepIndex(0);
     setAnswers({});
     setDone(false);
-  }, [part, day]);
+    clearSaveError();
+  }, [part, day, clearSaveError]);
 
   if ((loading || catalogLoading) && !content) {
     return (
@@ -208,6 +212,14 @@ export default function SessionScreen() {
                   onChange={write}
                   accent={meta.soft}
                 />
+              ) : null}
+
+              {/* Inline save error (Alert is a no-op on web, so this is the
+                  only feedback there) */}
+              {saveError ? (
+                <View style={styles.saveErrorBox}>
+                  <Text style={styles.saveErrorText}>{saveError}</Text>
+                </View>
               ) : null}
 
               {/* Navigation Action Buttons */}
@@ -967,6 +979,20 @@ const styles = StyleSheet.create({
   },
   navRow: {
     marginTop: 24,
+  },
+  saveErrorBox: {
+    backgroundColor: '#FBEAE4',
+    borderLeftWidth: 4,
+    borderLeftColor: '#D4795F',
+    borderRadius: 12,
+    padding: 12,
+    marginTop: 12,
+  },
+  saveErrorText: {
+    fontFamily: 'Nunito',
+    fontSize: 13,
+    color: '#8A3B24',
+    lineHeight: 18,
   },
   primaryBtn: {
     width: '100%',
