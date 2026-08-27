@@ -90,7 +90,13 @@ export default function HomeScreen() {
         const copy = PART_COPY[part];
         const done = Boolean(status?.[part]);
         const title =
-          part === 'exercise' && content?.exercise.title ? content.exercise.title : copy.title;
+          part === 'morning' && content?.morning?.title
+            ? content.morning.title
+            : part === 'exercise' && content?.exercise?.title
+            ? content.exercise.title
+            : part === 'evening' && content?.evening?.title
+            ? content.evening.title
+            : copy.title;
         const glow = suggested === part && !done && !todayDone;
         return (
           <TouchableOpacity key={part} onPress={() => open(part)} activeOpacity={0.88}>
