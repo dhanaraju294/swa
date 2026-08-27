@@ -99,7 +99,7 @@ export default function HomeScreen() {
 
       {/* Illustration */}
       <View style={styles.illustrationCard}>
-        <Image source={blossomHome} style={styles.illustration} resizeMode="cover" />
+        <Image source={blossomHome} style={styles.illustration} resizeMode="contain" />
       </View>
 
       {/* Your rhythm */}
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     overflow: 'hidden',
     height: 190,
-    backgroundColor: '#FBF3E4',
+    backgroundColor: '#F9F2E0',
   },
   illustration: { width: '100%', height: '100%' },
   rhythmCard: {
