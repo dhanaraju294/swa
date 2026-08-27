@@ -152,6 +152,28 @@ Root causes found & fixed:
     file deleted, stale comments in `seedContent.ts` and
     `MockInwardCore.ts` corrected.
 
+18. **Revisiting a submitted part was a full replay — submitted
+    reflections and exercises could not be viewed or edited.**
+    `SessionScreen` always started from a blank slate: the answers the user
+    had already saved were never read back, so tapping "Saved · revisit
+    anytime" repeated the whole session from the top (and re-saving
+    silently replaced the original answers with whatever was re-submitted).
+    The 12-question first check-in had the same problem. **Fix:** added
+    `useStoredPartAnswers` (`src/hooks/useDailyJourney.ts`) which loads the
+    saved reflection payload for the part + day; `parseStoredPart`
+    (`src/journey/types.ts`) turns it back into an answers map and
+    tolerates corrupt/legacy rows (blank session, never a crash).
+    Revisiting a saved part now pre-fills every step with the user's own
+    answers — viewable and editable — behind a
+    "✓ You already completed this — your answers are loaded. Change
+    anything, then save again." banner, and re-saving upserts the edited
+    answers (one row per part+day, from fix #13). `SpotCheckinScreen` does
+    the same for the first check-in ("Review my answers" + restored
+    draft). Covered by unit tests (`__tests__/storedPart.test.ts`) and by
+    the end-to-end jsdom flow, which now also checks: revisit shows the
+    saved answer → edit it → re-save → the edited answer is restored and
+    the old one is gone.
+
 ## How to build (from the repo root)
 
 ```bash

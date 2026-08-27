@@ -8,11 +8,13 @@ import {
   PART_JOURNALS,
   parseCatalog,
   parseDayContent,
+  parseStoredPart,
   unlockedDayOf,
   type DailyDayContent,
   type JourneyCatalog,
   type JourneyPart,
   type PartStatus,
+  type StoredPart,
 } from '../journey/types';
 
 const SESSION_PROMPT = 'session';
@@ -139,6 +141,46 @@ export function useDailyDay(dayNumber: number) {
   }, [refresh]);
 
   return { content, loading, error, refresh };
+}
+
+/**
+ * Loads the answers the user already submitted for this (part, day), so a
+ * revisited session pre-fills them (view + edit) instead of repeating the
+ * whole session from a blank slate.
+ *
+ * `storedKey` mirrors the (part, day) the current fetch belongs to, so the
+ * consumer can tell a just-arrived result apart from a stale in-flight one
+ * after a part/day switch.
+ */
+export function useStoredPartAnswers(day: number, part: JourneyPart) {
+  const [stored, setStored] = useState<StoredPart | null>(null);
+  const [storedKey, setStoredKey] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const refresh = useCallback(async () => {
+    const key = `${part}-${day}`;
+    setStoredKey(key);
+    setLoading(true);
+    try {
+      const engine = await getInwardEngine();
+      const rows = await engine.listReflections(PART_JOURNALS[part]);
+      const row = rows.find((r) => r.dayNumber === day && r.prompt === SESSION_PROMPT);
+      setStored(row ? parseStoredPart(row.response) : null);
+    } catch (e) {
+      // No stored answers (or unreadable ones) — start blank rather than
+      // blocking the session on a read error.
+      console.warn('Failed to load stored part answers:', e);
+      setStored(null);
+    } finally {
+      setLoading(false);
+    }
+  }, [day, part]);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  return { stored, storedKey, loading, refresh };
 }
 
 export function useSaveJourneyPart() {
