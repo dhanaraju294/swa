@@ -231,11 +231,20 @@ presentation layer re-skin on top of the same engine hooks.
    a leaf selection ring (gold badge removed); `PillSlider`'s label is
    optional. `SettingsScreen` is unchanged behind the "You" tab.
 
-7. **Verification.** `typecheck` 0 errors, jest 14/14, lint 0 errors, and
-   the jsdom end-to-end run passes all 38 checks (the 8 revisit/edit
+7. **The old winding roadmap was removed** (`PathMap.tsx` — deleted when
+   the design was first applied) — it is back. My Path's segment row is
+   now Day/Week/Month/**Map**: the Map view restores `PathMap.tsx` (the
+   winding road through all units/days, unit banners, pulsing
+   character on the current day), re-skinned to the new leaf/cream
+   palette (sage done-nodes with `colors.leaf` rings, gold current,
+   leaf-tinted dashed road). Tapping a node opens that day's first
+   still-open part.
+
+8. **Verification.** `typecheck` 0 errors, jest 14/14, lint 0 errors, and
+   the jsdom end-to-end run passes all 39 checks (the 8 revisit/edit
    checks from the previous pass still pass, plus fresh tab-render
-   checks for Check-In / My Path / Insights and streak reset/re-accrual
-   after "Delete All Data").
+   checks for Check-In / My Path / My Path Map / Insights and streak
+   reset/re-accrual after "Delete All Data").
 
 ## How to build (from the repo root)
 

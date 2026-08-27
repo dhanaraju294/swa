@@ -11,8 +11,9 @@ import { useDailyCatalog, useDailyDay } from '../../hooks/useDailyJourney';
 import { useCheckins } from '../../hooks/useCheckins';
 import { useReflections } from '../../hooks/useJournal';
 import { allPartsComplete, type JourneyPart } from '../../journey/types';
+import { PathMap } from './PathMap';
 
-type Segment = 'day' | 'week' | 'month';
+type Segment = 'day' | 'week' | 'month' | 'map';
 
 const PART_META: Record<JourneyPart, { icon: string; tint: string; sub: string }> = {
   morning: { icon: 'sunny', tint: '#FBF1DE', sub: 'Start your day with awareness' },
@@ -56,6 +57,16 @@ export default function PathScreen() {
       router.push({ pathname: '/session', params: { day: String(day), part } });
     },
     [router, unlockedDay],
+  );
+
+  // Tapping a roadmap node opens that day's first still-open part.
+  const openDay = useCallback(
+    (day: number) => {
+      const st = statusByDay[day];
+      const first = PARTS.find((p) => !st?.[p]);
+      openPart(first || 'exercise', day);
+    },
+    [openPart, statusByDay],
   );
 
   // Days (this week) the user was active in, from real data: any check-in or
@@ -169,7 +180,7 @@ export default function PathScreen() {
 
       {/* Segments */}
       <View style={styles.segmentRow}>
-        {(['day', 'week', 'month'] as Segment[]).map((s) => (
+        {(['day', 'week', 'month', 'map'] as Segment[]).map((s) => (
           <TouchableOpacity
             key={s}
             onPress={() => setSegment(s)}
@@ -218,8 +229,25 @@ export default function PathScreen() {
           </>
         )}
 
-        {segment !== 'month' && partNodes}
-        {segment !== 'month' && tomorrowCard}
+        {segment !== 'month' && segment !== 'map' && partNodes}
+        {segment !== 'month' && segment !== 'map' && tomorrowCard}
+
+        {segment === 'map' && (
+          <View>
+            <Text style={styles.mapHead}>The whole journey, one winding road</Text>
+            <PathMap
+              catalog={catalog}
+              unlockedDay={unlockedDay}
+              completedDays={completedDays}
+              statusByDay={statusByDay}
+              onPressDay={openDay}
+            />
+            <Text style={styles.foot}>
+              {completedDays.length} of {total} days lived · tap an open day to start it.
+            </Text>
+            {tomorrowCard}
+          </View>
+        )}
 
         {segment === 'month' && (
           <View>
@@ -372,6 +400,15 @@ const styles = StyleSheet.create({
     height: 6,
     borderRadius: 3,
     backgroundColor: colors.leaf,
+  },
+  mapHead: {
+    fontFamily: 'Nunito',
+    fontSize: 12,
+    fontWeight: '700',
+    color: colors.inkSoft,
+    textAlign: 'center',
+    marginBottom: spacing.md,
+    letterSpacing: 0.2,
   },
   nodes: {
     marginTop: spacing.sm,
