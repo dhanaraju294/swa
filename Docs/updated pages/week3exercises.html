@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SWA - Week 3: Micro-Exercises</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F1F8F4; --card: #FFFFFF; --plum: #2C2638; --grey: #827A90;
+    --exercise: #4CAF7D; --exercise-soft: #E4F5EB;
+    --line: #E5E0DA; --gold: #f5b942;
+    --shadow: 0 12px 32px rgba(44, 38, 56, 0.08);
+  }
+  * { box-sizing: border-box; font-family: 'Nunito', sans-serif; }
+  body { background: var(--bg); color: var(--plum); margin: 0; padding: 20px 14px 80px; min-height: 100vh; }
+  
+  .container { max-width: 460px; margin: 0 auto; }
+  
+  /* Top Navigation */
+  .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .logo { font-weight: 900; font-size: 24px; letter-spacing: -1px; }
+  .mode-badge { padding: 8px 16px; border-radius: 99px; font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; background: var(--exercise); color: #fff; box-shadow: var(--shadow);}
+
+  /* Day Selector */
+  .day-scroll { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 12px; margin-bottom: 16px; scrollbar-width: none; }
+  .day-scroll::-webkit-scrollbar { display: none; }
+  .day-pill { padding: 8px 16px; border-radius: 99px; background: var(--card); font-weight: 800; font-size: 13px; color: var(--grey); cursor: pointer; border: 2.5px solid var(--line); white-space: nowrap; transition: 0.2s;}
+  .day-pill.active { background: var(--plum); color: #fff; border-color: var(--plum); }
+
+  /* Progress Bar */
+  .progress-wrap { height: 6px; background: var(--line); border-radius: 99px; margin-bottom: 24px; overflow: hidden; }
+  .progress-bar { height: 100%; width: 0%; background: var(--exercise); border-radius: 99px; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+
+  /* Main Card */
+  .screen { background: var(--card); border-radius: 28px; padding: 32px 24px; box-shadow: var(--shadow); position: relative; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .kicker { font-size: 13px; font-weight: 800; color: var(--grey); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: block; }
+  .prompt { font-size: 22px; font-weight: 800; line-height: 1.35; margin: 0 0 24px; }
+
+  /* --- INTERACTIVES --- */
+  
+  /* Custom Inputs for {OTHER} */
+  .custom-input { border: none; outline: none; font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 700; color: var(--plum); background: transparent; width: 100%; text-align: center; padding: 0; margin-top: 4px; }
+  .custom-input::placeholder { color: var(--grey); opacity: 0.8; }
+  
+  /* Tap Grid */
+  .tap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .tap-card { background: #fff; border: 2.5px solid var(--line); border-radius: 18px; padding: 20px 12px; text-align: center; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; gap: 8px; justify-content: center; align-items: center; }
+  .tap-card.custom-tap { grid-column: 1 / -1; flex-direction: row; padding: 14px 20px; }
+  .tap-card.custom-tap .custom-input { text-align: left; font-size: 16px; margin-top: 0; margin-left: 8px; }
+  .tap-card .emoji { font-size: 32px; }
+  .tap-card .lbl { font-size: 14px; font-weight: 700; color: var(--plum); }
+  .tap-card.selected { border-color: var(--exercise); background: var(--exercise-soft); transform: translateY(-4px); box-shadow: 0 8px 16px rgba(76,175,125,0.15); }
+  .tap-card.selected .lbl, .tap-card.selected .custom-input { color: var(--plum); }
+  .tap-card.selected .custom-input::placeholder { color: var(--grey); opacity: 0.8; }
+
+  /* Multi-Tap Chips */
+  .chip-wrap { display: flex; flex-wrap: wrap; gap: 10px; }
+  .chip { padding: 12px 18px; border-radius: 14px; border: 2.5px solid var(--line); background: #fff; font-size: 15px; font-weight: 700; color: var(--grey); cursor: pointer; transition: 0.2s; display: flex; align-items: center; }
+  .chip.custom-chip { flex-grow: 1; }
+  .chip.custom-chip .custom-input { text-align: left; font-size: 15px; margin-top: 0; }
+  .chip.selected { background: var(--exercise); border-color: var(--exercise); color: #fff; }
+  .chip.selected .custom-input { color: #fff; }
+  .chip.selected .custom-input::placeholder { color: rgba(255,255,255,0.8); }
+
+  /* Slider */
+  .slider-wrap { margin: 20px 0; }
+  input[type="range"] { width: 100%; appearance: none; height: 8px; background: var(--line); border-radius: 99px; outline: none; }
+  input[type="range"]::-webkit-slider-thumb { appearance: none; width: 28px; height: 28px; border-radius: 50%; background: var(--exercise); cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: 0.2s; }
+  .slider-labels { display: flex; justify-content: space-between; margin-top: 12px; font-size: 13px; font-weight: 700; color: var(--grey); }
+  .slider-value { text-align: center; font-size: 42px; margin-bottom: 16px; font-weight: 800; }
+
+  /* Text Area */
+  textarea { width: 100%; border: 2.5px solid var(--line); border-radius: 18px; padding: 16px; font-size: 16px; font-weight: 600; min-height: 110px; resize: none; color: var(--plum); font-family: 'Nunito'; }
+  textarea:focus { outline: none; border-color: var(--exercise); }
+  textarea::placeholder { color: #B3AEBC; font-weight: 600; font-style: italic; }
+
+  /* Breathe / Countdown */
+  .breathe-circle { width: 140px; height: 140px; border-radius: 50%; background: var(--exercise-soft); margin: 30px auto; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; color: var(--exercise); text-align: center; padding: 10px; box-shadow: 0 0 0 0 rgba(76,175,125,0.4); }
+  .breathe-circle.animate { animation: breatheInOut 8s infinite ease-in-out; }
+  @keyframes breatheInOut {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(76,175,125,0.4); }
+    50% { transform: scale(1.4); box-shadow: 0 0 0 30px rgba(76,175,125,0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(76,175,125,0); }
+  }
+
+  .countdown-ring { width: 88px; height: 88px; border-radius: 50%; border: 5px solid var(--line); display: flex; align-items: center; justify-content: center; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 24px; color: var(--exercise); margin: 0 auto 20px; transition: border-color .3s ease; }
+  .countdown-ring.active { border-color: var(--exercise); }
+
+  /* Spin Wheel */
+  .spin-box { border: 3px dashed var(--line); border-radius: 20px; padding: 24px; text-align: center; font-size: 18px; font-weight: 800; min-height: 100px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; color: var(--grey); background: #fff; }
+  .spin-active { color: var(--exercise); transform: scale(1.05); transition: 0.1s; }
+
+  /* Nav Buttons */
+  .nav-row { display: flex; justify-content: space-between; margin-top: 32px; gap: 12px; }
+  .btn { padding: 16px 24px; border-radius: 16px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; border: none; }
+  .btn-ghost { background: transparent; color: var(--grey); border: 2.5px solid var(--line); flex: 0.5; }
+  .btn-primary { background: var(--exercise); color: #fff; box-shadow: 0 6px 16px rgba(76, 175, 125, 0.25); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+  .btn:active:not(:disabled) { transform: scale(0.97); }
+
+  /* Insight / End Card */
+  .insight-box { background: var(--exercise-soft); border-radius: 16px; padding: 20px; border-left: 4px solid var(--exercise); margin-top: 20px; }
+  .insight-box h4 { margin: 0 0 8px; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; color: var(--exercise); }
+  .insight-box p { margin: 0; font-size: 15px; font-weight: 700; line-height: 1.6; color: var(--plum); }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="top-nav">
+    <div class="logo">SWA.</div>
+    <div class="mode-badge">Micro-Exercises</div>
+  </div>
+
+  <div class="day-scroll" id="daySelector">
+    <!-- Generated via JS -->
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-bar" id="progBar"></div>
+  </div>
+
+  <div class="screen" id="appScreen">
+    <!-- Generated via JS -->
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   WEEK 3: FRESH MICRO-EXERCISES (Motivation & Agency)
+   Strictly 6 steps per day. Notice -> Identify -> Explore -> Choice -> Act -> Info
+   ========================================================= */
+const STORE_KEY = 'swa_week3_micro_final';
+
+const weekData = [
+  // --- DAY 1: Shifting "Have To" to "Choose To" ---
+  {
+    day: 1, 
+    exercises: [
+      { step: 1, type: "tap", kicker: "Notice", q: "Pick a boring task you have to do today.", opts: [["📚","Homework"],["🧹","Chores"],["💬","Hard Talk"],["🤷","Skip"],["✏️","{OTHER}"]] },
+      { step: 2, type: "multitap", kicker: "Explore", q: "Why does doing this task actually help YOU? (Pick all)", opts: ["I won't get in trouble", "It makes my space nice", "I learn something", "I feel proud after", "{OTHER}"] },
+      { step: 3, type: "slider", kicker: "Check", q: "How heavy does this task feel right now?", min: "Super light", max: "Like a boulder", emoji: ["🪶","🧱"] },
+      { step: 4, type: "text", kicker: "Choice", q: "Rewrite it! Instead of 'I have to...', type 'I choose to...'", placeholder: "e.g., I choose to do my math so I can pass." },
+      { step: 5, type: "countdown", kicker: "Act", q: "Go start that task for just 60 seconds right now. No more.", seconds: 60 },
+      { step: 6, type: "info", kicker: "Great Job", q: "Task Reframed", insightTitle: "Choosing Your Path", insightText: "When you remind yourself WHY a boring task helps you, it stops feeling like a chore." }
+    ]
+  },
+  // --- DAY 2: Smashing Doubt ---
+  {
+    day: 2,
+    exercises: [
+      { step: 1, type: "tap", kicker: "Notice", q: "What does your brain usually say when a task looks too hard?", opts: [["📉","I'll fail"],["🥵","Too much work"],["🧠","I'm not smart enough"],["🤷","Skip"],["✏️","{OTHER}"]] },
+      { step: 2, type: "slider", kicker: "Explore", q: "How loud is that doubting voice today?", min: "Just a whisper", max: "Screaming", emoji: ["🍃","🌪️"] },
+      { step: 3, type: "text", kicker: "Identify", q: "Name one time in the past you thought you'd fail but actually did okay:", placeholder: "e.g., That huge math test last month." },
+      { step: 4, type: "multitap", kicker: "Perspective", q: "What 'superpower' did you use back then to get through it?", opts: ["Patience", "Asking for help", "Bravery", "Taking breaks", "{OTHER}"] },
+      { step: 5, type: "countdown", kicker: "Act", q: "Say your superpower out loud for 10 seconds. You still have it.", seconds: 10 },
+      { step: 6, type: "info", kicker: "Great Job", q: "Fear Broken", insightTitle: "Trust Your Wins", insightText: "Confidence isn't being perfect. It's remembering you figured things out before." }
+    ]
+  },
+  // --- DAY 3: Being the Boss ---
+  {
+    day: 3,
+    exercises: [
+      { step: 1, type: "tap", kicker: "Notice", q: "What's the most annoying thing you have to deal with today?", opts: [["🗣️","A person"],["📜","A rule"],["📚","Too much work"],["🤷","Skip"],["✏️","{OTHER}"]] },
+      { step: 2, type: "multitap", kicker: "Identify", q: "Which parts of that are completely out of your control?", opts: ["Their mood", "The weather", "The amount of work", "The time it takes", "{OTHER}"] },
+      { step: 3, type: "text", kicker: "Perspective", q: "Since you can't control that, what CAN you control right now?", placeholder: "e.g., I can control my reaction." },
+      { step: 4, type: "tap", kicker: "Choice", q: "What will your first move be when the annoying thing happens?", opts: [["😮‍💨","Take a breath"],["🚶","Walk away"],["🤐","Stay quiet"],["✏️","{OTHER}"]] },
+      { step: 5, type: "breathe", kicker: "Act", q: "Practice that pause right now.", seconds: 10, label: "Notice your breath" },
+      { step: 6, type: "info", kicker: "Great Job", q: "You Are Driving", insightTitle: "Owning Your Reaction", insightText: "You can't control everything around you, but you are the boss of how you act." }
+    ]
+  },
+  // --- DAY 4: Shrinking the Goal ---
+  {
+    day: 4,
+    exercises: [
+      { step: 1, type: "text", kicker: "Notice", q: "What is a big goal hanging over your head right now?", placeholder: "e.g., My final science project." },
+      { step: 2, type: "slider", kicker: "Explore", q: "How stuck or frozen do you feel about starting it?", min: "Totally fine", max: "Frozen solid", emoji: ["🏃","🧊"] },
+      { step: 3, type: "tap", kicker: "Perspective", q: "If you had to explain the very first step to a 5-year-old, what is it?", opts: [["🎒","Get my stuff"],["📖","Open the book"],["🙋","Ask a question"],["🤷","Skip"],["✏️","{OTHER}"]] },
+      { step: 4, type: "multitap", kicker: "Choice", q: "How can you make that first step even smaller?", opts: ["Do it for just 2 mins", "Just set up my desk", "Ask a friend for help", "Only read one page", "{OTHER}"] },
+      { step: 5, type: "countdown", kicker: "Act", q: "Go do that micro-step for exactly 60 seconds right now.", seconds: 60 },
+      { step: 6, type: "info", kicker: "Great Job", q: "Momentum Built", insightTitle: "Shrink to Start", insightText: "When you make the first step super tiny, your brain stops feeling scared and starts moving." }
+    ]
+  },
+  // --- DAY 5: The "If-Then" Trap ---
+  {
+    day: 5,
+    exercises: [
+      { step: 1, type: "tap", kicker: "Notice", q: "What is your favorite way to waste time?", opts: [["📱","Scrolling phone"],["🎮","Games"],["💭","Daydreaming"],["🤷","Skip"],["✏️","{OTHER}"]] },
+      { step: 2, type: "multitap", kicker: "Identify", q: "How do you usually feel right before you waste time?", opts: ["Bored", "Stressed", "Tired", "Confused", "{OTHER}"] },
+      { step: 3, type: "slider", kicker: "Explore", q: "How fast do you usually give in to that feeling?", min: "I fight it", max: "Instantly", emoji: ["🛡️","⚡"] },
+      { step: 4, type: "text", kicker: "Choice", q: "Create a trap: IF I feel that way today, THEN I will...", placeholder: "e.g., THEN I will drink a glass of water." },
+      { step: 5, type: "spin", kicker: "Act", q: "Spin for a quick trick to use when you feel stuck today:", opts: ["Take 3 deep breaths", "Stand up and stretch", "Drink a glass of water", "Close eyes for 30s"] },
+      { step: 6, type: "info", kicker: "Great Job", q: "Trap Set", insightTitle: "Smart Planning", insightText: "Having a rule saves your brain energy. You are learning how to outsmart your own habits!" }
+    ]
+  },
+  // --- DAY 6: Guarding Your Battery ---
+  {
+    day: 6,
+    exercises: [
+      { step: 1, type: "tap", kicker: "Notice", q: "Look around you. What is the biggest distraction right now?", opts: [["📱","My phone"],["📺","A screen/TV"],["🛏️","My comfy bed"],["🤷","Skip"],["✏️","{OTHER}"]] },
+      { step: 2, type: "multitap", kicker: "Identify", q: "How can you fix it quickly?", opts: ["Put it in a drawer", "Turn it off", "Move to another chair", "Face the wall", "{OTHER}"] },
+      { step: 3, type: "text", kicker: "Choice", q: "Go hide or fix the distraction right now. Where did you put it?", placeholder: "e.g., In my backpack." },
+      { step: 4, type: "slider", kicker: "Explore", q: "How much do you want a peaceful, focused space right now?", min: "A little", max: "More than anything", emoji: ["🥱","🔥"] },
+      { step: 5, type: "breathe", kicker: "Act", q: "Enjoy your clean, focused space for a moment.", seconds: 10, label: "Notice your breath" },
+      { step: 6, type: "info", kicker: "Great Job", q: "Space Cleared", insightTitle: "Fix Your Space", insightText: "Willpower is hard. Changing your physical space so you CAN'T get distracted is much easier." }
+    ]
+  },
+  // --- DAY 7: The Master Mindset ---
+  {
+    day: 7,
+    exercises: [
+      { step: 1, type: "tap", kicker: "Notice", q: "What was your biggest win this week?", opts: [["🚀","Starting a hard task"],["🧘","Staying calm"],["🎯","Setting a goal"],["🤷","Skip"],["✏️","{OTHER}"]] },
+      { step: 2, type: "slider", kicker: "Explore", q: "Compared to Monday, how much more like a 'boss' do you feel?", min: "Same", max: "Way more", emoji: ["➖","👑"] },
+      { step: 3, type: "multitap", kicker: "Identify", q: "Which mental tool actually worked for you?", opts: ["Finding my 'why'", "My If-Then rule", "Tiny 60s steps", "Fixing my room", "{OTHER}"] },
+      { step: 4, type: "text", kicker: "Perspective", q: "What advice would you give a friend who is feeling stuck today?", placeholder: "e.g., Just do the first 2 minutes of it." },
+      { step: 5, type: "breathe", kicker: "Act", q: "Breathe in your progress. You are in control.", seconds: 15, label: "Notice your breath" },
+      { step: 6, type: "info", kicker: "Week Complete", q: "You Did It!", insightTitle: "Toolkit Unlocked", insightText: "Big dreams are just a bunch of small habits connected together. You are already on your way!" }
+    ]
+  }
+];
+
+// App State
+let currentDayIdx = 0; 
+let currentStepIdx = 0;
+let sessionData = {}; 
+
+// DOM Elements
+const DOM = {
+  screen: document.getElementById('appScreen'),
+  progBar: document.getElementById('progBar'),
+  daySel: document.getElementById('daySelector'),
+};
+
+// Build Day Selector
+function buildDaySelector() {
+  DOM.daySel.innerHTML = '';
+  weekData.forEach((d, i) => {
+    const pill = document.createElement('div');
+    pill.className = `day-pill ${i === currentDayIdx ? 'active' : ''}`;
+    pill.textContent = `Day ${d.day}`;
+    pill.onclick = () => { 
+      currentDayIdx = i; 
+      currentStepIdx = 0; 
+      sessionData = {};
+      buildDaySelector(); 
+      renderStep(); 
+    };
+    DOM.daySel.appendChild(pill);
+  });
+}
+
+function renderStep() {
+  const session = weekData[currentDayIdx].exercises;
+  const step = session[currentStepIdx];
+  const isLast = currentStepIdx === session.length - 1;
+  const prev = sessionData[currentStepIdx];
+  
+  DOM.progBar.style.width = `${((currentStepIdx + 1) / session.length) * 100}%`;
+
+  let html = `
+    <span class="kicker">${step.kicker}</span>
+    <h2 class="prompt">${step.q}</h2>
+  `;
+
+  if (step.type === "tap") {
+    const cards = step.opts.map((opt, i) => {
+      const isOther = opt[1] === "{OTHER}";
+      const isSel = prev === i;
+      if (isOther) {
+        const text = sessionData[currentStepIdx + '_text'] || '';
+        return `
+          <div class="tap-card custom-tap ${isSel ? 'selected' : ''}" data-idx="${i}" data-other="true">
+            <span class="emoji">${opt[0]}</span>
+            <input type="text" class="custom-input" placeholder="Type here..." value="${text}">
+          </div>`;
+      }
+      return `
+        <div class="tap-card ${isSel ? 'selected' : ''}" data-idx="${i}">
+          <span class="emoji">${opt[0]}</span>
+          <span class="lbl">${opt[1]}</span>
+        </div>`;
+    }).join('');
+    html += `<div class="tap-grid">${cards}</div>`;
+  } 
+  else if (step.type === "multitap") {
+    const cur = prev instanceof Array ? prev : [];
+    const chips = step.opts.map((opt, i) => {
+      const isOther = opt === "{OTHER}";
+      const isSel = cur.includes(i);
+      if (isOther) {
+        const text = sessionData[currentStepIdx + '_text'] || '';
+        return `
+          <div class="chip custom-chip ${isSel ? 'selected' : ''}" data-idx="${i}" data-other="true">
+            <input type="text" class="custom-input" placeholder="Other (type here)..." value="${text}">
+          </div>`;
+      }
+      return `<div class="chip ${isSel ? 'selected' : ''}" data-idx="${i}">${opt}</div>`;
+    }).join('');
+    html += `<div class="chip-wrap">${chips}</div>`;
+  }
+  else if (step.type === "slider") {
+    const val = prev !== null && prev !== undefined ? prev : 5;
+    const faceIdx = Math.min(step.emoji.length - 1, Math.floor((val - 1) / (10 / step.emoji.length)));
+    html += `
+      <div class="slider-wrap">
+        <div class="slider-value" id="slVal">${step.emoji ? step.emoji[faceIdx] : val}</div>
+        <input type="range" id="slInput" min="1" max="10" value="${val}">
+        <div class="slider-labels">
+          <span>${step.min}</span>
+          <span>${step.max}</span>
+        </div>
+      </div>
+    `;
+  }
+  else if (step.type === "text") {
+    html += `<textarea id="txtInput" placeholder="${step.placeholder || 'Type here...'}">${prev || ''}</textarea>`;
+  }
+  else if (step.type === "breathe") {
+    html += `
+      <div class="breathe-circle" id="breatheUI">${step.label}</div>
+      <button class="btn btn-primary" id="btnStartAnim" style="width:100%" ${prev ? 'disabled' : ''}>${prev ? 'Completed' : 'Start Exercise'}</button>
+    `;
+  }
+  else if (step.type === "countdown") {
+    html += `
+      <div class="countdown-ring ${prev ? 'active' : ''}" id="ring">${prev ? '🌟' : step.seconds}</div>
+      <button class="btn btn-primary" id="btnStartAnim" style="width:100%" ${prev ? 'disabled' : ''}>${prev ? 'Completed' : 'Start Timer'}</button>
+    `;
+  }
+  else if (step.type === "spin") {
+    html += `
+      <div class="spin-box" id="spinRes">${prev ? prev : 'Tap to spin for a random option'}</div>
+      <button class="btn btn-primary" id="btnSpin" style="width:100%">${prev ? 'Spin again? 🎲' : 'Spin! 🎲'}</button>
+    `;
+  }
+  else if (step.type === "info") {
+    html += `
+      <div style="font-size:48px; text-align:center; margin:20px 0;">🏆</div>
+      <div class="insight-box" style="background:var(--exercise-soft); border-left:4px solid var(--exercise);">
+        <h4 style="color:var(--exercise); margin:0 0 8px; font-size:15px; text-transform:uppercase;">${step.insightTitle}</h4>
+        <p style="margin:0; font-size:15px; font-weight:700;">${step.insightText}</p>
+      </div>
+    `;
+  }
+
+  html += `
+    <div class="nav-row">
+      ${currentStepIdx > 0 ? `<button class="btn btn-ghost" id="btnBack">Back</button>` : '<div></div>'}
+      ${step.type !== 'info' ? `<button class="btn btn-primary" id="btnNext" disabled>Next</button>` : `<button class="btn btn-primary" id="btnNext">Complete Day</button>`}
+    </div>
+  `;
+
+  DOM.screen.innerHTML = html;
+  bindEvents(step, isLast);
+}
+
+function bindEvents(step, isLast) {
+  const next = document.getElementById('btnNext');
+
+  const checkNext = () => {
+      let isComplete = false;
+      const val = sessionData[currentStepIdx];
+      if (step.type === 'text') isComplete = !!val && String(val).trim().length > 0;
+      else if (step.type === 'multitap') {
+          if (Array.isArray(val) && val.length > 0) {
+              const otherIdx = step.opts.findIndex(o => o === '{OTHER}');
+              if (otherIdx !== -1 && val.includes(otherIdx)) {
+                  const txt = sessionData[currentStepIdx + '_text'];
+                  isComplete = !!txt && txt.trim().length > 0;
+              } else { isComplete = true; }
+          }
+      }
+      else if (step.type === 'tap') {
+          if (val !== null && val !== undefined) {
+              const opt = step.opts[val];
+              if (opt && opt[1] === '{OTHER}') {
+                  const txt = sessionData[currentStepIdx + '_text'];
+                  isComplete = !!txt && txt.trim().length > 0;
+              } else {
+                  isComplete = true; 
+                  // allow skip logic: if they pick an option that implies "Skip"
+                  if (opt && (opt[1].includes('Skip') || opt[1].includes('Not sure'))) isComplete = true;
+              }
+          }
+      }
+      else { isComplete = val !== null && val !== undefined; }
+      
+      if(step.type === 'info') isComplete = true;
+      next.disabled = !isComplete;
+  };
+
+  const setAns = v => { sessionData[currentStepIdx] = v; checkNext(); };
+
+  checkNext();
+  
+  if (step.type === "tap") {
+    document.querySelectorAll('.tap-card').forEach(c => {
+      const i = +c.dataset.idx;
+      const inp = c.querySelector('input');
+      c.onclick = (e) => {
+        if (inp && e.target === inp) return; 
+        document.querySelectorAll('.tap-card').forEach(b => b.classList.remove('selected'));
+        c.classList.add('selected');
+        setAns(i);
+        if (inp) inp.focus();
+      };
+      if (inp) {
+        inp.onfocus = () => {
+          document.querySelectorAll('.tap-card').forEach(b => b.classList.remove('selected'));
+          c.classList.add('selected');
+          setAns(i);
+        };
+        inp.oninput = (e) => { sessionData[currentStepIdx + '_text'] = e.target.value; checkNext(); };
+      }
+    });
+  } 
+  else if (step.type === "multitap") {
+    document.querySelectorAll('.chip').forEach(c => {
+      const i = +c.dataset.idx;
+      const inp = c.querySelector('input');
+      c.onclick = (e) => {
+        if (inp && e.target === inp) return;
+        c.classList.toggle('selected');
+        let cur = sessionData[currentStepIdx]; if (!(cur instanceof Array)) cur = [];
+        cur = cur.includes(i) ? cur.filter(x => x !== i) : [...cur, i];
+        setAns(cur);
+        if (inp && c.classList.contains('selected')) inp.focus();
+      };
+      if (inp) {
+        inp.onfocus = () => {
+          let cur = sessionData[currentStepIdx]; if (!(cur instanceof Array)) cur = [];
+          if(!cur.includes(i)) { setAns([...cur, i]); c.classList.add('selected'); }
+        };
+        inp.oninput = (e) => { sessionData[currentStepIdx + '_text'] = e.target.value; checkNext(); };
+      }
+    });
+  }
+  else if (step.type === "slider") {
+    const sl = document.getElementById('slInput');
+    const val = document.getElementById('slVal');
+    sl.oninput = () => { 
+      const v = +sl.value;
+      setAns(v);
+      if(step.emoji) {
+        const faceIdx = Math.min(step.emoji.length - 1, Math.floor((v - 1) / (10 / step.emoji.length)));
+        val.textContent = step.emoji[faceIdx];
+      } else { val.textContent = v; }
+    };
+    if(sessionData[currentStepIdx] === undefined) setAns(5); // default
+  }
+  else if (step.type === "text") {
+    const txt = document.getElementById('txtInput');
+    txt.oninput = () => { setAns(txt.value); };
+  }
+  else if (step.type === "breathe" || step.type === "countdown") {
+    const btnAnim = document.getElementById('btnStartAnim');
+    const circle = step.type === "breathe" ? document.getElementById('breatheUI') : document.getElementById('ring');
+    btnAnim.onclick = () => {
+      btnAnim.disabled = true;
+      if(step.type === "breathe") {
+          circle.classList.add('animate');
+          circle.textContent = "Notice your breath";
+      } else {
+          circle.classList.add('active');
+      }
+      
+      let remaining = step.seconds;
+      const interval = setInterval(() => {
+          remaining--;
+          if(step.type === "countdown") circle.textContent = remaining > 0 ? remaining : "🌟";
+          if(remaining <= 0) {
+              clearInterval(interval);
+              if(step.type === "breathe") { circle.classList.remove('animate'); circle.textContent = "Done."; }
+              setAns(true);
+              next.textContent = "Continue";
+          }
+      }, 1000);
+    };
+  }
+  else if (step.type === "spin") {
+    const btnSpin = document.getElementById('btnSpin');
+    const res = document.getElementById('spinRes');
+    btnSpin.onclick = () => {
+      btnSpin.disabled = true;
+      let ticks = 0;
+      const maxTicks = 12;
+      const interval = setInterval(() => {
+        res.textContent = step.opts[ticks % step.opts.length];
+        ticks++;
+        if (ticks > maxTicks) {
+          clearInterval(interval);
+          const finalVal = step.opts[Math.floor(Math.random() * step.opts.length)];
+          res.innerHTML = `<span class="spin-active">${finalVal}</span>`;
+          setAns(finalVal);
+          btnSpin.disabled = false;
+          btnSpin.textContent = "Spin again? 🎲";
+        }
+      }, 120);
+    };
+  }
+
+  if(next) {
+    next.onclick = () => {
+      if (isLast) {
+        DOM.screen.innerHTML = `
+          <h2 class="prompt" style="text-align:center; margin-top:40px;">Day ${weekData[currentDayIdx].day} Complete</h2>
+          <p style="text-align:center; color:var(--grey);">Great job! You've finished today's micro-exercises.</p>
+          <div style="text-align:center; font-size:48px; margin:20px 0;">🏆</div>
+          <button class="btn btn-primary" style="width:100%; margin-top:20px;" onclick="currentDayIdx = (currentDayIdx+1)%7; currentStepIdx = 0; sessionData={}; buildDaySelector(); renderStep();">Return to Week</button>
+        `;
+      } else {
+        currentStepIdx++;
+        renderStep();
+      }
+    };
+  }
+
+  const back = document.getElementById('btnBack');
+  if (back) back.onclick = () => { currentStepIdx--; renderStep(); };
+}
+
+// Init App
+buildDaySelector();
+renderStep();
+</script>
+</body>
+</html>

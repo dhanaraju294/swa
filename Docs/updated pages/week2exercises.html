@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flex &amp; Feel — 7-Day Flexibility &amp; Wellbeing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Nunito:wght@400;500;600;700;800&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FDF6EC;
+    --sky:#7ec8e3; --sky-soft:#EAF5F9;
+    --sage:#8fbf8f; --sage-soft:#F1F7EF;
+    --lavender:#c3a6e0; --lavender-soft:#F3EEF9;
+    --gold:#f5b942; --gold-soft:#FBF1DE;
+    --peach:#ee8e7b; --peach-soft:#FBEFEC;
+    --ink:#3A3A3A; --ink-soft:#6b6560;
+    --shadow:0 8px 24px rgba(58,58,58,0.08);
+    --shadow-lift:0 14px 34px rgba(58,58,58,0.14);
+    --r-lg:26px; --r-md:20px; --r-sm:14px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:#e7e2d8;font-family:'Nunito',system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);padding:18px 14px 60px;min-height:100vh;}
+  .container{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
+  .screen{background:var(--cream);border-radius:var(--r-lg);padding:28px 22px;box-shadow:var(--shadow-lift);position:relative;overflow:hidden;animation:rise .35s ease;}
+  @keyframes rise{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+  h1,h2,h3{font-family:'Fraunces',Georgia,serif;margin:0;color:var(--ink);font-weight:600;}
+  p{margin:0;}
+  .eyebrow{font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:11px;color:var(--ink-soft);margin-bottom:12px;}
+  .screen-title{font-size:21px;line-height:1.3;margin-bottom:10px;}
+  .prog-label{font-size:12px;font-weight:700;color:var(--ink-soft);letter-spacing:1px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;}
+  .gentle{background:#fff;border-radius:var(--r-sm);padding:11px 14px;margin-bottom:16px;border-left:4px solid var(--accent,#7ec8e3);font-size:13px;color:var(--ink-soft);line-height:1.5;box-shadow:var(--shadow);}
+
+  .option-btn{background:#fff;border:2px solid transparent;border-radius:var(--r-sm);padding:15px 18px;font-size:15px;font-weight:600;color:var(--ink);box-shadow:var(--shadow);margin-bottom:11px;cursor:pointer;transition:.15s ease;display:block;width:100%;text-align:left;font-family:'Nunito',sans-serif;line-height:1.35;}
+  .option-btn:hover{border-color:var(--accent,#7ec8e3);transform:translateY(-2px);}
+  .option-btn.selected{border-color:var(--accent,#7ec8e3);background:var(--soft,#EAF5F9);box-shadow:var(--shadow-lift);}
+  .option-btn .check{float:right;opacity:0;font-weight:800;}
+  .option-btn.selected .check{opacity:1;}
+
+  .scale-row{display:flex;justify-content:space-between;gap:8px;margin:18px 0 8px;}
+  .scale-btn{flex:1;max-width:58px;aspect-ratio:1;border-radius:50%;background:#fff;border:2px solid transparent;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;box-shadow:var(--shadow);cursor:pointer;transition:.15s ease;color:var(--ink);}
+  .scale-btn:hover{border-color:var(--accent,#7ec8e3);}
+  .scale-btn.selected{background:var(--accent,#7ec8e3);color:#fff;transform:scale(1.08);box-shadow:var(--shadow-lift);}
+  .scale-ends{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-soft);font-weight:600;}
+
+  .nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:10px;}
+  .btn{border:none;border-radius:var(--r-sm);padding:14px 18px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:.18s ease;box-shadow:var(--shadow);}
+  .btn-primary{background:var(--ink);color:#fff;flex:1;}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:var(--shadow-lift);}
+  .btn-primary:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:var(--shadow);}
+  .btn-ghost{background:transparent;box-shadow:none;color:var(--ink-soft);}
+  .btn-ghost:hover{color:var(--ink);}
+  .btn-accent{background:var(--accent,#7ec8e3);color:var(--ink);flex:1;}
+  .btn-accent:hover{transform:translateY(-2px);box-shadow:var(--shadow-lift);}
+
+  .brand{display:flex;align-items:center;gap:12px;}
+  .logo{width:46px;height:46px;border-radius:15px;background:var(--ink);display:flex;align-items:center;justify-content:center;font-size:24px;}
+  .app-name{font-family:'Fraunces',serif;font-weight:700;font-size:23px;}
+  .week-pill{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:#fff;border-radius:99px;padding:4px 9px;color:var(--ink-soft);box-shadow:var(--shadow);}
+  .stats{display:flex;gap:10px;margin-top:12px;}
+  .stat{flex:1;background:#fff;border-radius:var(--r-md);padding:10px;text-align:center;box-shadow:var(--shadow);}
+  .stat b{display:block;font-size:20px;}
+  .stat span{font-size:11px;font-weight:700;color:var(--ink-soft);}
+
+  .journey{position:relative;padding-left:8px;}
+  .leg{display:flex;align-items:flex-start;gap:14px;position:relative;padding-bottom:6px;}
+  .leg::before{content:'';position:absolute;left:21px;top:40px;bottom:-6px;width:3px;background:#e0d8c8;border-radius:2px;}
+  .leg:last-child::before{display:none;}
+  .node{width:44px;height:44px;border-radius:50%;flex:none;background:#fff;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;position:relative;z-index:1;color:var(--ink-soft);}
+  .node.done{background:var(--accent,#7ec8e3);color:#fff;}
+  .node.now{background:var(--ink);color:#fff;box-shadow:0 0 0 5px rgba(58,58,58,.12);}
+  .leginfo{flex:1;background:#fff;border-radius:var(--r-md);padding:11px 14px;box-shadow:var(--shadow);cursor:pointer;border:2px solid transparent;}
+  .leginfo:hover{border-color:var(--accent,#7ec8e3);}
+  .leginfo.locked{opacity:.55;cursor:not-allowed;}
+  .leginfo.locked:hover{border-color:transparent;}
+  .leg-title{font-weight:800;font-size:14px;}
+  .leg-sub{font-size:11px;color:var(--ink-soft);font-weight:600;margin-top:2px;}
+  .leg-tag{display:inline-block;background:var(--soft,#EAF5F9);border-radius:99px;padding:2px 9px;font-size:10px;font-weight:800;margin-top:6px;}
+
+  .insight-card{background:linear-gradient(180deg,#fff 0%,var(--soft,#EAF5F9) 130%);border-radius:var(--r-md);padding:22px;border:2px solid var(--accent,#7ec8e3);}
+  .insight-title{font-family:'Fraunces',serif;font-size:21px;font-weight:700;margin-bottom:10px;}
+  .insight-text{font-size:15px;color:var(--ink);line-height:1.55;}
+  .insight-text b{color:var(--ink);}
+  .mantra{font-family:'Caveat',cursive;font-size:24px;color:var(--ink);line-height:1.5;margin:14px 0;background:#fff;border-radius:var(--r-md);padding:16px 18px;box-shadow:var(--shadow);}
+  .kchip{display:inline-block;background:#e9f5e9;border-radius:99px;padding:7px 12px;font-size:12px;font-weight:700;box-shadow:var(--shadow);border:2px solid var(--sage);color:#2c5a2c;margin:3px;}
+  .divider{border-top:1px solid var(--accent,#7ec8e3);margin:18px 0;opacity:.6;}
+  .meta{font-size:12px;color:var(--ink-soft);line-height:1.55;}
+  .center{text-align:center;}
+  .celebrate{text-align:center;font-family:'Caveat',cursive;font-size:26px;color:var(--ink);}
+  .xpfloat{position:absolute;right:14px;top:14px;background:var(--gold);color:#fff;border-radius:99px;padding:4px 10px;font-size:12px;font-weight:800;box-shadow:var(--shadow);}
+  .obj{font-size:12px;font-weight:700;color:var(--ink-soft);margin-top:4px;}
+  .confetti{position:fixed;top:-10px;width:10px;height:14px;pointer-events:none;z-index:999;border-radius:2px;animation:fall linear forwards;}
+  @keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:.4;}}
+  @media (prefers-reduced-motion: reduce){.confetti{animation:none;display:none;}}
+</style>
+</head>
+<body>
+<div class="container" id="app"></div>
+
+<script>
+/* ============================================================
+   FLEX & FEEL — Week 2 exercises.
+   Psychological flexibility + emotional wellbeing.
+   Same engine as Week 1 Clarity: 7 connected days, one tap
+   per screen, closed answers only, coaching insights, Day 7
+   personal blueprint. Not a quiz. Not a diagnosis.
+   ============================================================ */
+const STORE_KEY='flex_feel_ex_v1';
+
+const DAYS=[
+{theme:'Name What\'s Here',sub:'Notice feelings without fixing them',ex:'Observation',exIcon:'👀',accent:'#7ec8e3',soft:'#EAF5F9',icon:'🏷️',mins:4,
+ obj:'Spot and name what you feel, as it is.',
+ gentle:'Feelings are visitors. You do not have to solve them to notice them.',
+ qs:[
+  {type:'SL',low:'Foggy',high:'Crystal',text:'Right now, how clearly can I name what I am feeling?'},
+  {type:'MS',text:'Which feelings are visiting me today? (pick all that apply)',options:['Calm','Tension','Sadness','Irritation','Hope','Numb','A mix']},
+  {type:'SC',text:'When a feeling shows up, I usually…',options:['Name it','Push it away','Distract myself','Analyze it','Sit with it']},
+  {type:'TF',text:'I can feel something uncomfortable without needing to fix it right away.'},
+  {type:'SC',text:'The feeling I tend to avoid most is…',options:['Worry','Anger','Sadness','Shame','Disappointment']},
+  {type:'RK',text:'What would help me notice feelings sooner?',options:['A 10-second body check','Naming it in one word','A pause before I act','Writing one word down']}
+ ]},
+{theme:'Make Room',sub:'Allow a feeling instead of fighting it',ex:'Scenario',exIcon:'🎭',accent:'#8fbf8f',soft:'#F1F7EF',icon:'🪴',mins:4,
+ obj:'Practice letting one feeling stay for a short moment.',
+ gentle:'Fighting a feeling often makes it louder. Making room is not giving up — it is unclenching.',
+ qs:[
+  {type:'SC',text:'Imagine a small disappointment today. My first move would be…',options:['Fight the feeling','Distract myself','Allow it for a moment','Blame myself']},
+  {type:'SL',low:'Not willing',high:'Willing',text:'How willing am I to let an uncomfortable feeling stay for 30 seconds?'},
+  {type:'TF',text:'I notice that pushing a feeling away often makes it come back louder.'},
+  {type:'MS',text:'When I try to push a feeling away, I usually… (pick all that apply)',options:['Scroll my phone','Keep busy','Snack or sip','Snap at someone','Go quiet']},
+  {type:'SC',text:'“Making room” for a feeling looks most like…',options:['Breathe and stay with it','Tell myself it is okay to feel this','Soften my shoulders','All of these']},
+  {type:'RK',text:'The feeling I will practice making room for today:',options:['Worry','Frustration','Sadness','Restlessness']}
+ ]},
+{theme:'Unhook',sub:'See thoughts as thoughts, not facts',ex:'Comparison',exIcon:'⚖️',accent:'#f5b942',soft:'#FBF1DE',icon:'🪝',mins:4,
+ obj:'Hold a sticky thought loosely so it does not drive the day.',
+ gentle:'A thought is a weather report from your mind — useful sometimes, not always true.',
+ qs:[
+  {type:'SC',text:'A sticky thought I often treat as a fact is…',options:['“I can’t handle this”','“I always mess up”','“They will judge me”','“It has to be perfect”']},
+  {type:'TF',text:'I can notice a thought without treating it as the whole truth.'},
+  {type:'SC',text:'A more flexible way to hold that thought is…',options:['“I’m having the thought that…”','“That’s just my mind talking”','“Thanks, mind — not now”','“Maybe, maybe not”']},
+  {type:'SL',low:'Stuck to them',high:'They can pass',text:'How hooked am I by my thoughts today?'},
+  {type:'MS',text:'What helps me unhook? (pick all that apply)',options:['Name the thought','Take a slow breath','Move my body','Use a little humor','Talk to someone']},
+  {type:'RK',text:'The unhook phrase I will try today:',options:['“There’s my mind again”','“Thought, not fact”','“I can carry this and still act”']}
+ ]},
+{theme:'Bend, Don\'t Break',sub:'Change course when life shifts',ex:'Action',exIcon:'🎯',accent:'#c3a6e0',soft:'#F3EEF9',icon:'🌿',mins:4,
+ obj:'Practice one flexible move when the plan changes.',
+ gentle:'Adaptability is not giving up your path. It is keeping the destination and changing the steps.',
+ qs:[
+  {type:'SC',text:'When my plan changes suddenly, I usually…',options:['Freeze','Get irritated','Adapt fairly quickly','Pretend I am fine']},
+  {type:'SL',low:'Rigid',high:'Flexible',text:'How easily can I change course when the day shifts?'},
+  {type:'TF',text:'I can hold a plan loosely and still move forward.'},
+  {type:'MS',text:'What helps me adapt? (pick all that apply)',options:['A backup plan','A short pause','Asking for help','Lowering the bar','A bit of humor']},
+  {type:'SC',text:'Imagine this morning’s plan falls apart. My flexible move is…',options:['Pick the next smallest step','Ask what still matters','Take 3 breaths, then choose','Drop one extra thing']},
+  {type:'RK',text:'The adaptability muscle I will train today:',options:['Pausing before I react','Having a plan B','Letting go of “should”']}
+ ]},
+{theme:'Ride the Wave',sub:'Soften a loud feeling in the body',ex:'Action',exIcon:'🌊',accent:'#ee8e7b',soft:'#FBEFEC',icon:'🌊',mins:5,
+ obj:'Use a 60-second body reset when emotion gets loud.',
+ gentle:'Feelings rise and fall like waves. You do not have to stop the ocean — just stay on the board.',
+ qs:[
+  {type:'SL',low:'Quiet',high:'Loud',text:'How big do my feelings feel right now?'},
+  {type:'SC',text:'When emotion gets loud, my body usually…',options:['Tight chest','Fast thoughts','Heavy and slow','Restless','Numb']},
+  {type:'TF',text:'I have at least one small way to soothe myself that actually helps.'},
+  {type:'SC',text:'The 60-second reset I will use today is…',options:['A long, slow exhale','Cool water on my wrists','Step outside for air','Hand on heart + name the feeling']},
+  {type:'MS',text:'After a hard moment, I usually recover by… (pick all that apply)',options:['Talking it out','Rest','Movement','Distraction','Kind self-talk']},
+  {type:'RK',text:'The recovery skill I want to strengthen:',options:['Slowing my body','Kinder words to myself','Asking for support']}
+ ]},
+{theme:'Choose What Matters',sub:'Act on a value even if mood is off',ex:'Reflection',exIcon:'🪞',accent:'#7ec8e3',soft:'#E7F2F7',icon:'🧭',mins:4,
+ obj:'Pick one tiny action that matches a value, not a mood.',
+ gentle:'Moods vote. Values steer. You can feel off and still take one kind, honest step.',
+ qs:[
+  {type:'RK',text:'The value I want to live today:',options:['Kindness','Courage','Honesty','Calm','Connection','Growth']},
+  {type:'SC',text:'Even if my mood is off, one small action that still matches that value is…',options:['Send one kind message','Do 10 minutes of the hard thing','Tell the truth, kindly','Take a real rest']},
+  {type:'SL',low:'Not willing',high:'Ready',text:'How willing am I to act on a value even when I do not feel like it?'},
+  {type:'TF',text:'My feelings do not have to vote on every action I take.'},
+  {type:'MS',text:'What usually knocks me off my values? (pick all that apply)',options:['A low mood','Other people’s reactions','Tiredness','Wanting it perfect']},
+  {type:'SC',text:'If today goes sideways, I will still…',options:['Do one tiny valued action','Be kind to myself','Start again after a pause']}
+ ]},
+{theme:'Flexible & Well',sub:'Bring the week into one picture',ex:'Creative',exIcon:'🌟',accent:'#f5b942',soft:'#FBF1DE',icon:'🌤️',mins:5,dynamic:true,
+ obj:'Keep one flexibility practice and write your own wellbeing line.',
+ gentle:'The journey ends here — in a clearer, kinder way of bending with the day.',
+ qs:[
+  {type:'SC',text:'Looking back, which day’s skill felt most useful in real life?',options:['Name what’s here (Day 1)','Make room (Day 2)','Unhook (Day 3)','Bend, don’t break (Day 4)','Ride the wave (Day 5)','Choose what matters (Day 6)']},
+  {type:'SL',low:'No change',high:'Big shift',text:'Overall, how much more flexible do I feel than 7 days ago?'},
+  {type:'MS',dynamic:'flags',text:'Which skills do I want to keep using? (pick all that apply)',options:[]},
+  {type:'RK',dynamic:'commit',text:'Pick the ONE practice I will actually use next week.',options:[]},
+  {type:'TF',text:'I feel ready to keep one small flexibility practice going.'}
+ ]}
+];
+
+let state=load();
+function defaultState(){return{answers:{},xp:0,completed:{},updated:0};}
+function load(){try{const s=JSON.parse(localStorage.getItem(STORE_KEY));return s&&s.answers?s:defaultState();}catch(e){return defaultState();}}
+function save(){state.updated=Date.now();try{localStorage.setItem(STORE_KEY,JSON.stringify(state));}catch(e){}}
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const dayDone=i=>!!state.completed[i];
+const dayUnlocked=i=>i===0||dayDone(i-1);
+const ans=(d,q)=>state.answers[d]&&state.answers[d][q]!==undefined?state.answers[d][q]:null;
+const countDone=()=>Object.values(state.completed).filter(Boolean).length;
+function firstOpen(){for(let i=0;i<7;i++)if(dayUnlocked(i)&&!dayDone(i))return i;return 6;}
+
+function flagOf(i){const a=state.answers[i]||{};switch(i){
+ case 0:return (a[0]||0)>=4||a[3]===true?'Naming feelings as they arrive':'Pausing to name what is here';
+ case 1:return (a[1]||0)>=4||a[2]===true?'Making room instead of fighting feelings':'Allowing one feeling for 30 seconds';
+ case 2:return a[1]===true||(a[3]||0)>=4?'Unhooking from sticky thoughts':'Holding thoughts loosely — thought, not fact';
+ case 3:return a[2]===true||(a[1]||0)>=4?'Bending with the day instead of breaking':'Keeping a plan B when life shifts';
+ case 4:return a[2]===true?'Riding the wave with a 60-second reset':'Soothing my body when feelings get loud';
+ case 5:return a[3]===true||(a[2]||0)>=4?'Acting on a value even when mood is off':'Taking one tiny valued step';
+ default:return 'Keeping one flexibility practice';}}
+function buildFlags(){const out=[];for(let i=0;i<6;i++){if(!dayDone(i))continue;out.push(flagOf(i));}return out;}
+
+function insight(i){const a=state.answers[i]||{};switch(i){
+ case 0:return d1(a);case 1:return d2(a);case 2:return d3(a);case 3:return d4(a);case 4:return d5(a);case 5:return d6(a);}}
+function d1(a){
+ const clear=a[0]||0,can=a[3]===true,flag=flagOf(0);
+ if(clear>=4&&can)return{title:'You can name what is here',text:'You can often name a feeling and let it stay for a moment. <b>That is the first flexibility skill — noticing before fixing.</b>',flag};
+ if(can)return{title:'You do not have to fix every feeling',text:'You already know a feeling can be felt without being solved. <b>Add a one-word name next time it arrives.</b>',flag};
+ return{title:'Naming is a kind first step',text:'You started by looking at what is here. <b>Next time a feeling shows up, try giving it one word before you do anything else.</b>',flag};}
+function d2(a){
+ const will=a[1]||0,flag=flagOf(1);
+ if(will>=4)return{title:'You are willing to make a little room',text:'Willingness is not liking the feeling — it is letting it sit beside you. <b>Thirty honest seconds is enough practice for today.</b>',flag};
+ return{title:'Unclenching is a skill',text:'Pushing a feeling away is human. <b>Today, try staying with one feeling for three slow breaths — that is making room.</b>',flag};}
+function d3(a){
+ const unhook=a[1]===true,hooked=a[3]||0,flag=flagOf(2);
+ if(unhook&&hooked>=4)return{title:'You can hold thoughts loosely',text:'You already know a thought is not the whole truth — and you can let some pass. <b>Keep the phrase: “I’m having the thought that…”</b>',flag};
+ if(unhook)return{title:'Thought, not fact',text:'You can notice a thought without buying it. <b>That gap is where a new choice lives.</b>',flag};
+ return{title:'Sticky thoughts lose grip when named',text:'A sticky thought feels like a fact until you hold it up to the light. <b>Try: “There’s my mind again.” Then take the next small step.</b>',flag};}
+function d4(a){
+ const flex=a[1]||0,loose=a[2]===true,flag=flagOf(3);
+ if(flex>=4||loose)return{title:'You can bend with the day',text:'You can hold a plan loosely and still move. <b>When the day shifts, pick the next smallest step that still matters.</b>',flag};
+ return{title:'A plan B is a kindness',text:'Changing course is not failure — it is staying in the game. <b>Choose one backup move before the day asks for it.</b>',flag};}
+function d5(a){
+ const soothe=a[2]===true,loud=a[0]||0,flag=flagOf(4);
+ if(soothe)return{title:'You already have a reset',text:'You know at least one way to soothe yourself. <b>Use the 60-second reset on purpose the next time a wave rises.</b>',flag};
+ if(loud>=4)return{title:'The wave is loud — and it will pass',text:'Big feelings ask for a body-first response. <b>Long exhale, cool water, or a hand on your heart. Ride, don’t wrestle.</b>',flag};
+ return{title:'Waves rise and fall',text:'You do not have to stop the ocean. <b>Pick one 60-second reset and treat it as today’s practice, not a test.</b>',flag};}
+function d6(a){
+ const will=a[2]||0,vote=a[3]===true,flag=flagOf(5);
+ if(will>=4||vote)return{title:'Values can steer, even when mood votes',text:'You are willing to take a small valued step even if the mood is off. <b>That is emotional wellbeing in motion — action with kindness.</b>',flag};
+ return{title:'One tiny valued step is enough',text:'You do not need a perfect mood to live a value. <b>Pick the smallest honest action and let that be today’s win.</b>',flag};}
+
+let view=null;
+function render(){
+ if(view&&view.kind==='q'){renderQ(view.day,view.q);}
+ else if(view&&view.kind==='result'){renderResult(view.day);}
+ else renderHome();
+}
+function renderHome(){
+ const done=countDone();let legs='';
+ DAYS.forEach((d,i)=>{
+  const isdone=dayDone(i),locked=!dayUnlocked(i),now=!locked&&!isdone&&i===firstOpen();
+  const nodeCls=isdone?'done':now?'now':'';
+  const stTxt=isdone?'Done':locked?'Locked':now?'Today':'Ready';
+  legs+=`<div class="leg"><div class="node ${nodeCls}" style="--accent:${d.accent}">${isdone?'✓':i+1}</div>
+   <div class="leginfo ${locked?'locked':''}" data-i="${i}" style="--accent:${d.accent};--soft:${d.soft};">
+     <div class="leg-title">${d.icon} ${esc(d.theme)}</div>
+     <div class="leg-sub">${esc(d.obj)}</div>
+     <span class="leg-tag">${d.exIcon} ${esc(d.ex)} · ${d.mins} min · ${stTxt}</span></div></div>`;
+ });
+ $('#app').innerHTML=`
+ <div class="screen">
+   <div class="brand"><div class="logo">🌿</div><div><div class="app-name">Flex &amp; Feel</div><span class="week-pill">Week 2 · Flexibility &amp; wellbeing</span></div></div>
+   <div class="stats">
+     <div class="stat"><b>${done}/7</b><span>Days</span></div>
+     <div class="stat"><b>⭐ ${state.xp}</b><span>Insight points</span></div>
+     <div class="stat"><b>${Math.round(done/7*100)}%</b><span>Journey</span></div>
+   </div>
+ </div>
+ <div class="screen" style="background:linear-gradient(180deg,#FDF6EC,#FBF1E1);">
+   <div class="center">
+     <div class="celebrate">${done===0?'A 7-day practice in bending with life, kindly.':'Welcome back. Keep bending, not breaking.'}</div>
+     <p style="font-size:14px;color:var(--ink-soft);margin-top:6px;">${done===0?'Six small skills, one tap at a time — ending in a personal flexibility blueprint. About 4 minutes a day. No typing required, no wrong answers.':'You have earned ⭐ ${state.xp}. Pair this with today’s morning / evening loop if you like.'}</p>
+   </div>
+ </div>
+ <div class="screen">
+   <div class="eyebrow">Your 7-day practice</div>
+   <div class="journey">${legs}</div>
+   <div class="divider"></div>
+   <p class="meta">A gentle self-development practice for adaptability and emotional wellbeing. Each day has one objective, about 4 minutes, and step-by-step tap questions. Every answer is about you — no pass or fail, only noticing. Pair with <b>week2-reflections.html</b> (morning + evening) so the same day stays in sync.</p>
+   <div style="text-align:center;margin-top:12px;"><button class="btn btn-ghost" id="resetBtn" style="font-size:12px;">Start over</button></div>
+ </div>`;
+ document.querySelectorAll('.leginfo').forEach(c=>c.onclick=()=>{const i=+c.dataset.i;if(!dayUnlocked(i))return;view={kind:'q',day:i,q:0};render();});
+ const rb=$('#resetBtn');if(rb)rb.onclick=()=>{if(confirm('Clear all progress and start over?')){state=defaultState();save();render();}};
+}
+
+function renderQ(day,q){
+ const d=DAYS[day],Q=d.qs[q];const opts=resolveOpts(day,q);const prev=ans(day,q);const isLast=q===d.qs.length-1;
+ $('#app').innerHTML=`
+ <div class="screen" style="--accent:${d.accent};--soft:${d.soft};">
+   <div class="xpfloat">⭐ ${state.xp}</div>
+   <div class="prog-label"><span>Day ${day+1} · ${esc(d.theme)}</span><span>${Math.round((q+1)/d.qs.length*100)}%</span></div>
+   <div class="scale-row" style="height:8px;background:#e0d8c8;border-radius:99px;overflow:hidden;margin:0 0 16px;max-width:none;">
+     <div style="height:100%;width:${(q+1)/d.qs.length*100}%;background:${d.accent};border-radius:99px;"></div>
+   </div>
+   <div class="gentle">${esc(d.gentle)} <span class="obj">Objective: ${esc(d.obj)} · ${d.mins} min</span></div>
+   <h2 class="screen-title">${esc(Q.text)}</h2>
+   <div id="optBox">${renderOpts(Q,opts,prev)}</div>
+   <div class="nav-row" style="margin-top:${Q.type==='SL'?'20px':'14px'};">
+     <button class="btn btn-ghost" id="backBtn" ${q===0?'style="visibility:hidden"':''}>← Back</button>
+     <button class="btn ${isLast?'btn-accent':'btn-primary'}" id="nextBtn" disabled>${isLast?(day===6?'Reveal my blueprint':'Reveal today’s insight'):'Continue →'}</button>
+   </div>
+ </div>`;
+ $('#backBtn').onclick=()=>{if(q>0){view={kind:'q',day,q:q-1};render();}};
+ const next=$('#nextBtn');
+ next.onclick=()=>{if(ans(day,q)===null)return;if(isLast){view={kind:'result',day};}else{view={kind:'q',day,q:q+1};}render();};
+ bindOpts(day,q,next);
+}
+function resolveOpts(day,q){const Q=DAYS[day].qs[q];
+ if(Q.dynamic==='flags'){const f=buildFlags();return f.length?f:['Pausing to name what is here']; }
+ if(Q.dynamic==='commit'){const f=buildFlags();return f.length?f:['Pausing to name what is here']; }
+ return Q.options||[];}
+function renderOpts(Q,opts,prev){
+ switch(Q.type){
+  case 'TF':return `<button class="option-btn ${prev===true?'selected':''}" data-v="true">Yes, that’s me <span class="check">✓</span></button>
+    <button class="option-btn ${prev===false?'selected':''}" data-v="false">Not really <span class="check">✓</span></button>`;
+  case 'SL':{let b='';for(let i=1;i<=5;i++)b+=`<button class="scale-btn ${prev===i?'selected':''}" data-v="${i}">${i}</button>`;return `<div class="scale-row">${b}</div><div class="scale-ends"><span>${esc(Q.low)}</span><span>${esc(Q.high)}</span></div>`;}
+  case 'RK':
+  case 'SC':return opts.map((o,i)=>`<button class="option-btn ${prev===i?'selected':''}" data-i="${i}">${esc(o)} <span class="check">✓</span></button>`).join('');
+  case 'MS':{const cur=prev instanceof Array?prev:[];return opts.map((o,i)=>`<button class="option-btn ${cur.includes(i)?'selected':''}" data-i="${i}">${esc(o)} <span class="check">✓</span></button>`).join('');}
+ }return '';}
+function bindOpts(day,q,next){
+ const Q=DAYS[day].qs[q];const setAns=v=>{if(!state.answers[day])state.answers[day]={};state.answers[day][q]=v;save();next.disabled=false;};
+ const box=$('#optBox');const refresh=()=>{box.querySelectorAll('.option-btn,.scale-btn').forEach(b=>{const cur=ans(day,q);
+  if(b.dataset.i!==undefined)b.classList.toggle('selected',cur instanceof Array?cur.includes(+b.dataset.i):cur===+b.dataset.i);
+  else if(b.dataset.v!==undefined)b.classList.toggle('selected',cur===(b.dataset.v==='true')||cur===+b.dataset.v||cur===+b.dataset.v);});};
+ if(Q.type==='MS'){box.querySelectorAll('.option-btn').forEach(b=>b.onclick=()=>{let cur=ans(day,q);if(!(cur instanceof Array))cur=[];const i=+b.dataset.i;cur=cur.includes(i)?cur.filter(x=>x!==i):[...cur,i];setAns(cur);refresh();});}
+ else{box.querySelectorAll('.option-btn,.scale-btn').forEach(b=>b.onclick=()=>{let v=b.dataset.i!==undefined?+b.dataset.i:(b.dataset.v==='true'?true:(b.dataset.v==='false'?false:+b.dataset.v));setAns(v);refresh();});}
+ if(ans(day,q)!==null)next.disabled=false;
+}
+
+function renderResult(day){
+ const d=DAYS[day];if(!state.completed[day]){state.completed[day]=true;state.xp+=10;save();}confetti();
+ $('#app').innerHTML=`
+ <div class="screen" style="--accent:${d.accent};--soft:${d.soft};">
+   <div class="xpfloat">⭐ ${state.xp}</div>
+   <div class="eyebrow">Day ${day+1} · ${d.exIcon} ${esc(d.ex)} · ${d.mins} min</div>
+   ${day===6?renderCapstone():renderDayInsight(day)}
+   <div class="nav-row" style="margin-top:20px;">
+     <button class="btn btn-ghost" id="backQ">← Back</button>
+     ${day===6?`<button class="btn btn-accent" id="homeEnd">Keep this blueprint ✓</button>`
+      :`<button class="btn btn-accent" id="nextDay">${dayDone(day+1)?'Review Day '+(day+2):'Begin Day '+(day+2)+' →'}</button>`}
+   </div>
+   <div style="text-align:center;margin-top:12px;"><button class="btn btn-ghost" id="editBtn" style="font-size:12px;">Edit today’s answers</button></div>
+ </div>`;
+ $('#backQ').onclick=()=>{view={kind:'q',day,q:d.qs.length-1};render();};
+ $('#editBtn').onclick=()=>{view={kind:'q',day,q:0};render();};
+ const nx=$('#nextDay');if(nx)nx.onclick=()=>{view={kind:'q',day:day+1,q:0};render();};
+ const he=$('#homeEnd');if(he)he.onclick=()=>{view=null;render();};
+}
+function renderDayInsight(day){const ins=insight(day);
+ return `<div class="insight-card">
+  <div class="insight-title">${ins?esc(ins.title):''}</div>
+  <p class="insight-text">${ins?ins.text:''}</p>
+  <div class="divider"></div>
+  <p class="insight-text"><b>Today’s thread:</b> ${esc(flagOf(day))}.</p>
+  <p class="insight-text" style="margin-top:8px;">Close the loop tonight in the morning / evening reflection — same day, same skill.</p>
+ </div>`;}
+
+function renderCapstone(){
+ const a=state.answers[6]||{};const flags=buildFlags();
+ const commit=flags.length?flags[Math.min(a[3]||0,flags.length-1)]:flagOf(0);
+ const which=['Name what’s here','Make room','Unhook','Bend, don’t break','Ride the wave','Choose what matters'][a[0]||0]||'';
+ const shift=a[1]||0;
+ const lines=[];
+ lines.push('I can name what is here without rushing to fix it.');
+ if(dayDone(1))lines.push('I can make a little room for a feeling.');
+ if(dayDone(2))lines.push('I can unhook from a sticky thought.');
+ if(dayDone(3))lines.push('I can bend with the day instead of breaking.');
+ if(dayDone(4))lines.push('I can ride a wave instead of wrestling it.');
+ if(dayDone(5))lines.push('I can take one valued step even when mood votes no.');
+ lines.push('I am learning to be flexible — and well.');
+ const mantra=lines.join(' ');
+ return `<div class="insight-card">
+  <div class="insight-title">Flexible &amp; well — your week in one picture.</div>
+  <p class="insight-text">You practiced <b>naming</b>, <b>making room</b>, <b>unhooking</b>, <b>bending</b>, <b>riding the wave</b>, and <b>choosing what matters</b>. That is psychological flexibility in everyday language.</p>
+  <div class="divider"></div>
+  <p class="insight-text"><b>The skill that felt most real:</b> ${esc(which)}.</p>
+  <p class="insight-text" style="margin-top:6px;"><b>Skills you are keeping:</b></p>
+  <p>${flags.map(f=>`<span class="kchip">✓ ${esc(f)}</span>`).join('')}</p>
+  <div class="divider"></div>
+  <p class="insight-text"><b>Your ONE practice for next week:</b> ${esc(commit)}.</p>
+  <p class="insight-text" style="margin-top:8px;">Your flexibility line:</p>
+  <div class="mantra">${esc(mantra)}</div>
+  <p class="insight-text">You feel ${shift}/5 more flexible than a week ago. This is not a grade — it is a way of meeting the day. 🌿</p>
+ </div>`;}
+
+function confetti(){for(let i=0;i<60;i++){const c=document.createElement('div');c.className='confetti';
+ const colors=['#7ec8e3','#8fbf8f','#f5b942','#ee8e7b','#c3a6e0'];c.style.left=Math.random()*100+'vw';c.style.background=colors[Math.floor(Math.random()*colors.length)];
+ c.style.animationDuration=(1.4+Math.random()*1.4)+'s';c.style.animationDelay=(Math.random()*0.3)+'s';document.body.appendChild(c);setTimeout(()=>c.remove(),3200);}}
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SWA - Week 3: Motivation & Agency</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F9F7F1; --card: #FFFFFF; --plum: #2C2638; --grey: #827A90;
+    --morning: #E27B58; --morning-soft: #FCEBE5;
+    --evening: #5C6B9C; --evening-soft: #EAEFF8;
+    --line: #E5E0DA; --success: #52B788;
+    --shadow: 0 12px 32px rgba(44, 38, 56, 0.08);
+  }
+  * { box-sizing: border-box; font-family: 'Nunito', sans-serif; }
+  body { background: var(--bg); color: var(--plum); margin: 0; padding: 20px 14px 80px; min-height: 100vh; transition: background 0.5s ease; }
+  body.evening-mode { background: #E8E8EE; }
+  
+  .container { max-width: 460px; margin: 0 auto; }
+  
+  /* Top Navigation */
+  .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .logo { font-weight: 900; font-size: 24px; letter-spacing: -1px; }
+  .mode-badge { padding: 8px 16px; border-radius: 99px; font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; background: var(--morning); color: #fff; transition: 0.4s; cursor: pointer; box-shadow: var(--shadow);}
+  body.evening-mode .mode-badge { background: var(--evening); }
+
+  /* Day Selector */
+  .day-scroll { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 12px; margin-bottom: 16px; scrollbar-width: none; }
+  .day-scroll::-webkit-scrollbar { display: none; }
+  .day-pill { padding: 8px 16px; border-radius: 99px; background: var(--card); font-weight: 800; font-size: 13px; color: var(--grey); cursor: pointer; border: 2.5px solid var(--line); white-space: nowrap; transition: 0.2s;}
+  .day-pill.active { background: var(--plum); color: #fff; border-color: var(--plum); }
+
+  /* Progress Bar */
+  .progress-wrap { height: 6px; background: var(--line); border-radius: 99px; margin-bottom: 24px; overflow: hidden; }
+  .progress-bar { height: 100%; width: 0%; background: var(--morning); border-radius: 99px; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+  body.evening-mode .progress-bar { background: var(--evening); }
+
+  /* Main Card */
+  .screen { background: var(--card); border-radius: 28px; padding: 32px 24px; box-shadow: var(--shadow); position: relative; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .kicker { font-size: 13px; font-weight: 800; color: var(--grey); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: block; }
+  .prompt { font-size: 22px; font-weight: 800; line-height: 1.35; margin: 0 0 24px; }
+
+  /* --- INTERACTIVES --- */
+  
+  /* Custom Inputs for {OTHER} */
+  .custom-input { border: none; outline: none; font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 700; color: var(--plum); background: transparent; width: 100%; text-align: center; padding: 0; margin-top: 4px; }
+  .custom-input::placeholder { color: var(--grey); opacity: 0.8; }
+  
+  /* 1. Tap Grid (Single Select) */
+  .tap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .tap-card { background: #fff; border: 2.5px solid var(--line); border-radius: 18px; padding: 20px 12px; text-align: center; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; gap: 8px; justify-content: center; align-items: center; }
+  .tap-card.custom-tap { grid-column: 1 / -1; flex-direction: row; padding: 14px 20px; }
+  .tap-card.custom-tap .custom-input { text-align: left; font-size: 16px; margin-top: 0; margin-left: 8px; }
+  .tap-card .emoji { font-size: 32px; }
+  .tap-card .lbl { font-size: 14px; font-weight: 700; color: var(--plum); }
+  .tap-card.selected { border-color: var(--morning); background: var(--morning-soft); transform: translateY(-4px); box-shadow: 0 8px 16px rgba(226,123,88,0.15); }
+  body.evening-mode .tap-card.selected { border-color: var(--evening); background: var(--evening-soft); box-shadow: 0 8px 16px rgba(92,107,156,0.15); }
+  .tap-card.selected .lbl, .tap-card.selected .custom-input { color: #fff; }
+  .tap-card.selected .custom-input::placeholder { color: rgba(255,255,255,0.8); }
+
+  /* 2. Multi-Tap Chips (Multiple Select) */
+  .chip-wrap { display: flex; flex-wrap: wrap; gap: 10px; }
+  .chip { padding: 12px 18px; border-radius: 14px; border: 2.5px solid var(--line); background: #fff; font-size: 15px; font-weight: 700; color: var(--grey); cursor: pointer; transition: 0.2s; display: flex; align-items: center; }
+  .chip.custom-chip { flex-grow: 1; }
+  .chip.custom-chip .custom-input { text-align: left; font-size: 15px; margin-top: 0; }
+  .chip.selected { background: var(--morning); border-color: var(--morning); color: #fff; }
+  body.evening-mode .chip.selected { background: var(--evening); border-color: var(--evening); }
+  .chip.selected .custom-input { color: #fff; }
+  .chip.selected .custom-input::placeholder { color: rgba(255,255,255,0.8); }
+
+  /* 3. Slider */
+  .slider-wrap { margin: 20px 0; }
+  input[type="range"] { width: 100%; appearance: none; height: 8px; background: var(--line); border-radius: 99px; outline: none; }
+  input[type="range"]::-webkit-slider-thumb { appearance: none; width: 28px; height: 28px; border-radius: 50%; background: var(--morning); cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: 0.2s; }
+  body.evening-mode input[type="range"]::-webkit-slider-thumb { background: var(--evening); }
+  .slider-labels { display: flex; justify-content: space-between; margin-top: 12px; font-size: 13px; font-weight: 700; color: var(--grey); }
+  .slider-value { text-align: center; font-size: 42px; margin-bottom: 16px; font-weight: 800; }
+
+  /* 4. Text Area */
+  textarea { width: 100%; border: 2.5px solid var(--line); border-radius: 18px; padding: 16px; font-size: 16px; font-weight: 600; min-height: 110px; resize: none; color: var(--plum); font-family: 'Nunito'; }
+  textarea:focus { outline: none; border-color: var(--morning); }
+  body.evening-mode textarea:focus { border-color: var(--evening); }
+  textarea::placeholder { color: #B3AEBC; font-weight: 600; font-style: italic; }
+
+  /* 5. Breathe Animation */
+  .breathe-circle { width: 140px; height: 140px; border-radius: 50%; background: var(--morning-soft); margin: 30px auto; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; color: var(--morning); text-align: center; padding: 10px; box-shadow: 0 0 0 0 rgba(226,123,88,0.4); }
+  body.evening-mode .breathe-circle { background: var(--evening-soft); color: var(--evening); box-shadow: 0 0 0 0 rgba(92,107,156,0.4); }
+  .breathe-circle.animate { animation: breatheInOut 8s infinite ease-in-out; }
+  @keyframes breatheInOut {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(226,123,88,0.4); }
+    50% { transform: scale(1.4); box-shadow: 0 0 0 30px rgba(226,123,88,0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(226,123,88,0); }
+  }
+
+  /* 6. Spin Wheel */
+  .spin-box { border: 3px dashed var(--line); border-radius: 20px; padding: 24px; text-align: center; font-size: 18px; font-weight: 800; min-height: 100px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; color: var(--grey); background: #fff; }
+  .spin-active { color: var(--morning); transform: scale(1.05); transition: 0.1s; }
+  body.evening-mode .spin-active { color: var(--evening); }
+  
+  /* Nav Buttons */
+  .nav-row { display: flex; justify-content: space-between; margin-top: 32px; gap: 12px; }
+  .btn { padding: 16px 24px; border-radius: 16px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; border: none; }
+  .btn-ghost { background: transparent; color: var(--grey); border: 2.5px solid var(--line); flex: 0.5; }
+  .btn-primary { background: var(--morning); color: #fff; box-shadow: 0 6px 16px rgba(226, 123, 88, 0.25); }
+  body.evening-mode .btn-primary { background: var(--evening); box-shadow: 0 6px 16px rgba(92, 107, 156, 0.25); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+  .btn:active:not(:disabled) { transform: scale(0.97); }
+
+  /* End Screen Insight */
+  .insight-box { background: var(--morning-soft); border-radius: 16px; padding: 20px; border-left: 4px solid var(--morning); margin-top: 20px; }
+  body.evening-mode .insight-box { background: var(--evening-soft); border-left-color: var(--evening); }
+  .insight-box h4 { margin: 0 0 8px; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; color: var(--morning); }
+  body.evening-mode .insight-box h4 { color: var(--evening); }
+  .insight-box p { margin: 0; font-size: 15px; font-weight: 700; line-height: 1.6; color: var(--plum); }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="top-nav">
+    <div class="logo">SWA.</div>
+    <div class="mode-badge" id="modeToggle">Morning</div>
+  </div>
+
+  <div class="day-scroll" id="daySelector">
+    <!-- Generated via JS -->
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-bar" id="progBar"></div>
+  </div>
+
+  <div class="screen" id="appScreen">
+    <!-- Generated via JS -->
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   WEEK 3: MOTIVATION & AGENCY
+   * 4-5 Interactive Steps + 1 Insight Card per session.
+   * Student-friendly English with {OTHER} input options.
+   ========================================================= */
+const weekData = [
+  // --- DAY 1: Find Your Reason ---
+  {
+    day: 1, 
+    morning: [
+      { step: 1, type: "tap", kicker: "Check In", q: "Why did you get out of bed today?", opts: [["😨","I had to"],["👥","To please others"],["🚀","For my own goals"],["🧠","To learn"],["✏️","{OTHER}"]] },
+      { step: 2, type: "slider", kicker: "Evaluate", q: "How much do you feel like YOU are in charge of today?", min: "Not at all", max: "Totally my choice", emoji: ["😡","😎"] },
+      { step: 3, type: "breathe", kicker: "Center Yourself", q: "Take a moment to remember you choose your own path today.", seconds: 10, label: "Breathe" },
+      { step: 4, type: "spin", kicker: "Reward", q: "Spin for one fun thing to do just for yourself today!", opts: ["Take a 10-min walk 🚶", "Listen to a favorite song 🎵", "Eat a yummy snack 🍎", "Sit and relax for 2 mins 🧘"] },
+      { step: 5, type: "text", kicker: "Action Plan", q: "I promise to remember my reason today by...", placeholder: "e.g., telling myself I chose this path." },
+      { step: 6, type: "info", kicker: "Ready to Go", q: "Inner Drive", insightTitle: "You Are the Boss", insightText: "Doing things because you WANT to gives you much better energy than doing things because you HAVE to. It is your strongest fuel!" }
+    ],
+    evening: [
+      { step: 1, type: "tap", kicker: "Reality Check", q: "Did you do that fun thing for yourself today?", opts: [["✅","Yes, I did"],["🛑","I forgot"],["🔄","I tried to"],["✏️","{OTHER}"]] },
+      { step: 2, type: "slider", kicker: "Evaluate", q: "How much of today actually felt like your own choice?", min: "None of it", max: "All of it", emoji: ["📉","📈"] },
+      { step: 3, type: "multitap", kicker: "Look Closely", q: "What made you feel like you were in charge today? (Pick all)", opts: ["I set my own schedule", "I did something I loved", "I said 'no' to something", "I chose my attitude", "{OTHER}"] },
+      { step: 4, type: "text", kicker: "Learning", q: "What is one thing you did today just because you wanted to?", placeholder: "e.g., I helped a friend because I care." },
+      { step: 5, type: "info", kicker: "Day Complete", q: "Inner Power", insightTitle: "Choosing Your Path", insightText: "When you choose your path, you don't burn out as fast. Great job taking charge of your day!" }
+    ]
+  },
+  // --- DAY 2: Believe in You ---
+  {
+    day: 2,
+    morning: [
+      { step: 1, type: "slider", kicker: "Current State", q: "How ready are you for the hardest thing today?", min: "Not ready", max: "Totally ready", emoji: ["😬","😎"] },
+      { step: 2, type: "multitap", kicker: "Your Toolkit", q: "What are you already good at? (Pick all)", opts: ["Being patient", "Solving puzzles", "Making people laugh", "Not giving up", "{OTHER}"] },
+      { step: 3, type: "breathe", kicker: "Center Yourself", q: "Notice your breath and feel your own strength right now.", seconds: 10, label: "Breathe" },
+      { step: 4, type: "text", kicker: "Action Plan", q: "Write down one past win that proves you can handle today:", placeholder: "e.g., That time I passed my math test..." },
+      { step: 5, type: "info", kicker: "Intention Set", q: "Past Wins", insightTitle: "Trusting Your Skills", insightText: "Confidence isn’t about being perfect; it’s knowing you figured it out before, so you can do it again." }
+    ],
+    evening: [
+      { step: 1, type: "tap", kicker: "Reality Check", q: "Did you tackle your hardest task today?", opts: [["👾","Yes, I crushed it"],["🕊️","No, I avoided it"],["🔄","I tried my best"],["✏️","{OTHER}"]] },
+      { step: 2, type: "slider", kicker: "Reaction", q: "How hard was it really?", min: "Super easy", max: "Impossible", emoji: ["🍃","🧱"] },
+      { step: 3, type: "multitap", kicker: "Reframe", q: "What helped you get through it? (Pick all)", opts: ["My patience", "Asking for help", "Taking a break", "Just starting it", "{OTHER}"] },
+      { step: 4, type: "text", kicker: "Learning", q: "What is one new thing you learned you are good at?", placeholder: "e.g., I'm really good at staying calm under pressure." },
+      { step: 5, type: "info", kicker: "Day Complete", q: "Learning Logged", insightTitle: "Growing Stronger", insightText: "Every time you do something hard, your brain learns to trust you more. You are building your confidence muscle." }
+    ]
+  },
+  // --- DAY 3: Be the Boss ---
+  {
+    day: 3,
+    morning: [
+      { step: 1, type: "tap", kicker: "Notice", q: "When things go wrong, what do you do first?", opts: [["🤬","Get mad"],["🥶","Freeze/panic"],["🔄","Look for a fix"],["🤷","Ask 'What now?'"],["✏️","{OTHER}"]] },
+      { step: 2, type: "multitap", kicker: "Focus", q: "What can you ALWAYS control? (Pick all)", opts: ["My attitude", "My words", "My breathing", "Where I put my focus", "{OTHER}"] },
+      { step: 3, type: "text", kicker: "Action Plan", q: "Name one thing you will NOT let ruin your day:", placeholder: "e.g., My friend being grumpy, bad weather..." },
+      { step: 4, type: "breathe", kicker: "Regulate", q: "Decide to be the boss of your mood today.", seconds: 10, label: "Breathe" },
+      { step: 5, type: "info", kicker: "Intention Set", q: "You Are the Driver", insightTitle: "Owning Your Mood", insightText: "You can't control everything that happens around you, but you CAN always control how you act." }
+    ],
+    evening: [
+      { step: 1, type: "tap", kicker: "Reality Check", q: "Did you stay the boss of your mood today?", opts: [["👑","Yes, I did"],["🌪️","No, I lost it"],["⚖️","Half and half"],["✏️","{OTHER}"]] },
+      { step: 2, type: "multitap", kicker: "Look Closely", q: "What tried to ruin your day? (Pick all)", opts: ["Traffic/Delays", "Bad news", "A mistake I made", "Other people", "{OTHER}"] },
+      { step: 3, type: "slider", kicker: "Learning", q: "How proud are you of your reactions today?", min: "Not proud", max: "Very proud", emoji: ["📉","📈"] },
+      { step: 4, type: "text", kicker: "Evaluate", q: "How did you handle a tough moment today?", placeholder: "e.g., Traffic was bad, but I listened to music." },
+      { step: 5, type: "info", kicker: "Day Complete", q: "Staying in Control", insightTitle: "You Are Driving", insightText: "You are the driver of your own mood, not a passenger in someone else's car. Great work today." }
+    ]
+  },
+  // --- DAY 4: Pick Your Goal ---
+  {
+    day: 4,
+    morning: [
+      { step: 1, type: "text", kicker: "Focus", q: "Write down the ONE main thing you want to get done today:", placeholder: "e.g., Finish my history homework." },
+      { step: 2, type: "tap", kicker: "Understand", q: "Why is this important to you?", opts: [["🔑","Builds my skills"],["🚧","Gets it done"],["🦅","Proves I can"],["📈","Helps my future"],["✏️","{OTHER}"]] },
+      { step: 3, type: "slider", kicker: "Check", q: "How hard is this goal? (A little challenge is good!)", min: "Super easy", max: "Really tough", emoji: ["🥱","🧗"] },
+      { step: 4, type: "spin", kicker: "Reward", q: "Spin for a small reward you will give yourself when you finish it!", opts: ["Watch a funny video", "Eat a good snack", "Play a quick game", "Chat with a friend"] },
+      { step: 5, type: "info", kicker: "Intention Set", q: "Clear Target", insightTitle: "A Map for Your Brain", insightText: "Whenever you feel lost or lazy today, just look at your specific goal. It tells your brain exactly what to do next." }
+    ],
+    evening: [
+      { step: 1, type: "tap", kicker: "Reality Check", q: "Did you finish your main goal today?", opts: [["🏆","Yes!"],["🔄","Moved to tomorrow"],["🚧","Got stuck"],["✏️","{OTHER}"]] },
+      { step: 2, type: "slider", kicker: "Evaluate", q: "How much effort did you put in?", min: "Very little", max: "Gave it my all", emoji: ["🔋","🔥"] },
+      { step: 3, type: "multitap", kicker: "Look Closely", q: "What got in your way? (Pick all)", opts: ["Distractions", "Too tired", "It was too hard", "Nothing stopped me!", "{OTHER}"] },
+      { step: 4, type: "text", kicker: "Learning", q: "What is the first small step for tomorrow's goal?", placeholder: "e.g., Get my books ready tonight." },
+      { step: 5, type: "info", kicker: "Day Complete", q: "Small Steps", insightTitle: "The Power of Focus", insightText: "A clear target gives your brain a map to follow. You don't have to do everything, just the next right thing." }
+    ]
+  },
+  // --- DAY 5: Beat Distractions ---
+  {
+    day: 5,
+    morning: [
+      { step: 1, type: "multitap", kicker: "Notice", q: "What might get in your way today?", opts: ["My phone", "Feeling sleepy", "Worrying too much", "Friends talking", "{OTHER}"] },
+      { step: 2, type: "spin", kicker: "Action Plan", q: "Spin for a trick to stay focused when you get distracted:", opts: ["Take 3 deep breaths", "Stand up and stretch", "Drink a glass of water", "Close eyes for 30s"] },
+      { step: 3, type: "breathe", kicker: "Center Yourself", q: "Imagine yourself staying totally focused today.", seconds: 10, label: "Breathe" },
+      { step: 4, type: "text", kicker: "Rule Making", q: "Write your 'If-Then' rule for today:", placeholder: "e.g., IF I look at my phone, THEN I will put it in a drawer." },
+      { step: 5, type: "info", kicker: "Intention Set", q: "Backup Plan", insightTitle: "Saving Brain Energy", insightText: "When you get distracted today, you don’t even have to think—just follow your backup plan!" }
+    ],
+    evening: [
+      { step: 1, type: "tap", kicker: "Reality Check", q: "Did your distraction try to stop you today?", opts: [["👀","Yes, it did"],["🙈","No, not today"],["🌪️","A different one did"],["✏️","{OTHER}"]] },
+      { step: 2, type: "tap", kicker: "Check", q: "Did you use your 'If-Then' rule?", opts: [["🛡️","Yes, it worked"],["📉","I forgot"],["🤷","I tried but failed"],["✏️","{OTHER}"]] },
+      { step: 3, type: "slider", kicker: "Learning", q: "How well did your rule work?", min: "Terribly", max: "Perfectly", emoji: ["👎","👍"] },
+      { step: 4, type: "text", kicker: "Improve", q: "How can you make your rule even better for tomorrow?", placeholder: "e.g., I'll put my phone away BEFORE I start working." },
+      { step: 5, type: "info", kicker: "Day Complete", q: "Ready for Anything", insightTitle: "Smart Planning", insightText: "Having a rule saves your brain energy when things get messy. You are learning how to outsmart your own habits!" }
+    ]
+  },
+  // --- DAY 6: Plan Your Rest ---
+  {
+    day: 6,
+    morning: [
+      { step: 1, type: "multitap", kicker: "Current State", q: "How do you want to feel tonight?", opts: ["Proud of my work", "Totally peaceful", "Energized", "Really happy", "{OTHER}"] },
+      { step: 2, type: "multitap", kicker: "Action Plan", q: "What do you need to do today so you can relax later?", opts: ["Stop working on time", "Say 'no' to extra things", "Do the hardest thing first", "Put my phone away", "{OTHER}"] },
+      { step: 3, type: "slider", kicker: "Commit", q: "How much do you want a peaceful evening today?", min: "A little", max: "More than anything", emoji: ["🥱","🔥"] },
+      { step: 4, type: "text", kicker: "Rule Making", q: "Write down the exact time you will stop working today:", placeholder: "e.g., 6:00 PM sharp." },
+      { step: 5, type: "info", kicker: "Intention Set", q: "Earning Your Rest", insightTitle: "Work to Rest", insightText: "Keep that peaceful evening in mind today. Use it as your motivation to finish your work strong right now." }
+    ],
+    evening: [
+      { step: 1, type: "tap", kicker: "Reality Check", q: "Are you having a peaceful evening?", opts: [["😌","Yes, I am"],["🌪️","No, still busy"],["💤","Just sleepy"],["✏️","{OTHER}"]] },
+      { step: 2, type: "multitap", kicker: "Notice", q: "What helped you relax tonight? (Pick all)", opts: ["Good music", "Hot shower", "Talking to a friend", "Reading/Watching TV", "{OTHER}"] },
+      { step: 3, type: "breathe", kicker: "Regulate", q: "Notice your breath and let go of the day.", seconds: 12, label: "Relax" },
+      { step: 4, type: "text", kicker: "Evaluate", q: "What is one thing you did today to earn this rest?", placeholder: "e.g., I focused for 2 hours straight." },
+      { step: 5, type: "info", kicker: "Day Complete", q: "Rest is Fuel", insightTitle: "Charging the Battery", insightText: "Resting is not being lazy. True rest is how you get your brain and body ready for a great tomorrow." }
+    ]
+  },
+  // --- DAY 7: Look Back ---
+  {
+    day: 7,
+    morning: [
+      { step: 1, type: "tap", kicker: "Review", q: "What helped you work best this week?", opts: [["🌱","My reason why"],["🗺️","Backup plans"],["🎯","Clear goals"],["👣","Small steps"],["✏️","{OTHER}"]] },
+      { step: 2, type: "slider", kicker: "Evaluate", q: "How much of a 'boss' of your day do you feel like now?", min: "Not much", max: "Totally in charge", emoji: ["➖","🚀"] },
+      { step: 3, type: "text", kicker: "Learn", q: "What is the biggest thing you learned about yourself this week?", placeholder: "e.g., I work better when my phone is away." },
+      { step: 4, type: "breathe", kicker: "Regulate", q: "Notice your breath and feel proud of your work this week.", seconds: 15, label: "Breathe" },
+      { step: 5, type: "info", kicker: "Intention Set", q: "You Are in Control", insightTitle: "The Boss of You", insightText: "You learned how to find your motivation, trust yourself, and set goals. You have an amazing toolkit now!" }
+    ],
+    evening: [
+      { step: 1, type: "tap", kicker: "Reality Check", q: "Are you ready for next week?", opts: [["🚀","Yes, let's go!"],["⏳","Almost ready"],["🛌","Need more rest"],["✏️","{OTHER}"]] },
+      { step: 2, type: "multitap", kicker: "Evaluate", q: "What tools will you keep using next week?", opts: ["Remembering my reasons", "Making If-Then rules", "Setting clear goals", "Protecting my rest", "{OTHER}"] },
+      { step: 3, type: "slider", kicker: "Look Forward", q: "How excited are you to keep practicing these skills?", min: "A little", max: "Super excited", emoji: ["🙂","🔥"] },
+      { step: 4, type: "text", kicker: "Final Reflection", q: "Write a short promise to yourself for next week.", placeholder: "e.g., I promise to write my goal down every day." },
+      { step: 5, type: "info", kicker: "Week Complete", q: "Keep Going!", insightTitle: "Your New Superpowers", insightText: "You have a great toolkit now. Use it every single day to stay the boss of your life and your goals!" }
+    ]
+  }
+];
+
+// App State
+let currentDayIdx = 0; 
+let isEvening = false;
+let currentStepIdx = 0;
+let sessionData = {}; 
+
+// DOM Elements
+const DOM = {
+  screen: document.getElementById('appScreen'),
+  modeToggle: document.getElementById('modeToggle'),
+  progBar: document.getElementById('progBar'),
+  daySel: document.getElementById('daySelector'),
+  body: document.body
+};
+
+// Build Day Selector
+function buildDaySelector() {
+  DOM.daySel.innerHTML = '';
+  weekData.forEach((d, i) => {
+    const pill = document.createElement('div');
+    pill.className = `day-pill ${i === currentDayIdx ? 'active' : ''}`;
+    pill.textContent = `Day ${d.day}`;
+    pill.onclick = () => { 
+      currentDayIdx = i; 
+      currentStepIdx = 0; 
+      sessionData = {};
+      buildDaySelector(); 
+      renderStep(); 
+    };
+    DOM.daySel.appendChild(pill);
+  });
+}
+
+// Mode Switcher
+DOM.modeToggle.onclick = () => {
+  isEvening = !isEvening;
+  DOM.body.classList.toggle('evening-mode', isEvening);
+  DOM.modeToggle.textContent = isEvening ? "Evening Reflection" : "Morning Intention";
+  currentStepIdx = 0;
+  sessionData = {};
+  renderStep();
+};
+
+function renderStep() {
+  const session = isEvening ? weekData[currentDayIdx].evening : weekData[currentDayIdx].morning;
+  const step = session[currentStepIdx];
+  const isLast = currentStepIdx === session.length - 1;
+  
+  // Update Progress
+  DOM.progBar.style.width = `${((currentStepIdx + 1) / session.length) * 100}%`;
+
+  let html = `
+    <span class="kicker">${step.kicker}</span>
+    <h2 class="prompt">${step.q}</h2>
+  `;
+
+  // Render Interactives
+  if (step.type === "tap") {
+    const cards = step.opts.map((opt, i) => {
+      const isOther = opt[1] === "{OTHER}";
+      if (isOther) {
+        return `
+          <div class="tap-card custom-tap" data-idx="${i}" data-other="true">
+            <span class="emoji">${opt[0]}</span>
+            <input type="text" class="custom-input" placeholder="Type here...">
+          </div>`;
+      }
+      return `
+        <div class="tap-card" data-idx="${i}">
+          <span class="emoji">${opt[0]}</span>
+          <span class="lbl">${opt[1]}</span>
+        </div>`;
+    }).join('');
+    html += `<div class="tap-grid">${cards}</div>`;
+  } 
+  else if (step.type === "multitap") {
+    const chips = step.opts.map((opt, i) => {
+      const isOther = opt === "{OTHER}";
+      if (isOther) {
+        return `
+          <div class="chip custom-chip" data-idx="${i}" data-other="true">
+            <input type="text" class="custom-input" placeholder="Other (type here)...">
+          </div>`;
+      }
+      return `<div class="chip" data-idx="${i}">${opt}</div>`;
+    }).join('');
+    html += `<div class="chip-wrap">${chips}</div>`;
+  }
+  else if (step.type === "slider") {
+    html += `
+      <div class="slider-wrap">
+        <div class="slider-value" id="slVal">5</div>
+        <input type="range" id="slInput" min="1" max="10" value="5">
+        <div class="slider-labels">
+          <span>${step.min}</span>
+          <span>${step.max}</span>
+        </div>
+      </div>
+    `;
+  }
+  else if (step.type === "text") {
+    html += `<textarea id="txtInput" placeholder="${step.placeholder || 'Type here...'}"></textarea>`;
+  }
+  else if (step.type === "breathe") {
+    html += `
+      <div class="breathe-circle" id="breatheUI">${step.label}</div>
+      <button class="btn btn-primary" id="btnStartAnim" style="width:100%">Start Exercise</button>
+    `;
+  }
+  else if (step.type === "spin") {
+    html += `
+      <div class="spin-box" id="spinRes">Tap to spin for a random option</div>
+      <button class="btn btn-primary" id="btnSpin" style="width:100%">Spin 🎲</button>
+    `;
+  }
+  else if (step.type === "info") {
+    html += `
+      <div style="font-size:48px; text-align:center; margin:20px 0;">✨</div>
+      <div class="insight-box">
+        <h4>${step.insightTitle}</h4>
+        <p>${step.insightText}</p>
+      </div>
+    `;
+  }
+
+  // Navigation
+  html += `
+    <div class="nav-row">
+      ${currentStepIdx > 0 ? `<button class="btn btn-ghost" id="btnBack">Back</button>` : '<div></div>'}
+      ${step.type !== 'info' ? `<button class="btn btn-primary" id="btnNext" disabled>Next</button>` : `<button class="btn btn-primary" id="btnNext">Finish Session</button>`}
+    </div>
+  `;
+
+  DOM.screen.innerHTML = html;
+  bindEvents(step, isLast);
+}
+
+function bindEvents(step, isLast) {
+  const next = document.getElementById('btnNext');
+  
+  if (step.type === "tap") {
+    document.querySelectorAll('.tap-card').forEach(c => {
+      const inp = c.querySelector('input');
+      c.onclick = (e) => {
+        if (inp && e.target === inp) return; 
+        document.querySelectorAll('.tap-card').forEach(b => b.classList.remove('selected'));
+        c.classList.add('selected');
+        if (inp) {
+          inp.focus();
+          next.disabled = inp.value.trim().length === 0;
+        } else {
+          next.disabled = false;
+        }
+      };
+      if (inp) {
+        inp.onfocus = () => {
+          document.querySelectorAll('.tap-card').forEach(b => b.classList.remove('selected'));
+          c.classList.add('selected');
+          next.disabled = inp.value.trim().length === 0;
+        };
+        inp.oninput = () => {
+          next.disabled = inp.value.trim().length === 0;
+        };
+      }
+    });
+  } 
+  else if (step.type === "multitap") {
+    const checkNext = () => {
+      let validCount = 0;
+      document.querySelectorAll('.chip.selected').forEach(sel => {
+        const inp = sel.querySelector('input');
+        if (!inp || inp.value.trim().length > 0) validCount++;
+      });
+      next.disabled = validCount === 0;
+    };
+
+    document.querySelectorAll('.chip').forEach(c => {
+      const inp = c.querySelector('input');
+      c.onclick = (e) => {
+        if (inp && e.target === inp) return;
+        c.classList.toggle('selected');
+        if (inp && c.classList.contains('selected')) inp.focus();
+        checkNext();
+      };
+      if (inp) {
+        inp.onfocus = () => {
+          if (!c.classList.contains('selected')) c.classList.add('selected');
+          checkNext();
+        };
+        inp.oninput = () => checkNext();
+      }
+    });
+  }
+  else if (step.type === "slider") {
+    const sl = document.getElementById('slInput');
+    const val = document.getElementById('slVal');
+    next.disabled = false; 
+    sl.oninput = () => { 
+      if(step.emoji) {
+        val.textContent = sl.value < 4 ? step.emoji[0] : (sl.value > 7 ? step.emoji[1] : '😐');
+      } else {
+        val.textContent = sl.value; 
+      }
+    };
+  }
+  else if (step.type === "text") {
+    const txt = document.getElementById('txtInput');
+    txt.oninput = () => { next.disabled = txt.value.trim().length < 4; };
+  }
+  else if (step.type === "breathe") {
+    const btnAnim = document.getElementById('btnStartAnim');
+    const circle = document.getElementById('breatheUI');
+    btnAnim.onclick = () => {
+      btnAnim.disabled = true;
+      circle.classList.add('animate');
+      circle.textContent = "Notice your breath";
+      
+      setTimeout(() => {
+        circle.classList.remove('animate');
+        circle.textContent = "Done.";
+        next.disabled = false;
+        next.textContent = "Continue";
+      }, step.seconds * 1000);
+    };
+  }
+  else if (step.type === "spin") {
+    const btnSpin = document.getElementById('btnSpin');
+    const res = document.getElementById('spinRes');
+    btnSpin.onclick = () => {
+      btnSpin.disabled = true;
+      let ticks = 0;
+      const maxTicks = 12;
+      const interval = setInterval(() => {
+        res.textContent = step.opts[ticks % step.opts.length];
+        ticks++;
+        if (ticks > maxTicks) {
+          clearInterval(interval);
+          const finalVal = step.opts[Math.floor(Math.random() * step.opts.length)];
+          res.innerHTML = `<span class="spin-active">${finalVal}</span>`;
+          next.disabled = false;
+        }
+      }, 120);
+    };
+  }
+
+  if(next) {
+    next.onclick = () => {
+      if (isLast) {
+        DOM.screen.innerHTML = `
+          <h2 class="prompt" style="text-align:center; margin-top:40px;">Session Complete</h2>
+          <p style="text-align:center; color:var(--grey);">Great job! Come back ${isEvening ? "tomorrow morning" : "tonight"} for your next step.</p>
+          <div style="text-align:center; font-size:48px; margin:20px 0;">🏆</div>
+        `;
+      } else {
+        currentStepIdx++;
+        renderStep();
+      }
+    };
+  }
+
+  const back = document.getElementById('btnBack');
+  if (back) back.onclick = () => { currentStepIdx--; renderStep(); };
+}
+
+// Init App
+buildDaySelector();
+renderStep();
+</script>
+</body>
+</html>

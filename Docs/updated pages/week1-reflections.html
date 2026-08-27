@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day &amp; Dusk — Morning &amp; Evening Self-Awareness</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --accent:#FF6F61; --accent-soft:#FFE9E6;
+    --plum:#33294D; --grey:#8A80A0; --cream:#FFFBF4;
+    --card:#FFFFFF; --line:#ECE5F5;
+    --grass:#4CAF7D; --amber:#F2913D; --red:#E8564F;
+    --sky:#7ec8e3;
+    --shadow:0 8px 22px -10px rgba(51,41,77,.25);
+    --shadow-lift:0 16px 34px -14px rgba(51,41,77,.35);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;font-family:'Nunito',sans-serif;color:var(--plum);
+    background:
+      radial-gradient(circle at 15% 0%, #FFE3B0 0%, transparent 38%),
+      radial-gradient(circle at 90% 10%, #C9E7FF 0%, transparent 35%),
+      linear-gradient(180deg,#FBEFE0 0%,#FDF7EC 45%,#FFFBF4 100%);
+    background-attachment:fixed;
+    display:flex;align-items:flex-start;justify-content:center;padding:20px 14px 70px;
+  }
+  .container{width:100%;max-width:520px;display:flex;flex-direction:column;gap:16px;}
+  .screen{background:var(--card);border-radius:24px;padding:22px 20px;box-shadow:var(--shadow-lift);position:relative;animation:rise .35s ease;}
+  @keyframes rise{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+  h1,h2,h3{font-family:'Baloo 2',sans-serif;margin:0;font-weight:800;}
+  p{margin:0;}
+  .eyebrow{font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:11px;color:var(--grey);margin-bottom:12px;}
+
+  .masthead{background:linear-gradient(150deg,var(--accent) 0%,color-mix(in srgb,var(--accent) 70%,#000 15%) 100%);padding:20px;text-align:center;color:#fff;border-radius:24px;position:relative;overflow:hidden;transition:background .4s ease;box-shadow:var(--shadow-lift);}
+  .masthead .glow{position:absolute;top:-36px;right:-26px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.35);filter:blur(2px);}
+  .masthead h1{font-size:24px;margin:0 0 3px;position:relative;}
+  .masthead p{margin:0;font-size:12.5px;font-weight:700;opacity:.95;position:relative;}
+  .mast-xp{position:absolute;top:16px;left:16px;background:rgba(255,255,255,.2);border-radius:99px;padding:4px 12px;font-weight:800;font-size:13px;}
+  .phase-badge{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.22);border-radius:99px;padding:4px 12px;font-weight:800;font-size:12px;}
+
+  .stats{display:flex;gap:10px;}
+  .stat{flex:1;background:var(--card);border-radius:18px;padding:10px;text-align:center;box-shadow:var(--shadow);}
+  .stat b{display:block;font-size:20px;font-family:'Baloo 2',sans-serif;}
+  .stat span{font-size:11px;font-weight:700;color:var(--grey);}
+
+  .journey{position:relative;padding-left:8px;}
+  .leg{display:flex;align-items:flex-start;gap:14px;position:relative;padding-bottom:6px;}
+  .leg::before{content:'';position:absolute;left:21px;top:40px;bottom:-6px;width:3px;background:var(--line);border-radius:2px;}
+  .leg:last-child::before{display:none;}
+  .node{width:44px;height:44px;border-radius:50%;flex:none;background:var(--card);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;position:relative;z-index:1;color:var(--grey);border:2.5px solid var(--line);}
+  .node.done{background:linear-gradient(160deg,#FFE9A8,#F2913D);color:#fff;border-color:#F2913D;}
+  .node.part{background:var(--sky);color:#fff;border-color:var(--sky);}
+  .node.now{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 18%,transparent);}
+  .leginfo{flex:1;background:var(--card);border-radius:16px;padding:11px 14px;box-shadow:var(--shadow);cursor:pointer;border:2px solid transparent;}
+  .leginfo:hover{border-color:var(--accent);}
+  .leginfo.locked{opacity:.55;cursor:not-allowed;}
+  .leginfo.locked:hover{border-color:transparent;}
+  .leg-title{font-weight:800;font-size:14px;font-family:'Baloo 2',sans-serif;}
+  .leg-sub{font-size:11px;color:var(--grey);font-weight:700;margin-top:2px;}
+  .phase-row{display:flex;gap:6px;margin-top:7px;}
+  .ph{font-size:10px;font-weight:800;padding:3px 8px;border-radius:99px;background:var(--accent-soft);color:var(--grey);}
+  .ph.done{background:var(--grass);color:#fff;}
+  .ph.now{background:var(--accent);color:#fff;}
+  .ph.morn{background:var(--sky);color:#fff;}
+
+  .prog-label{font-size:12px;font-weight:800;color:var(--grey);letter-spacing:1px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;}
+  .day-header{text-align:center;margin-bottom:12px;}
+  .day-header .theme-emoji{font-size:32px;display:block;margin-bottom:2px;}
+  .day-header h2{font-size:19px;}
+  .day-header .sub{font-size:11.5px;font-weight:700;color:var(--grey);margin-top:2px;}
+  .dots{display:flex;justify-content:center;gap:7px;margin-bottom:14px;}
+  .dots span{width:8px;height:8px;border-radius:50%;background:var(--line);}
+  .dots span.done{background:var(--grass);}
+  .dots span.now{background:var(--accent);width:20px;border-radius:6px;}
+
+  .step-card{background:var(--accent-soft);border:2.5px solid var(--line);border-radius:22px;padding:18px 15px;text-align:center;min-height:230px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;transition:background .4s ease;}
+  .step-icon{font-size:26px;margin-bottom:4px;}
+  .step-kicker{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin:0 0 6px;}
+  .step-prompt{font-size:14.5px;font-weight:800;line-height:1.45;margin:0 0 14px;color:var(--plum);}
+
+  .tap-grid{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;}
+  .tap-card{width:82px;background:#fff;border:2.5px solid var(--line);border-radius:16px;padding:10px 5px;cursor:pointer;font-size:20px;display:flex;flex-direction:column;align-items:center;gap:4px;font-family:'Nunito',sans-serif;}
+  .tap-card .t-lbl{font-size:10px;font-weight:800;color:var(--grey);}
+  .tap-card.selected{background:var(--accent);border-color:var(--accent);}
+  .tap-card.selected .t-lbl{color:#fff;}
+  .tap-card.custom{width:auto;min-width:82px;padding:8px 10px;}
+  .tap-card .custom-input{border:none;outline:none;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;color:var(--plum);background:transparent;width:100%;text-align:center;}
+  .tap-card .custom-input::placeholder{color:var(--grey);}
+
+  .chip-row{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;}
+  .chip{font-size:12px;font-weight:800;padding:9px 13px;border-radius:999px;border:2.5px solid var(--line);background:#fff;color:var(--plum);cursor:pointer;font-family:'Nunito',sans-serif;}
+  .chip.selected{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .chip.custom{display:flex;align-items:center;gap:6px;padding:6px 10px 6px 14px;}
+  .chip.custom input{border:none;outline:none;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;color:var(--plum);background:transparent;width:120px;}
+  .chip.custom input::placeholder{color:var(--grey);}
+
+  .slider-wrap{width:100%;padding:4px 4px 0;}
+  .slider-face{font-size:40px;text-align:center;margin-bottom:6px;}
+  input[type="range"]{width:100%;accent-color:var(--accent);height:6px;}
+  .slider-labels{display:flex;justify-content:space-between;font-size:10.5px;font-weight:800;color:var(--grey);margin-top:4px;}
+
+  .spin-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:12px;}
+  .spin-card{font-size:13px;font-weight:800;padding:10px 12px;border-radius:14px;border:2.5px solid var(--line);background:#fff;color:var(--plum);transition:transform .08s ease,background .08s ease,border-color .08s ease;}
+  .spin-card.spin-active{background:var(--accent);color:#fff;border-color:var(--accent);transform:scale(1.08);}
+  .spin-card.selected{background:var(--grass);color:#fff;border-color:var(--grass);}
+  .spin-btn{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:14px;padding:10px 22px;border-radius:14px;border:none;cursor:pointer;background:var(--accent);color:#fff;}
+  .spin-btn:disabled{opacity:.55;}
+
+  .countdown-ring{width:88px;height:88px;border-radius:50%;border:5px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:24px;color:var(--accent);margin-bottom:10px;transition:border-color .3s ease;}
+  .countdown-ring.active{border-color:var(--accent);}
+
+  textarea{width:100%;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--plum);background:#fff;border:2.5px solid var(--line);border-radius:14px;padding:11px 13px;resize:none;min-height:84px;outline:none;}
+  textarea:focus{border-color:var(--accent);}
+
+  /* Sync recap */
+  .sync-card{background:#fff;border-radius:16px;padding:14px;text-align:left;border:2px dashed var(--line);margin-bottom:12px;width:100%;}
+  .sync-card .sc-k{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--grey);margin-bottom:6px;}
+  .sync-card .sc-v{font-size:13.5px;font-weight:800;color:var(--plum);font-style:italic;line-height:1.4;}
+  .sync-arrow{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--accent-soft);border-radius:14px;padding:10px 12px;margin-bottom:10px;}
+  .sync-arrow .side{text-align:center;flex:1;}
+  .sync-arrow .side .face{font-size:26px;display:block;}
+  .sync-arrow .side .lab{font-size:10px;font-weight:800;color:var(--grey);}
+  .sync-arrow .mid{font-size:20px;color:var(--grey);}
+
+  .promise-quote{background:#fff;border-radius:14px;padding:12px 14px;font-size:13px;font-weight:800;font-style:italic;color:var(--plum);border:2px dashed var(--line);margin-bottom:12px;width:100%;}
+  .check-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+  .check-btn{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:12.5px;padding:10px 12px;border-radius:14px;border:2.5px solid var(--line);background:#fff;cursor:pointer;color:var(--plum);}
+  .check-btn.selected.yes{background:var(--grass);border-color:var(--grass);color:#fff;}
+  .check-btn.selected.kinda{background:var(--amber);border-color:var(--amber);color:#fff;}
+  .check-btn.selected.no{background:var(--red);border-color:var(--red);color:#fff;}
+
+  .insight-card{background:linear-gradient(180deg,#fff 0%,var(--accent-soft) 130%);border-radius:20px;padding:22px;border:2.5px solid var(--line);}
+  .insight-title{font-family:'Baloo 2',sans-serif;font-size:21px;font-weight:800;margin-bottom:10px;}
+  .insight-text{font-size:14.5px;color:var(--plum);line-height:1.55;}
+  .insight-text b{color:var(--plum);}
+  .mantra{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:17px;color:var(--plum);line-height:1.5;margin:14px 0;background:#fff;border-radius:16px;padding:16px 18px;box-shadow:var(--shadow);}
+  .kchip{display:inline-block;background:#fff;border-radius:99px;padding:7px 12px;font-size:12px;font-weight:700;box-shadow:var(--shadow);border:2.5px solid var(--grass);color:#2c6e4f;margin:3px;}
+  .divider{border-top:2px dashed var(--line);margin:16px 0;opacity:.8;}
+  .meta{font-size:12px;color:var(--grey);line-height:1.55;}
+  .center{text-align:center;}
+
+  .nav-row{display:flex;gap:10px;margin-top:16px;}
+  .nav-btn{flex:1;font-family:'Baloo 2',sans-serif;font-weight:700;font-size:15px;padding:12px;border-radius:16px;border:none;cursor:pointer;}
+  .nav-btn.back{background:#fff;border:2.5px solid var(--line);color:var(--grey);flex:0 0 80px;}
+  .nav-btn.fwd{background:var(--accent);color:#fff;box-shadow:0 10px 18px -8px rgba(0,0,0,.25);}
+  .nav-btn.fwd.finish{background:var(--grass);}
+  .nav-btn.fwd.morn{background:var(--sky);}
+  .nav-btn.fwd:disabled{opacity:.4;}
+  .ghost-btn{background:transparent;border:none;color:var(--grey);font-weight:800;font-size:12px;cursor:pointer;font-family:'Nunito',sans-serif;}
+
+  .overlay{position:fixed;inset:0;z-index:999;background:linear-gradient(160deg,var(--accent),color-mix(in srgb,var(--accent) 55%,#000 25%));display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;padding:30px;animation:fadeIn .3s ease;}
+  .overlay.hidden{display:none;}
+  .overlay .big-emoji{font-size:58px;margin-bottom:10px;animation:pop .5s ease;}
+  .overlay h3{font-family:'Baloo 2',sans-serif;font-size:26px;margin:0 0 8px;}
+  .overlay p{font-weight:700;font-size:14px;margin:0 0 6px;max-width:280px;}
+  .overlay .xp-badge{background:rgba(255,255,255,.22);border-radius:99px;padding:6px 16px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:16px;margin:6px 0 18px;}
+  .overlay button{background:#fff;color:var(--plum);border:none;font-family:'Baloo 2',sans-serif;font-weight:700;font-size:15px;padding:12px 26px;border-radius:16px;cursor:pointer;}
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  @keyframes pop{0%{transform:scale(0);}70%{transform:scale(1.2);}100%{transform:scale(1);}}
+  @media (prefers-reduced-motion: reduce){.overlay .big-emoji{animation:none;}}
+</style>
+</head>
+<body>
+<div class="container" id="app"></div>
+<div class="overlay hidden" id="overlay">
+  <div class="big-emoji">🎉</div>
+  <h3 id="overlayTitle">Nice work!</h3>
+  <p id="overlayMsg"></p>
+  <div class="xp-badge" id="overlayXp">⭐ +10 XP</div>
+  <button id="overlayBtn">Continue</button>
+</div>
+
+<script>
+/* ============================================================
+   DAY & DUSK — a 7-day Morning + Evening self-awareness loop.
+   Morning sets the day; Evening closes the loop.
+   SYNC: the promise you make at dawn is checked at night, your
+   morning energy baseline is compared to your evening state, and
+   the intention you set is reflected on. Each day = morning +
+   evening; evening unlocks after morning; day completes after
+   evening; next day unlocks.
+   ============================================================ */
+const STORE_KEY='day_and_dusk_v1';
+
+const FACES5=['😴','😕','😐','🙂','😎'];
+const FACE_SETS={
+ energy:['😴','😕','😐','🙂','🚀'],
+ weather:['⛈️','🌧️','☁️','🌤️','☀️'],
+ confidence:['😟','😕','😐','🙂','😎'],
+ control:['😴','😕','😐','🙂','🚀'],
+ clear:['🌫️','☁️','🌤️','☀️','🔆'],
+ close:['😕','😐','🙂','😃','🎉'],
+ handle:['😕','😐','🙂','😊','💪']
+};
+
+const DAYS=[
+{theme:'Set Your Compass',sub:'Purpose & intention',emoji:'🧭',accent:'#FF6F61',soft:'#FFE9E6',
+ morning:{gentle:'Begin with why. One intention gives the whole day a direction.',promiseLabel:'I promise myself today I will...',promisePlaceholder:'e.g. take one real break',
+  prompts:[
+   {ui:'tap',text:'The reason today matters to me right now is...',options:[['🌱','To grow'],['💛','For someone I love'],['🏔️','To face a challenge'],['🕊️','To feel at peace']]},
+   {ui:'slider',key:'baseline',text:'My energy this morning feels like...',low:'Drained',high:'Charged',faces:FACE_SETS.energy},
+   {ui:'chipsOne',text:'The one intention I will hold today is...',options:[['🎯','Stay focused'],['🧘','Stay calm'],['💬','Be present with people'],['🚶','Go at my own pace']]},
+   {ui:'promise'}]},
+ evening:{gentle:'Close the loop. How did the day you set this morning actually go?',promiseLabel:'Tonight, I promise to...',promisePlaceholder:'e.g. fully switch off',
+  prompts:[
+   {ui:'slider',key:'endState',text:'My energy right now feels like...',low:'Drained',high:'Charged',faces:FACE_SETS.energy},
+   {ui:'chipsOne',text:'How did I honour the intention I set this morning?',options:[['✅','Mostly yes'],['🤏','Partly'],['❌','Life got loud']]},
+   {ui:'tap',text:'The one moment I feel proudest of today...',options:[['🌱','I chose with intention'],['💪','I faced something hard'],['🤝','I connected with someone'],['🧘','I protected my calm']]},
+   {ui:'text',text:'A small note to my tomorrow-self...',placeholder:'e.g. slow down before reacting'}]}},
+
+{theme:'Inner Weather',sub:'Emotions & thoughts',emoji:'🌤️',accent:'#F2913D',soft:'#FFF1DE',
+ morning:{gentle:'Name the weather inside you. Feelings are information, not problems.',promiseLabel:'I promise to be gentle with myself today...',promisePlaceholder:'e.g. pause before I judge myself',
+  prompts:[
+   {ui:'slider',key:'baseline',text:'My inner weather this morning...',low:'Stormy',high:'Sunny',faces:FACE_SETS.weather},
+   {ui:'chips',text:'Which feelings are with me this morning?',options:[['😌','Calm'],['😟','Worried'],['😃','Hopeful'],['😤','Frustrated'],['😴','Tired']]},
+   {ui:'chipsOne',text:'The thought repeating most right now...',options:[['💪','I can handle this'],['❓','What if I fail?'],['🎯','I\'ll focus on one thing'],['😮‍💨','I just need to breathe']]},
+   {ui:'promise'}]},
+ evening:{gentle:'Look back at the inner weather. What did you notice today?',promiseLabel:'Tonight, I promise to...',promisePlaceholder:'e.g. wind down without my phone',
+  prompts:[
+   {ui:'slider',key:'endState',text:'My inner weather now...',low:'Stormy',high:'Sunny',faces:FACE_SETS.weather},
+   {ui:'tap',text:'When my feelings were strongest today, I...',options:[['🌬️','Breathed through it'],['📝','Named it'],['🌊','Let it pass'],['😶','Suppressed it']]},
+   {ui:'chips',text:'What I noticed about my mind today...',options:[['🔁','It loops on worry'],['🪟','It was clear'],['🎭','It told me stories'],['🎵','It was calm']]},
+   {ui:'text',text:'One feeling I want to understand better...',placeholder:'Type here...'}]}},
+
+{theme:'Know Your Engine',sub:'Strengths & confidence',emoji:'🔋',accent:'#1FA398',soft:'#DFF7F4',
+ morning:{gentle:'You have tools inside you. Name them before the day asks for them.',promiseLabel:'I promise to use my strength of...',promisePlaceholder:'e.g. patience when I\'m rushed',
+  prompts:[
+   {ui:'slider',key:'baseline',text:'My confidence this morning...',low:'Shaky',high:'Steady',faces:FACE_SETS.confidence},
+   {ui:'chips',text:'Strengths I bring today...',options:[['🧘','Patience'],['🧩','Problem-solving'],['😂','Humor'],['🛡️','Resilience']]},
+   {ui:'countdown',text:'Pause: close your eyes and take 3 slow, steady breaths.',seconds:12},
+   {ui:'promise'}]},
+ evening:{gentle:'Celebrate the small proof. Confidence grows from evidence.',promiseLabel:'Tonight, I promise to...',promisePlaceholder:'e.g. write down one win',
+  prompts:[
+   {ui:'slider',key:'endState',text:'My confidence now...',low:'Shaky',high:'Steady',faces:FACE_SETS.confidence},
+   {ui:'text',text:'One small "win" I can honestly claim today...',placeholder:'e.g. I finished the task I dreaded'},
+   {ui:'chipsOne',text:'What most built my confidence today...',options:[['✅','Completing something'],['👏','Being acknowledged'],['💡','Solving a problem'],['🌟','Being kind to myself']]},
+   {ui:'text',text:'A message to my future self about what I\'m capable of...',placeholder:'Type here...'}]}},
+
+{theme:'Take the Wheel',sub:'Agency & control',emoji:'🚗',accent:'#8B6FCF',soft:'#EDE7F9',
+ morning:{gentle:'You are the driver, not a passenger. Choose your lane today.',promiseLabel:'Today I take the wheel by...',promisePlaceholder:'e.g. choosing my first task',
+  prompts:[
+   {ui:'tap',text:'Right now, what is steering my attention...',options:[['🙋','My own intention'],['📱','My phone'],['⏰','Deadlines'],['🌀','Rushing thoughts']]},
+   {ui:'chips',text:'What I actually control today...',options:[['🧘','My reaction'],['⏳','My pace'],['💬','What I say'],['🎯','Where I focus']]},
+   {ui:'slider',key:'baseline',text:'How ready I am to take the wheel...',low:'Passenger',high:'Driver',faces:FACE_SETS.control},
+   {ui:'promise'}]},
+ evening:{gentle:'Where did you drive today — and where did you just let it happen?',promiseLabel:'Tonight, I promise to...',promisePlaceholder:'e.g. switch my phone to focus mode',
+  prompts:[
+   {ui:'slider',key:'endState',text:'How much of today did I actually steer...',low:'Passenger',high:'Driver',faces:FACE_SETS.control},
+   {ui:'tap',text:'Where I most took back control today...',options:[['🧘','My reaction to stress'],['🎯','My focus'],['⏳','My time'],['💬','My words']]},
+   {ui:'chipsOne',text:'One place I drifted into autopilot...',options:[['📱','Phone scrolling'],['😤','Reacting fast'],['⏰','Rushing'],['🙅','People-pleasing']]},
+   {ui:'text',text:'One way I\'ll drive more of tomorrow...',placeholder:'Type here...'}]}},
+
+{theme:'One Clear Target',sub:'Goals',emoji:'🎯',accent:'#3D84C7',soft:'#E1EEF9',
+ morning:{gentle:'A clear target beats a busy day. Pick one thing that matters.',promiseLabel:'My specific target today is...',promisePlaceholder:'e.g. finish the report by 3pm',
+  prompts:[
+   {ui:'tap',text:'The ONE thing that matters most today...',options:[['📚','Finish a task'],['🌿','Care for my health'],['💬','Connect with someone'],['🧘','Protect my peace']]},
+   {ui:'chipsOne',text:'My first tiny step toward it...',options:[['🔕','Remove distractions'],['🧩','Break it into pieces'],['👣','Just start']]},
+   {ui:'slider',key:'baseline',text:'How clear is my target this morning...',low:'Foggy',high:'Crystal',faces:FACE_SETS.clear},
+   {ui:'promise'}]},
+ evening:{gentle:'Measure gently. Progress, not perfection.',promiseLabel:'Tonight, I promise to...',promisePlaceholder:'e.g. review my progress without judging',
+  prompts:[
+   {ui:'slider',key:'endState',text:'How close did I get to my target today...',low:'Nowhere',high:'Hit it',faces:FACE_SETS.close},
+   {ui:'chipsOne',text:'What most helped me today...',options:[['🎯','A clear focus'],['🧩','Small steps'],['🤝','Support'],['⏱️','Starting early']]},
+   {ui:'chipsOne',text:'What got in the way...',options:[['📱','Distraction'],['😴','Tiredness'],['😤','Overthinking'],['📋','Too many tasks']]},
+   {ui:'text',text:'One adjustment I\'ll make tomorrow...',placeholder:'Type here...'}]}},
+
+{theme:'Plan for Potholes',sub:'If-Then & obstacles',emoji:'🛡️',accent:'#4CAF7D',soft:'#E4F5EB',
+ morning:{gentle:'Obstacles are expected. A plan turns surprises into speed bumps.',promiseLabel:'If I get stuck today, I promise to...',promisePlaceholder:'e.g. stand up and breathe for 2 minutes',
+  prompts:[
+   {ui:'spin',text:'Spin for the obstacle most likely today...',options:['📱 Phone scrolling','😴 Feeling sleepy','📢 Unexpected requests','🧠 Overthinking']},
+   {ui:'chipsOne',text:'IF it happens, THEN my backup plan is...',options:[['🌬️','Deep breath & step away'],['💧','Drink water & stretch'],['⏳','Say "later" to it'],['👣','Start with 2 minutes']]},
+   {ui:'slider',key:'baseline',text:'How prepared I feel to meet obstacles...',low:'Not ready',high:'Very ready',faces:['😟','😕','😐','🙂','😎']},
+   {ui:'promise'}]},
+ evening:{gentle:'How did you meet the pothole? Notice it, don\'t judge it.',promiseLabel:'Tonight, I promise to...',promisePlaceholder:'e.g. rest without guilt',
+  prompts:[
+   {ui:'slider',key:'endState',text:'How did I handle obstacles today...',low:'Bounced',high:'Handled',faces:['😕','😐','🙂','😊','💪']},
+   {ui:'tap',text:'When my obstacle appeared, my backup plan...',options:[['✅','Worked'],['🤏','Kind of worked'],['❌','I forgot it']]},
+   {ui:'chipsOne',text:'What I learned about my triggers...',options:[['📱','Phone = my main trap'],['😴','Tired = vulnerable'],['🧠','Overthinking = spiral'],['📢','Requests = overwhelm']]},
+   {ui:'text',text:'One new If-Then rule for tomorrow...',placeholder:'If ___, then I will ___'}]}},
+
+{theme:'Full Clarity',sub:'Integration',emoji:'🌟',accent:'#D9469A',soft:'#FBE3F0',
+ morning:{gentle:'One last look. Set the tone, then watch yourself close the loop tonight.',promiseLabel:'This week, I promise to carry forward...',promisePlaceholder:'e.g. remembering my why',
+  prompts:[
+   {ui:'chips',text:'The mindset I choose for this final day...',options:[['💪','I am capable'],['🛣️','I choose my path'],['🧘','I am steady'],['🚗','I am the driver']]},
+   {ui:'slider',key:'baseline',text:'My overall clarity as I begin...',low:'Foggy',high:'Clear',faces:['🌫️','☁️','🌤️','☀️','🔆']},
+   {ui:'promise'}]},
+ evening:{gentle:'This is the full picture. You set it in the morning, and now you complete it.',promiseLabel:'Tonight, I promise to...',promisePlaceholder:'e.g. celebrate finishing the week',
+  prompts:[
+   {ui:'slider',key:'endState',text:'My clarity after a week of noticing...',low:'Foggy',high:'Clear',faces:['🌫️','☁️','🌤️','☀️','🔆']},
+   {ui:'tap',text:'The insight that feels most true this week...',options:[['🧭','I know my why'],['💪','I know my strengths'],['🚗','I can steer my day'],['🛡️','I can meet obstacles']]},
+   {ui:'text',text:'One promise to my future self...',placeholder:'Type your commitment here...'}]}}
+];
+
+/* ================= STATE ================= */
+let state=load();
+function defaultState(){return{morning:{},evening:{},baseline:{},endState:{},promises:{},promiseChecks:{},xp:0,compM:{},compD:{},updated:0};}
+function load(){try{const s=JSON.parse(localStorage.getItem(STORE_KEY));return s&&s.morning?s:defaultState();}catch(e){return defaultState();}}
+function save(){state.updated=Date.now();try{localStorage.setItem(STORE_KEY,JSON.stringify(state));}catch(e){}}
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const dayDone=i=>!!state.compD[i];            // evening done = day complete
+const morningDone=i=>!!state.compM[i];
+const dayUnlocked=i=>i===0||dayDone(i-1);
+const eveningUnlocked=i=>dayUnlocked(i)&&morningDone(i);
+const countDone=()=>Object.values(state.compD).filter(Boolean).length;
+const countMorn=()=>Object.values(state.compM).filter(Boolean).length;
+function firstDay(){for(let i=0;i<7;i++)if(dayUnlocked(i)&&!dayDone(i))return i;return 6;}
+function getAns(phase,d,idx){const o=state[phase];return o&&o[d]?o[d][idx]:undefined;}
+function setAns(phase,d,idx,v){const o=state[phase]||(state[phase]={});if(!o[d])o[d]={};o[d][idx]=v;save();}
+function face(faces,v){const i=Math.max(0,Math.min(faces.length-1,Math.round((v-1)/2)));return faces[i];}
+
+/* ================= FLAGS / INSIGHT ================= */
+function flagOf(i){const names=['Choosing my day with intention','Understanding my inner weather','Trusting my strengths','Keeping my hands on the wheel','Staying clear on one target','Meeting obstacles with a plan'];return names[i]||'Choosing my own path';}
+function buildFlags(){const out=[];for(let i=0;i<6;i++)if(dayDone(i))out.push(flagOf(i));return out;}
+
+/* ================= RENDER ================= */
+let view=null; // {kind:'home'} | {kind:'step',day,phase,idx} | {kind:'insight',day,phase}
+function render(){
+ if(view&&view.kind==='step')renderStep(view.day,view.phase,view.idx);
+ else if(view&&view.kind==='insight')renderInsight(view.day,view.phase);
+ else renderHome();
+}
+
+function renderHome(){
+ const done=countDone();const morn=countMorn();let legs='';
+ DAYS.forEach((d,i)=>{
+  const isdone=dayDone(i),mm=morningDone(i),ev=eveningUnlocked(i);
+  const locked=!dayUnlocked(i);
+  const nowM=!locked&&!mm&&!isdone&&i===firstDay();
+  const nowE=!locked&&mm&&!isdone&&i===firstDay();
+  let nodeCls='';if(isdone)nodeCls='done';else if(mm)nodeCls='part';else if(nowM||nowE)nodeCls='now';
+  const phMorn=mm?'ph done':'ph now';
+  const phEve=isdone?'ph done':(ev?'ph now':'');
+  const mLabel=mm?'☀️ Morning ✓':'☀️ Morning';
+  const eLabel=isdone?'🌙 Evening ✓':(ev?'🌙 Evening':'🌙 Locked');
+  legs+=`<div class="leg"><div class="node ${nodeCls}" style="--accent:${d.accent}">${isdone?'✓':i+1}</div>
+   <div class="leginfo ${locked?'locked':''}" data-i="${i}" style="--accent:${d.accent}">
+     <div class="leg-title">${d.emoji} ${esc(d.theme)}</div>
+     <div class="leg-sub">${esc(d.sub)}</div>
+     <div class="phase-row"><span class="ph ${phMorn}">${mLabel}</span><span class="ph ${phEve}">${eLabel}</span></div>
+   </div></div>`;
+ });
+ $('#app').innerHTML=`
+ <div class="masthead" style="--accent:${DAYS[firstDay()].accent}"><div class="glow"></div>
+   <div class="mast-xp">⭐ ${state.xp} XP</div><div class="phase-badge">Day & Dusk</div>
+   <h1>Morning &amp; Evening</h1><p>${DAYS[firstDay()].emoji} ${esc(DAYS[firstDay()].theme)} — set it at dawn, close it at dusk.</p></div>
+ <div class="stats">
+   <div class="stat"><b>${morn}</b><span>Mornings</span></div>
+   <div class="stat"><b>${done}/7</b><span>Days closed</span></div>
+   <div class="stat"><b>⭐ ${state.xp}</b><span>XP</span></div>
+ </div>
+ <div class="screen center">
+   <div style="font-family:'Baloo 2',sans-serif;font-size:24px;color:var(--plum);">${done===0?'One week of noticing yourself — twice a day.':'Keep closing the loop. 🌗'}</div>
+   <p style="font-size:14px;color:var(--grey);margin-top:6px;font-weight:600;">${done===0?'Each day: set your intention in the morning, then check in tonight to see how it went. Morning and evening are in sync.':'You\u2019ve closed ${done} day(s) and earned ⭐ ${state.xp}. Momentum is building.'}</p>
+ </div>
+ <div class="screen">
+   <div class="eyebrow">Your 7-day loop</div>
+   <div class="journey">${legs}</div>
+   <div class="divider"></div>
+   <p class="meta">A paired self-awareness practice. The morning sets the day; the evening closes the loop by checking your promise, comparing your energy, and noticing what you learned. Every answer is about you — no pass or fail, only noticing.</p>
+   <div style="text-align:center;margin-top:12px;"><button class="ghost-btn" id="resetBtn">Start over</button></div>
+ </div>`;
+ document.querySelectorAll('.leginfo').forEach(c=>c.onclick=()=>{const i=+c.dataset.i;if(!dayUnlocked(i))return;
+  // open wherever they are: if evening available & day not done and morning done, open evening; else morning
+  if(!morningDone(i)){view={kind:'step',day:i,phase:'m',idx:0};}else{view={kind:'step',day:i,phase:'e',idx:0};}render();});
+ const rb=$('#resetBtn');if(rb)rb.onclick=()=>{if(confirm('Clear all progress and start over?')){state=defaultState();save();render();}};
+}
+
+function stepsFor(day,phase){
+ if(phase==='m'){const s=DAYS[day].morning.prompts.map((p,k)=>({kind:'p',idx:k}));s.push({kind:'promise'});return s;}
+ const s=[{kind:'sync'}];DAYS[day].evening.prompts.forEach((p,k)=>s.push({kind:'p',idx:k}));s.push({kind:'insight'});return s;
+}
+
+function renderStep(day,phase,idx){
+ const d=DAYS[day];const steps=stepsFor(day,phase);if(idx>=steps.length)idx=steps.length-1;
+ const step=steps[idx];const acc=phase==='m'?d.accent:d.accent;
+ const title=phase==='m'?('☀️ '+d.theme):('🌙 '+d.theme);
+ const gentle=phase==='m'?d.morning.gentle:d.evening.gentle;
+ const dots=steps.map((s,k)=>`<span class="${k<idx?'done':k===idx?'now':''}"></span>`).join('');
+ let inner='';
+ if(step.kind==='sync'){ inner=syncCard(day); }
+ else if(step.kind==='promise'){ inner=promiseCard(day,phase); }
+ else if(step.kind==='insight'){ inner=''; } // shouldn't render here normally
+ else { const p=(phase==='m'?d.morning:d.evening).prompts[step.idx]; inner=renderPrompt(p,phase,day,step.idx); }
+ const isFinish=idx===steps.length-1;
+ $('#app').innerHTML=`
+ <div class="masthead" style="--accent:${acc}"><div class="glow"></div>
+   <div class="mast-xp">⭐ ${state.xp} XP</div><div class="phase-badge">${phase==='m'?'☀️ Morning':'🌙 Evening'}</div>
+   <h1>${title}</h1><p>${esc(d.sub)}</p></div>
+ <div class="screen">
+   <div class="day-header"><h2>${phase==='m'?'Set your day':'Close the loop'}</h2><p class="sub">Day ${day+1} of 7 · ${phase==='m'?'Morning':'Evening'}</p></div>
+   <div class="dots">${dots}</div>
+   <div class="step-card"><div class="gentle" style="font-size:12px;font-weight:700;color:var(--grey);margin-bottom:8px;background:#fff;border-radius:12px;padding:8px 12px;width:100%;">${esc(gentle)}</div>${inner}</div>
+   <div class="nav-row">
+     ${idx>0?`<button class="nav-btn back" id="backBtn">← Back</button>`:''}
+     <button class="nav-btn fwd ${phase==='m'?'morn':'finish'} ${isFinish?'finish':''}" id="fwdBtn">${isFinish?(phase==='m'?'Finish morning →':'Close my day 🌙'):'Next →'}</button>
+   </div>
+ </div>`;
+ const back=$('#backBtn');if(back)back.onclick=()=>{view={kind:'step',day,phase,idx:idx-1};render();};
+ const fwd=$('#fwdBtn');
+ fwd.onclick=()=>{
+  if(step.kind==='sync'){ if(!state.promiseChecks[day])return; }
+  if(idx<steps.length-1){view={kind:'step',day,phase,idx:idx+1};render();}
+  else{finishPhase(day,phase);}
+ };
+ wireStep(day,phase,step,steps,idx);
+}
+
+function syncCard(day){
+ const p=state.promises[day]||'';const base=state.baseline[day];
+ const baseFace=base?face(FACE_SETS.energy,base):'–';
+ const chk=state.promiseChecks[day];
+ return `<div class="step-icon">🔁</div><p class="step-kicker">Your morning ↔ evening</p>
+  <div class="sync-card" style="text-align:left;"><div class="sc-k">This morning, I promised…</div><div class="sc-v">${p?esc(p):'(no promise written)'}</div></div>
+  ${base?`<div class="sync-arrow"><div class="side"><span class="face">${baseFace}</span><span class="lab">Morning energy</span></div><div class="mid">→</div><div class="side"><span class="face" id="endFace">?</span><span class="lab">Tonight</span></div></div>`:''}
+  <p class="step-prompt">Did I keep my promise?</p>
+  <div class="check-row">
+    <button type="button" class="check-btn yes ${chk==='yes'?'selected':''}" data-check="yes">✅ Yes I did!</button>
+    <button type="button" class="check-btn kinda ${chk==='kinda'?'selected':''}" data-check="kinda">🤏 Kind of</button>
+    <button type="button" class="check-btn no ${chk==='no'?'selected':''}" data-check="no">❌ Not yet</button>
+  </div>`;
+}
+function promiseCard(day,phase){
+ const label=(phase==='m'?DAYS[day].morning:DAYS[day].evening).promiseLabel;
+ const ph=(phase==='m'?DAYS[day].morning:DAYS[day].evening).promisePlaceholder;
+ return `<div class="step-icon">💌</div><p class="step-kicker">${phase==='m'?'Your daily promise':'Tonight\u2019s promise'}</p>
+  <p class="step-prompt">${esc(label)}</p>
+  <textarea id="promiseInput" placeholder="${esc(ph)}">${esc(state.promises[day]||'')}</textarea>
+  <p style="font-size:11px;font-weight:700;color:var(--grey);margin-top:8px;">${phase==='m'?'🔔 Tonight, I\u2019ll ask you if you kept this.':'🔁 Tomorrow morning starts the next loop.'}</p>`;
+}
+
+function renderPrompt(p,phase,day,idx){
+ const saved=getAns(phase,day,idx);
+ if(p.ui==='tap'){
+  let cards=p.options.map(([e,l],k)=>`<button type="button" class="tap-card ${saved===l?'selected':''}" data-tap="${esc(l)}"><span>${e}</span><span class="t-lbl">${esc(l)}</span></button>`).join('');
+  return `<div class="step-icon">👆</div><p class="step-kicker">Tap one</p><p class="step-prompt">${esc(p.text)}</p><div class="tap-grid">${cards}</div>`;
+ }
+ if(p.ui==='chips'||p.ui==='chipsOne'){
+  const multi=p.ui==='chips';const cur=multi?(saved instanceof Array?saved:[]):saved;
+  let chips=p.options.map(([e,l],k)=>{const sel=multi?cur.includes(l):cur===l;return `<button type="button" class="chip ${sel?'selected':''}" data-chip="${esc(l)}">${e} ${esc(l)}</button>`;}).join('');
+  return `<div class="step-icon">🖐️</div><p class="step-kicker">${multi?'Tap all that fit':'Tap one'}</p><p class="step-prompt">${esc(p.text)}</p><div class="chip-row">${chips}</div>`;
+ }
+ if(p.ui==='slider'){
+  const val=saved??5;const fset=p.faces||FACE_SETS.energy;
+  const key=p.key; // baseline or endState
+  const saved2=key==='baseline'?state.baseline[day]:state.endState[day];
+  const v=saved2??5;
+  return `<div class="step-icon">🎚️</div><p class="step-kicker">Slide to answer</p><p class="step-prompt">${esc(p.text)}</p>
+   <div class="slider-wrap"><div class="slider-face" id="sliderFace">${face(fset,v)}</div>
+   <input type="range" min="1" max="10" value="${v}" id="sliderInput">
+   <div class="slider-labels"><span>1 · ${esc(p.low)}</span><span>${esc(p.high)} · 10</span></div></div>`;
+ }
+ if(p.ui==='spin'){
+  const cards=p.options.map((o,k)=>`<span class="spin-card" data-idx="${k}">${esc(o)}</span>`).join('');
+  return `<div class="step-icon">🎡</div><p class="step-kicker">Mystery Spin</p><p class="step-prompt">${esc(p.text)}</p>
+   <div class="spin-grid" id="spinGrid">${cards}</div><button type="button" class="spin-btn" id="spinBtn">${saved?'Spin again?':'Spin! 🎲'}</button>`;
+ }
+ if(p.ui==='countdown'){
+  return `<div class="step-icon">⏱️</div><p class="step-kicker">Do it now!</p><p class="step-prompt">${esc(p.text)}</p>
+   <div class="countdown-ring" id="ring">${saved?'🌟':p.seconds}</div><button type="button" class="spin-btn" id="countGo" ${saved?'disabled':''}>${saved?'All done!':'Start'}</button>`;
+ }
+ if(p.ui==='text'){
+  return `<div class="step-icon">✍️</div><p class="step-kicker">Your own thought</p><p class="step-prompt">${esc(p.text)}</p>
+   <textarea id="textArea" placeholder="${esc(p.placeholder||'Type your thought here...')}">${saved?esc(saved):''}</textarea>`;
+ }
+ return '';
+}
+
+function wireStep(day,phase,step,steps,idx){
+ const d=DAYS[day];
+ if(step.kind==='sync'){
+  document.querySelectorAll('[data-check]').forEach(b=>b.onclick=()=>{state.promiseChecks[day]=b.dataset.check;save();
+   document.querySelectorAll('[data-check]').forEach(x=>x.classList.remove('selected'));b.classList.add('selected',b.dataset.check);
+   const fwd=$('#fwdBtn');if(fwd)fwd.disabled=false;});
+  // update end face if endState exists
+  const es=state.endState[day];if(es!==undefined){const ef=$('#endFace');if(ef)ef.textContent=face(FACE_SETS.energy,es);}
+  return;
+ }
+ if(step.kind==='promise'){
+  const ta=$('#promiseInput');if(ta)ta.oninput=e=>{state.promises[day]=e.target.value;save();const fwd=$('#fwdBtn');if(fwd)fwd.disabled=false;};
+  return;
+ }
+ const p=(phase==='m'?d.morning:d.evening).prompts[step.idx];
+ if(p.ui==='tap'){
+  document.querySelectorAll('[data-tap]').forEach(b=>b.onclick=()=>{setAns(phase,day,step.idx,b.dataset.tap);renderStep(day,phase,idx);});
+ }
+ else if(p.ui==='chips'||p.ui==='chipsOne'){
+  const multi=p.ui==='chips';
+  document.querySelectorAll('[data-chip]').forEach(b=>b.onclick=()=>{const l=b.dataset.chip;
+   if(multi){let cur=getAns(phase,day,step.idx);if(!(cur instanceof Array))cur=[];cur=cur.includes(l)?cur.filter(x=>x!==l):[...cur,l];setAns(phase,day,step.idx,cur);b.classList.toggle('selected');}
+   else{setAns(phase,day,step.idx,l);renderStep(day,phase,idx);}});
+ }
+ else if(p.ui==='slider'){
+  const inp=$('#sliderInput'),faceEl=$('#sliderFace');const fset=p.faces||FACE_SETS.energy;
+  inp.oninput=e=>{const val=+e.target.value;if(p.key==='baseline'){state.baseline[day]=val;}else{state.endState[day]=val;}save();
+   faceEl.textContent=face(fset,val);
+   // live update sync end face if present
+   const ef=$('#endFace');if(ef)ef.textContent=face(FACE_SETS.energy,val);
+   const fwd=$('#fwdBtn');if(fwd)fwd.disabled=false;};
+ }
+ else if(p.ui==='spin'){
+  const btn=$('#spinBtn'),grid=$('#spinGrid');const cards=Array.from(grid.querySelectorAll('.spin-card'));
+  btn.onclick=()=>{btn.disabled=true;cards.forEach(c=>c.classList.remove('selected'));
+   const n=cards.length,target=Math.floor(Math.random()*n),totalTicks=n*2+target;let k=0;
+   function tick(){cards.forEach(c=>c.classList.remove('spin-active'));cards[k%n].classList.add('spin-active');
+    if(k>=totalTicks){cards[k%n].classList.remove('spin-active');cards[k%n].classList.add('selected');setAns(phase,day,step.idx,p.options[target]);btn.disabled=false;btn.textContent='Spin again?';return;}
+    k++;setTimeout(tick,55+Math.floor((k/totalTicks)*250));}
+   tick();};
+ }
+ else if(p.ui==='countdown'){
+  const ring=$('#ring'),go=$('#countGo');
+  if(go&&!go.disabled)go.onclick=()=>{go.disabled=true;let remaining=p.seconds;ring.classList.add('active');
+   const t=setInterval(()=>{remaining--;if(remaining<=0){clearInterval(t);ring.textContent='🌟';go.textContent='All done!';setAns(phase,day,step.idx,true);const fwd=$('#fwdBtn');if(fwd)fwd.disabled=false;}else{ring.textContent=remaining;}},1000);};
+ }
+ else if(p.ui==='text'){
+  const ta=$('#textArea');if(ta)ta.oninput=e=>{setAns(phase,day,step.idx,e.target.value);const fwd=$('#fwdBtn');if(fwd)fwd.disabled=false;};
+ }
+}
+
+function finishPhase(day,phase){
+ if(phase==='m'){state.compM[day]=true;state.xp+=5;save();showOverlay('Morning set! ☀️',`You\u2019ve set Day ${day+1}. Tonight, close the loop with your evening reflection.`,+5,()=>{view={kind:'step',day,phase:'e',idx:0};render();});}
+ else{state.compD[day]=true;state.xp+=10;save();
+  showOverlay('Day complete! 🌗',`You closed Day ${day+1}. Morning and evening in sync. ${day<6?'Tomorrow sets a new loop.':'That\u2019s the whole week!'}`,+10,()=>{
+   if(day===6){view={kind:'insight',day,phase:'e'};render();}else{view=null;render();}});
+ }
+}
+
+function showOverlay(title,msg,xp,cb){
+ $('#overlayTitle').textContent=title;$('#overlayMsg').textContent=msg;$('#overlayXp').textContent='⭐ +'+xp+' XP';
+ const ov=$('#overlay');ov.classList.remove('hidden');
+ $('#overlayBtn').onclick=()=>{ov.classList.add('hidden');cb();};
+}
+
+function renderInsight(day,phase){
+ const d=DAYS[day];const flags=buildFlags();
+ const lines=[];
+ lines.push('I set my day in the morning, and I close it at night.');
+ if(state.compM[0])lines.push('I know why each day matters.');
+ if(dayDone(2))lines.push('I know the strengths I carry.');
+ if(dayDone(3))lines.push('I can take the wheel of my day.');
+ if(dayDone(4))lines.push('I aim at one clear target.');
+ if(dayDone(5))lines.push('I meet obstacles with a plan.');
+ lines.push('I am learning to understand myself.');
+ const mantra=lines.join(' ');
+ $('#app').innerHTML=`
+ <div class="masthead" style="--accent:${d.accent}"><div class="glow"></div>
+   <div class="mast-xp">⭐ ${state.xp} XP</div><div class="phase-badge">🌙 Week Complete</div>
+   <h1>${d.emoji} ${esc(d.theme)}</h1><p>${esc(d.sub)}</p></div>
+ <div class="screen">
+   <div class="insight-card">
+     <div class="insight-title">Full Clarity — your week, dawn to dusk. 🌗</div>
+     <p class="insight-text">For 7 days you set an intention each morning and closed the loop each night. That daily rhythm is itself the practice of self-understanding.</p>
+     <div class="divider"></div>
+     <p class="insight-text"><b>The mindsets you built:</b></p>
+     <p>${flags.map(f=>`<span class="kchip">✓ ${esc(f)}</span>`).join('')}</p>
+     <div class="divider"></div>
+     <p class="insight-text">Your evening manifesto:</p>
+     <div class="mantra">${esc(mantra)}</div>
+     <p class="insight-text">Morning and evening, you are learning to meet yourself. Keep the loop alive. 💫</p>
+   </div>
+   <div class="nav-row" style="margin-top:16px;"><button class="nav-btn fwd finish" id="homeEnd">Back to my week ✓</button></div>
+ </div>`;
+ $('#homeEnd').onclick=()=>{view=null;render();};
+}
+
+render();
+</script>
+</body>
+</html>

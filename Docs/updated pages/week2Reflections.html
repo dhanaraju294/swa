@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seven Mornings — a different surprise every day!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --accent:#FF6F61;
+    --accent-soft:#FFE9E6;
+    --plum:#33294D;
+    --grey:#8A80A0;
+    --cream:#FFFBF4;
+    --card:#FFFFFF;
+    --line:#ECE5F5;
+    --grass:#4CAF7D;
+    --amber:#F2913D;
+    --red:#E8564F;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    font-family:'Nunito', sans-serif;
+    color:var(--plum);
+    background:
+      radial-gradient(circle at 15% 0%, #FFE3B0 0%, transparent 38%),
+      radial-gradient(circle at 90% 10%, #C9E7FF 0%, transparent 35%),
+      linear-gradient(180deg, #FBEFE0 0%, #FDF7EC 45%, #FFFBF4 100%);
+    background-attachment:fixed;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:36px 14px 70px;
+    transition:background .4s ease;
+  }
+  .tag{
+    position:fixed; top:14px; left:50%; transform:translateX(-50%);
+    font-size:11.5px; font-weight:700; color:rgba(51,41,77,0.45);
+    text-align:center; pointer-events:none;
+  }
+  .phone{
+    width:100%;
+    max-width:412px;
+    background:var(--card);
+    border-radius:34px;
+    box-shadow:0 26px 50px -18px rgba(51,41,77,0.32), 0 0 0 8px rgba(255,255,255,0.6);
+    overflow:hidden;
+    margin-top:26px;
+    position:relative;
+  }
+
+  /* ---------- Masthead ---------- */
+  .masthead{
+    background:linear-gradient(150deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 70%, #000 15%) 100%);
+    padding:20px 20px 18px;
+    text-align:center;
+    color:#fff;
+    position:relative;
+    overflow:hidden;
+    transition:background .4s ease;
+  }
+  .masthead .glow{
+    position:absolute; top:-36px; right:-26px;
+    width:110px; height:110px; border-radius:50%;
+    background:rgba(255,255,255,0.35);
+    filter:blur(2px);
+  }
+  .masthead h1{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    font-size:24px;
+    margin:0 0 3px;
+    position:relative;
+  }
+  .masthead p{
+    margin:0;
+    font-size:12.5px;
+    font-weight:700;
+    opacity:0.95;
+    position:relative;
+  }
+
+  /* ---------- Week path ---------- */
+  .week-path{
+    display:flex;
+    justify-content:space-between;
+    padding:14px 12px;
+    background:var(--cream);
+    border-bottom:2px dashed var(--line);
+  }
+  .day-pin{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    cursor:pointer;
+    background:none;
+    border:none;
+    font-family:'Nunito', sans-serif;
+    padding:2px;
+    position:relative;
+  }
+  .day-pin .bubble{
+    width:36px; height:36px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:17px;
+    background:#fff;
+    border:2.5px solid var(--line);
+    transition:transform .15s ease, border-color .15s ease;
+  }
+  .day-pin.active .bubble{
+    border-color:var(--pin-color, var(--accent));
+    transform:scale(1.14);
+  }
+  .day-pin.complete .bubble{ background:linear-gradient(160deg, #FFE9A8, #F2913D); border-color:#F2913D; }
+  .day-pin .bell{
+    position:absolute; top:-3px; right:0;
+    font-size:11px;
+    background:var(--red);
+    border-radius:50%;
+    width:16px; height:16px;
+    display:flex; align-items:center; justify-content:center;
+    color:#fff;
+    box-shadow:0 0 0 2px #fff;
+  }
+  .day-pin .lbl{ font-size:9px; font-weight:800; color:var(--grey); }
+  .day-pin.active .lbl{ color:var(--plum); }
+
+  /* ---------- Screen ---------- */
+  .screen{ padding:18px 18px 22px; min-height:400px; }
+  .day-header{ text-align:center; margin-bottom:12px; }
+  .day-header .theme-emoji{ font-size:30px; display:block; margin-bottom:2px; }
+  .day-header h2{ font-family:'Baloo 2', sans-serif; font-weight:700; font-size:19px; margin:0; }
+  .day-header .sub{ font-size:11.5px; font-weight:700; color:var(--grey); margin-top:2px; }
+
+  .dots{ display:flex; justify-content:center; gap:7px; margin-bottom:14px; }
+  .dots span{ width:8px; height:8px; border-radius:50%; background:var(--line); }
+  .dots span.done{ background:var(--grass); }
+  .dots span.now{ background:var(--accent); width:20px; border-radius:6px; }
+
+  .step-card{
+    background:var(--accent-soft);
+    border:2.5px solid var(--line);
+    border-radius:22px;
+    padding:18px 15px;
+    text-align:center;
+    min-height:220px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    transition:background .4s ease;
+  }
+  .step-icon{ font-size:26px; margin-bottom:4px; }
+  .step-kicker{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size:11.5px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--accent);
+    margin:0 0 6px;
+  }
+  .step-prompt{ font-size:14px; font-weight:800; line-height:1.45; margin:0 0 14px; color:var(--plum); }
+
+  /* True/False */
+  .tf-row{ display:flex; gap:10px; justify-content:center; margin-bottom:10px; }
+  .tf-btn{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size:15px;
+    padding:12px 22px;
+    border-radius:16px;
+    border:2.5px solid var(--line);
+    background:#fff;
+    cursor:pointer;
+    color:var(--plum);
+  }
+  .tf-btn.selected{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  .reveal-card{
+    margin-top:6px;
+    background:#fff;
+    border-radius:14px;
+    padding:10px 13px;
+    font-size:12.5px;
+    font-weight:700;
+    color:var(--plum);
+    border:2px dashed var(--line);
+  }
+
+  /* Tap-choice grid */
+  .tap-grid{ display:flex; flex-wrap:wrap; gap:9px; justify-content:center; }
+  .tap-card{
+    width:82px;
+    background:#fff;
+    border:2.5px solid var(--line);
+    border-radius:16px;
+    padding:10px 5px;
+    cursor:pointer;
+    font-size:19px;
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+  }
+  .tap-card .t-lbl{ font-size:10px; font-weight:800; color:var(--grey); }
+  .tap-card.selected{ background:var(--accent); border-color:var(--accent); }
+  .tap-card.selected .t-lbl{ color:#fff; }
+
+  /* Multi-tap chips */
+  .chip-row{ display:flex; flex-wrap:wrap; gap:7px; justify-content:center; }
+  .chip{
+    font-size:12px; font-weight:800; padding:8px 12px; border-radius:999px;
+    border:2.5px solid var(--line); background:#fff; color:var(--plum); cursor:pointer;
+  }
+  .chip.selected{ background:var(--accent); border-color:var(--accent); color:#fff; }
+
+  /* Slider */
+  .slider-wrap{ width:100%; padding:4px 4px 0; }
+  .slider-face{ font-size:34px; text-align:center; margin-bottom:6px; }
+  input[type="range"]{
+    width:100%;
+    accent-color:var(--accent);
+    height:6px;
+  }
+  .slider-labels{ display:flex; justify-content:space-between; font-size:10.5px; font-weight:800; color:var(--grey); margin-top:4px; }
+
+  /* Toggle */
+  .toggle-row{ display:flex; gap:10px; justify-content:center; }
+  .toggle-btn{
+    font-family:'Baloo 2', sans-serif; font-weight:700; font-size:15px;
+    padding:13px 28px; border-radius:18px; border:2.5px solid var(--line);
+    background:#fff; cursor:pointer; color:var(--plum);
+  }
+  .toggle-btn.selected{ background:var(--accent); border-color:var(--accent); color:#fff; }
+
+  /* Stars */
+  .star-row{ display:flex; gap:6px; justify-content:center; font-size:32px; }
+  .star{ cursor:pointer; filter:grayscale(1) opacity(0.5); transition:transform .1s ease; }
+  .star.lit{ filter:none; opacity:1; }
+  .star:active{ transform:scale(1.2); }
+
+  /* Word cloud */
+  .word-row{ display:flex; flex-wrap:wrap; gap:9px; justify-content:center; align-items:center; }
+  .word-chip{
+    font-family:'Baloo 2', sans-serif; font-weight:700;
+    padding:9px 14px; border-radius:14px; border:2.5px solid var(--line);
+    background:#fff; cursor:pointer; color:var(--plum);
+  }
+  .word-chip.selected{ background:var(--accent); border-color:var(--accent); color:#fff; }
+
+  /* Spin / mystery picker */
+  .spin-grid{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:12px; }
+  .spin-card{
+    font-size:12px; font-weight:800; padding:9px 11px; border-radius:14px;
+    border:2.5px solid var(--line); background:#fff; color:var(--plum);
+    transition:transform .08s ease, background .08s ease, border-color .08s ease;
+  }
+  .spin-card.spin-active{ background:var(--accent); color:#fff; border-color:var(--accent); transform:scale(1.08); }
+  .spin-card.selected{ background:var(--grass); color:#fff; border-color:var(--grass); }
+  .spin-btn{
+    font-family:'Baloo 2', sans-serif; font-weight:700; font-size:14px;
+    padding:10px 22px; border-radius:14px; border:none; cursor:pointer;
+    background:var(--accent); color:#fff;
+  }
+  .spin-btn:disabled{ opacity:0.55; }
+
+  /* Countdown */
+  .countdown-ring{
+    width:88px; height:88px; border-radius:50%;
+    border:5px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Baloo 2', sans-serif; font-weight:800; font-size:24px;
+    color:var(--accent);
+    margin-bottom:10px;
+    transition:border-color .3s ease;
+  }
+  .countdown-ring.active{ border-color:var(--accent); }
+
+  /* Reminder / promise-check step */
+  .promise-quote{
+    background:#fff; border-radius:14px; padding:12px 14px;
+    font-size:13px; font-weight:800; font-style:italic; color:var(--plum);
+    border:2px dashed var(--line); margin-bottom:12px;
+  }
+  .check-row{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+  .check-btn{
+    font-family:'Baloo 2', sans-serif; font-weight:700; font-size:12.5px;
+    padding:10px 12px; border-radius:14px; border:2.5px solid var(--line);
+    background:#fff; cursor:pointer; color:var(--plum);
+  }
+  .check-btn.selected.yes{ background:var(--grass); border-color:var(--grass); color:#fff; }
+  .check-btn.selected.kinda{ background:var(--amber); border-color:var(--amber); color:#fff; }
+  .check-btn.selected.no{ background:var(--red); border-color:var(--red); color:#fff; }
+
+  textarea{
+    width:100%;
+    font-family:'Nunito', sans-serif;
+    font-size:13.5px; font-weight:700; color:var(--plum);
+    background:#fff; border:2.5px solid var(--line); border-radius:14px;
+    padding:11px 13px; resize:none; min-height:70px;
+  }
+  textarea:focus{ border-color:var(--accent); outline:none; }
+
+  .nav-row{ display:flex; gap:10px; margin-top:14px; }
+  .nav-btn{
+    flex:1; font-family:'Baloo 2', sans-serif; font-weight:700; font-size:15px;
+    padding:12px; border-radius:16px; border:none; cursor:pointer;
+  }
+  .nav-btn.back{ background:#fff; border:2.5px solid var(--line); color:var(--grey); flex:0 0 76px; }
+  .nav-btn.fwd{ background:var(--accent); color:#fff; box-shadow:0 10px 18px -8px rgba(0,0,0,0.25); }
+  .nav-btn.fwd.finish{ background:var(--grass); }
+
+  .celebrate{
+    position:absolute; inset:0;
+    background:linear-gradient(160deg, var(--accent), color-mix(in srgb, var(--accent) 60%, #000 20%));
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; color:#fff; padding:30px;
+    animation:fadeIn .3s ease;
+  }
+  .celebrate.hidden{ display:none; }
+  .celebrate .big-emoji{ font-size:52px; margin-bottom:10px; animation:pop .5s ease; }
+  .celebrate h3{ font-family:'Baloo 2', sans-serif; font-size:22px; margin:0 0 8px; }
+  .celebrate p{ font-weight:700; font-size:13.5px; margin:0 0 20px; max-width:260px; }
+  .celebrate button{
+    background:#fff; color:var(--plum); border:none;
+    font-family:'Baloo 2', sans-serif; font-weight:700; font-size:15px;
+    padding:12px 26px; border-radius:16px; cursor:pointer;
+  }
+  @keyframes fadeIn{ from{opacity:0;} to{opacity:1;} }
+  @keyframes pop{ 0%{transform:scale(0);} 70%{transform:scale(1.2);} 100%{transform:scale(1);} }
+
+  @media (prefers-reduced-motion: reduce){
+    .celebrate .big-emoji{ animation:none; }
+  }
+</style>
+</head>
+<body>
+<div class="tag">A 5-minute self-awareness app — different games every day 🎲</div>
+
+<div class="phone" id="phone">
+  <div class="masthead" id="masthead">
+    <div class="glow"></div>
+    <h1>Seven Mornings</h1>
+    <p id="mastSub">A new surprise every day! 🎲</p>
+  </div>
+
+  <div class="week-path" id="weekPath"></div>
+  <div class="screen" id="screen"></div>
+
+  <div class="celebrate hidden" id="celebrate">
+    <div class="big-emoji">🎉</div>
+    <h3>Nice work!</h3>
+    <p id="celebrateMsg"></p>
+    <button id="celebrateBtn">Back to my week</button>
+  </div>
+</div>
+
+<script>
+/* ---------------------------------------------------------------
+   7 days × 3 unique mini-games (never the same shape twice in one
+   day) + a promise you make to yourself, which the NEXT day checks
+   back on — like a friendly reminder.
+   Everything lives in memory only (no localStorage), so it resets
+   on reload. A real shipped app would save this + send real
+   notifications.
+------------------------------------------------------------------*/
+const DAYS = [
+  { label:"Mon", emoji:"🪞", theme:"Be Your Own Best Friend",
+    accent:"#FF6F61", soft:"#FFE9E6",
+    tasks:[
+      { type:"truefalse", statement:"I am kinder to my friends than I am to myself.",
+        reveal:"That's okay — lots of people are! Today, try being as kind to YOU as you are to others. 💛" },
+      { type:"tap", question:"Pick the kind word you need today:",
+        options:[["💪","Brave"],["😌","Calm"],["💛","Loved"],["✅","Enough"]] },
+      { type:"countdown", question:"Say one nice thing about yourself out loud!", seconds:10 }
+    ],
+    promiseLabel:"I promise to be kind to myself today by…",
+    promisePlaceholder:"e.g. not being mean to myself about mistakes" },
+
+  { label:"Tue", emoji:"🎯", theme:"Try Something New",
+    accent:"#F2913D", soft:"#FFF1DE",
+    tasks:[
+      { type:"spin", question:"Spin to find your tiny challenge!",
+        options:["Take the stairs 🪜","Smile at someone 😊","Say thank you 🙏","Try a new snack 🍎","Listen more 👂"] },
+      { type:"slider", question:"How ready do you feel to try something new?", faces:["😴","😐","🙂","😃","🤩"] },
+      { type:"toggle", question:"Will you try your challenge before lunch?" }
+    ],
+    promiseLabel:"I promise to try…",
+    promisePlaceholder:"type your challenge here" },
+
+  { label:"Wed", emoji:"🧭", theme:"Which Way Are You?",
+    accent:"#1FA398", soft:"#DFF7F4",
+    tasks:[
+      { type:"tap", question:"Which way is your energy pointing?",
+        options:[["🎯","Focus"],["🔍","Curious"],["😌","Calm"],["😄","Happy"]] },
+      { type:"star", question:"Rate your focus right now:" },
+      { type:"quiz", statement:"True or False: Taking 3 deep breaths can help your brain focus faster.",
+        answer:true, fact:"True! Deep breaths send extra oxygen to your brain. 🧠" }
+    ],
+    promiseLabel:"I promise to point my energy toward…",
+    promisePlaceholder:"e.g. finishing my homework calmly" },
+
+  { label:"Thu", emoji:"🐾", theme:"Mood Animal",
+    accent:"#8B6FCF", soft:"#EDE7F9",
+    tasks:[
+      { type:"word", question:"Pick the animal that matches your mood:",
+        options:["Lion 🦁","Turtle 🐢","Bird 🐦","Cat 🐱","Bear 🐻","Rabbit 🐰"] },
+      { type:"quiz", statement:"True or False: Animals show their feelings with their bodies, just like people.",
+        answer:true, fact:"True! A wagging tail or a puffed-up cat both show feelings. 🐾" },
+      { type:"countdown", question:"Move or make a sound like your mood animal!", seconds:10 }
+    ],
+    promiseLabel:"I promise to act a little more like my animal today by…",
+    promisePlaceholder:"e.g. being brave like a lion" },
+
+  { label:"Fri", emoji:"🚀", theme:"Tiny Adventure",
+    accent:"#3D84C7", soft:"#E1EEF9",
+    tasks:[
+      { type:"spin", question:"Spin for your tiny adventure!",
+        options:["New route 🗺️","New song 🎵","New food 🍜","Talk to someone new 👋","Sit somewhere new 🪑"] },
+      { type:"slider", question:"How brave do you feel today?", faces:["😬","😐","🙂","😎","🦁"] },
+      { type:"multitap", question:"Pick ALL the adventures you might try this week:",
+        options:["New route 🗺️","New song 🎵","New food 🍜","Talk to someone new 👋","Sit somewhere new 🪑","Wear something fun 👕","Read something new 📖"] }
+    ],
+    promiseLabel:"I promise to try my adventure today:",
+    promisePlaceholder:"type it here" },
+
+  { label:"Sat", emoji:"🌼", theme:"Notice the Little Things",
+    accent:"#4CAF7D", soft:"#E4F5EB",
+    tasks:[
+      { type:"tap", question:"Where will you notice something small today?",
+        options:[["🏠","Home"],["🌳","Outside"],["🏫","School"],["🧑‍🤝‍🧑","Friend"]] },
+      { type:"star", question:"Rate how peaceful you feel right now:" },
+      { type:"quiz", statement:"True or False: Noticing small good things can make you feel happier over time.",
+        answer:true, fact:"True! Scientists call this 'gratitude' — and it really works. 🌟" }
+    ],
+    promiseLabel:"I promise to notice…",
+    promisePlaceholder:"e.g. the smell of breakfast" },
+
+  { label:"Sun", emoji:"📰", theme:"Tomorrow's Headline",
+    accent:"#D9469A", soft:"#FBE3F0",
+    tasks:[
+      { type:"word", question:"Pick your headline word for the week:",
+        options:["Calm","Brave","Kind","Proud","Curious","Strong"] },
+      { type:"slider", question:"How proud are you of this week?", faces:["😕","😐","🙂","😊","🥳"] },
+      { type:"toggle", question:"Did this week help you know yourself better?" }
+    ],
+    promiseLabel:"Next week, I promise I will…",
+    promisePlaceholder:"type your promise for next week" }
+];
+
+const state = {
+  current: 0,
+  stepIndex: 0,
+  promise: new Array(DAYS.length).fill(""),
+  promiseCheck: new Array(DAYS.length).fill(null),
+  answers: DAYS.map(()=>[null,null,null]),
+  completed: new Array(DAYS.length).fill(false)
+};
+
+const weekPath = document.getElementById("weekPath");
+const screen = document.getElementById("screen");
+const masthead = document.getElementById("masthead");
+const mastSub = document.getElementById("mastSub");
+const celebrate = document.getElementById("celebrate");
+const celebrateMsg = document.getElementById("celebrateMsg");
+
+function getStepList(i){
+  const list = [];
+  if(i>0 && state.promise[i-1] && state.promiseCheck[i-1]===null){
+    list.push({kind:"reminder", ref:i-1});
+  }
+  list.push({kind:"task", idx:0});
+  list.push({kind:"task", idx:1});
+  list.push({kind:"task", idx:2});
+  list.push({kind:"promise"});
+  return list;
+}
+
+function applyAccent(i){
+  const d = DAYS[i];
+  document.documentElement.style.setProperty("--accent", d.accent);
+  document.documentElement.style.setProperty("--accent-soft", d.soft);
+}
+
+function renderWeekPath(){
+  weekPath.innerHTML = DAYS.map((d,i)=>{
+    const cls = "day-pin" + (i===state.current?" active":"") + (state.completed[i]?" complete":"");
+    const pendingBell = (i>0 && state.promise[i-1] && state.promiseCheck[i-1]===null && !state.completed[i]);
+    return `<button type="button" class="${cls}" data-i="${i}" style="--pin-color:${d.accent}">
+      ${pendingBell ? '<span class="bell">🔔</span>' : ""}
+      <span class="bubble">${state.completed[i] ? "✅" : d.emoji}</span>
+      <span class="lbl">${d.label}</span>
+    </button>`;
+  }).join("");
+  weekPath.querySelectorAll(".day-pin").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      state.current = +btn.dataset.i;
+      state.stepIndex = 0;
+      renderAll();
+    });
+  });
+}
+
+function renderScreen(){
+  const i = state.current;
+  const d = DAYS[i];
+  applyAccent(i);
+  mastSub.textContent = d.theme + " " + d.emoji;
+
+  const steps = getStepList(i);
+  if(state.stepIndex >= steps.length) state.stepIndex = steps.length-1;
+  const step = steps[state.stepIndex];
+
+  const dotsHtml = steps.map((s,idx)=>{
+    let cls = "";
+    if(idx < state.stepIndex) cls="done";
+    else if(idx === state.stepIndex) cls="now";
+    return `<span class="${cls}"></span>`;
+  }).join("");
+
+  let inner = "";
+
+  if(step.kind === "reminder"){
+    const prevDay = DAYS[step.ref];
+    inner = `
+      <div class="step-icon">🔔</div>
+      <p class="step-kicker">A little reminder</p>
+      <p class="step-prompt">Yesterday, on ${prevDay.label}, you said:</p>
+      <div class="promise-quote">“${escapeHtml(state.promise[step.ref])}”</div>
+      <p class="step-prompt" style="margin-bottom:8px;">Did you do it?</p>
+      <div class="check-row">
+        <button type="button" class="check-btn yes" data-check="yes">✅ Yes I did!</button>
+        <button type="button" class="check-btn kinda" data-check="kinda">🤏 Kind of</button>
+        <button type="button" class="check-btn no" data-check="no">❌ Not yet</button>
+      </div>`;
+  }
+
+  if(step.kind === "task"){
+    const task = d.tasks[step.idx];
+    inner = renderTask(task, i, step.idx);
+  }
+
+  if(step.kind === "promise"){
+    inner = `
+      <div class="step-icon">💌</div>
+      <p class="step-kicker">Your promise for today</p>
+      <p class="step-prompt">${d.promiseLabel}</p>
+      <textarea id="promiseInput" placeholder="${d.promisePlaceholder}">${state.promise[i]}</textarea>
+      <p style="font-size:11px;font-weight:700;color:var(--grey);margin-top:8px;">🔔 Tomorrow, I'll gently remind you about this!</p>`;
+  }
+
+  screen.innerHTML = `
+    <div class="day-header">
+      <span class="theme-emoji">${d.emoji}</span>
+      <h2>${d.theme}</h2>
+      <p class="sub">Day ${i+1} of 7 · about 5 minutes</p>
+    </div>
+    <div class="dots">${dotsHtml}</div>
+    <div class="step-card">${inner}</div>
+    <div class="nav-row">
+      ${state.stepIndex>0 ? `<button type="button" class="nav-btn back" id="backBtn">← Back</button>` : ""}
+      <button type="button" class="nav-btn fwd ${state.stepIndex===steps.length-1?'finish':''}" id="fwdBtn">
+        ${state.stepIndex===steps.length-1 ? "Finish Day 🎉" : "Next →"}
+      </button>
+    </div>
+  `;
+
+  wireStep(i, step, steps);
+}
+
+function escapeHtml(s){
+  const div = document.createElement("div");
+  div.textContent = s || "";
+  return div.innerHTML;
+}
+
+/* ---------------- Task renderers ---------------- */
+function renderTask(task, dayI, taskIdx){
+  const saved = state.answers[dayI][taskIdx];
+
+  if(task.type === "truefalse"){
+    return `
+      <div class="step-icon">🤔</div>
+      <p class="step-kicker">True or False</p>
+      <p class="step-prompt">${task.statement}</p>
+      <div class="tf-row">
+        <button type="button" class="tf-btn ${saved==='true'?'selected':''}" data-tf="true">True</button>
+        <button type="button" class="tf-btn ${saved==='false'?'selected':''}" data-tf="false">False</button>
+      </div>
+      ${saved ? `<div class="reveal-card">${task.reveal}</div>` : ""}
+    `;
+  }
+
+  if(task.type === "quiz"){
+    let feedback = "";
+    if(saved){
+      const correct = (saved==='true') === task.answer;
+      feedback = `<div class="reveal-card">${correct ? "✅ Correct! " : "Good guess! "}${task.fact}</div>`;
+    }
+    return `
+      <div class="step-icon">💡</div>
+      <p class="step-kicker">Fun Fact Quiz</p>
+      <p class="step-prompt">${task.statement}</p>
+      <div class="tf-row">
+        <button type="button" class="tf-btn ${saved==='true'?'selected':''}" data-tf="true">True</button>
+        <button type="button" class="tf-btn ${saved==='false'?'selected':''}" data-tf="false">False</button>
+      </div>
+      ${feedback}
+    `;
+  }
+
+  if(task.type === "tap"){
+    const cards = task.options.map(([emoji,label])=>{
+      const sel = saved===label ? "selected" : "";
+      return `<button type="button" class="tap-card ${sel}" data-tap="${label}"><span>${emoji}</span><span class="t-lbl">${label}</span></button>`;
+    }).join("");
+    return `
+      <div class="step-icon">👆</div>
+      <p class="step-kicker">Tap One</p>
+      <p class="step-prompt">${task.question}</p>
+      <div class="tap-grid">${cards}</div>
+    `;
+  }
+
+  if(task.type === "multitap"){
+    const picked = saved || [];
+    const chips = task.options.map(opt=>{
+      const sel = picked.includes(opt) ? "selected" : "";
+      return `<button type="button" class="chip ${sel}" data-multi="${opt}">${opt}</button>`;
+    }).join("");
+    return `
+      <div class="step-icon">🖐️</div>
+      <p class="step-kicker">Tap ALL that fit</p>
+      <p class="step-prompt">${task.question}</p>
+      <div class="chip-row">${chips}</div>
+    `;
+  }
+
+  if(task.type === "slider"){
+    const val = saved !== null && saved !== undefined ? saved : 5;
+    const faceIdx = Math.min(task.faces.length-1, Math.floor((val-1)/2));
+    return `
+      <div class="step-icon">🎚️</div>
+      <p class="step-kicker">Slide to answer</p>
+      <p class="step-prompt">${task.question}</p>
+      <div class="slider-wrap">
+        <div class="slider-face" id="sliderFace">${task.faces[faceIdx]}</div>
+        <input type="range" min="1" max="10" value="${val}" id="sliderInput">
+        <div class="slider-labels"><span>1</span><span>10</span></div>
+      </div>
+    `;
+  }
+
+  if(task.type === "toggle"){
+    return `
+      <div class="step-icon">🔀</div>
+      <p class="step-kicker">Yes or No</p>
+      <p class="step-prompt">${task.question}</p>
+      <div class="toggle-row">
+        <button type="button" class="toggle-btn ${saved==='yes'?'selected':''}" data-toggle="yes">Yes</button>
+        <button type="button" class="toggle-btn ${saved==='no'?'selected':''}" data-toggle="no">No</button>
+      </div>
+    `;
+  }
+
+  if(task.type === "star"){
+    const val = saved || 0;
+    let stars = "";
+    for(let s=1;s<=5;s++){
+      stars += `<span class="star ${s<=val?'lit':''}" data-star="${s}">⭐</span>`;
+    }
+    return `
+      <div class="step-icon">⭐</div>
+      <p class="step-kicker">Tap the stars</p>
+      <p class="step-prompt">${task.question}</p>
+      <div class="star-row">${stars}</div>
+    `;
+  }
+
+  if(task.type === "word"){
+    const chips = task.options.map(w=>{
+      const sel = saved===w ? "selected" : "";
+      return `<button type="button" class="word-chip ${sel}" data-word="${w}">${w}</button>`;
+    }).join("");
+    return `
+      <div class="step-icon">☁️</div>
+      <p class="step-kicker">Pick a word</p>
+      <p class="step-prompt">${task.question}</p>
+      <div class="word-row">${chips}</div>
+    `;
+  }
+
+  if(task.type === "spin"){
+    const cards = task.options.map((opt,idx)=>`<span class="spin-card" data-idx="${idx}">${opt}</span>`).join("");
+    return `
+      <div class="step-icon">🎡</div>
+      <p class="step-kicker">Mystery Spin</p>
+      <p class="step-prompt">${task.question}</p>
+      <div class="spin-grid" id="spinGrid">${cards}</div>
+      <button type="button" class="spin-btn" id="spinBtn">${saved ? "Spin again?" : "Spin! 🎲"}</button>
+    `;
+  }
+
+  if(task.type === "countdown"){
+    return `
+      <div class="step-icon">⏱️</div>
+      <p class="step-kicker">Do it now!</p>
+      <p class="step-prompt">${task.question}</p>
+      <div class="countdown-ring" id="ring">${saved ? "🌟" : task.seconds}</div>
+      <button type="button" class="spin-btn" id="countGo" ${saved?'disabled':''}>${saved ? "All done!" : "Start"}</button>
+    `;
+  }
+
+  return "";
+}
+
+/* ---------------- Wiring ---------------- */
+function wireStep(dayI, step, steps){
+  if(step.kind === "reminder"){
+    screen.querySelectorAll("[data-check]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        state.promiseCheck[step.ref] = btn.dataset.check;
+        renderAll();
+      });
+    });
+  }
+
+  if(step.kind === "task"){
+    wireTask(DAYS[dayI].tasks[step.idx], dayI, step.idx);
+  }
+
+  if(step.kind === "promise"){
+    const input = document.getElementById("promiseInput");
+    if(input) input.addEventListener("input", e=>{ state.promise[dayI] = e.target.value; });
+  }
+
+  const backBtn = document.getElementById("backBtn");
+  if(backBtn) backBtn.addEventListener("click", ()=>{ state.stepIndex--; renderScreen(); });
+
+  const fwdBtn = document.getElementById("fwdBtn");
+  fwdBtn.addEventListener("click", ()=>{
+    if(state.stepIndex < steps.length-1){
+      state.stepIndex++;
+      renderScreen();
+    } else {
+      finishDay(dayI);
+    }
+  });
+}
+
+function wireTask(task, dayI, taskIdx){
+  if(task.type === "truefalse" || task.type === "quiz"){
+    screen.querySelectorAll("[data-tf]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        state.answers[dayI][taskIdx] = btn.dataset.tf;
+        renderScreen();
+      });
+    });
+  }
+  if(task.type === "tap"){
+    screen.querySelectorAll("[data-tap]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        state.answers[dayI][taskIdx] = btn.dataset.tap;
+        renderScreen();
+      });
+    });
+  }
+  if(task.type === "multitap"){
+    screen.querySelectorAll("[data-multi]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const val = btn.dataset.multi;
+        let arr = state.answers[dayI][taskIdx] || [];
+        if(arr.includes(val)) arr = arr.filter(x=>x!==val);
+        else arr = [...arr, val];
+        state.answers[dayI][taskIdx] = arr;
+        btn.classList.toggle("selected");
+      });
+    });
+  }
+  if(task.type === "slider"){
+    const input = document.getElementById("sliderInput");
+    const face = document.getElementById("sliderFace");
+    input.addEventListener("input", e=>{
+      const val = +e.target.value;
+      state.answers[dayI][taskIdx] = val;
+      const faceIdx = Math.min(task.faces.length-1, Math.floor((val-1)/2));
+      face.textContent = task.faces[faceIdx];
+    });
+  }
+  if(task.type === "toggle"){
+    screen.querySelectorAll("[data-toggle]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        state.answers[dayI][taskIdx] = btn.dataset.toggle;
+        renderScreen();
+      });
+    });
+  }
+  if(task.type === "star"){
+    screen.querySelectorAll("[data-star]").forEach(el=>{
+      el.addEventListener("click", ()=>{
+        state.answers[dayI][taskIdx] = +el.dataset.star;
+        renderScreen();
+      });
+    });
+  }
+  if(task.type === "word"){
+    screen.querySelectorAll("[data-word]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        state.answers[dayI][taskIdx] = btn.dataset.word;
+        renderScreen();
+      });
+    });
+  }
+  if(task.type === "spin"){
+    const btn = document.getElementById("spinBtn");
+    const grid = document.getElementById("spinGrid");
+    const cards = Array.from(grid.querySelectorAll(".spin-card"));
+    btn.addEventListener("click", ()=>{
+      btn.disabled = true;
+      cards.forEach(c=>c.classList.remove("selected"));
+      const n = cards.length;
+      const target = Math.floor(Math.random()*n);
+      const totalTicks = n*2 + target;
+      let k = 0;
+      function tick(){
+        cards.forEach(c=>c.classList.remove("spin-active"));
+        cards[k % n].classList.add("spin-active");
+        if(k >= totalTicks){
+          cards[k % n].classList.remove("spin-active");
+          cards[k % n].classList.add("selected");
+          state.answers[dayI][taskIdx] = task.options[target];
+          btn.disabled = false;
+          btn.textContent = "Spin again?";
+          return;
+        }
+        k++;
+        const delay = 55 + Math.floor((k/totalTicks)*250);
+        setTimeout(tick, delay);
+      }
+      tick();
+    });
+  }
+  if(task.type === "countdown"){
+    const ring = document.getElementById("ring");
+    const go = document.getElementById("countGo");
+    if(go && !go.disabled){
+      go.addEventListener("click", ()=>{
+        go.disabled = true;
+        let remaining = task.seconds;
+        ring.classList.add("active");
+        const timer = setInterval(()=>{
+          remaining--;
+          if(remaining <= 0){
+            clearInterval(timer);
+            ring.textContent = "🌟";
+            go.textContent = "All done!";
+            state.answers[dayI][taskIdx] = true;
+          } else {
+            ring.textContent = remaining;
+          }
+        }, 1000);
+      });
+    }
+  }
+}
+
+function finishDay(i){
+  state.completed[i] = true;
+  const d = DAYS[i];
+  const hasPromise = !!state.promise[i];
+  celebrateMsg.textContent = hasPromise
+    ? `You finished "${d.theme}"! Tomorrow I'll gently remind you about your promise. 🔔`
+    : `You finished "${d.theme}"! Come back tomorrow for a new surprise. 🎲`;
+  celebrate.classList.remove("hidden");
+}
+
+document.getElementById("celebrateBtn").addEventListener("click", ()=>{
+  celebrate.classList.add("hidden");
+  state.current = (state.current+1) % DAYS.length;
+  state.stepIndex = 0;
+  renderAll();
+});
+
+function renderAll(){
+  renderWeekPath();
+  renderScreen();
+}
+renderAll();
+</script>
+</body>
+</html>

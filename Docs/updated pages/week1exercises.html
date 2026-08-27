@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clarity — A 7-Day Self-Awareness Journey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Nunito:wght@400;500;600;700;800&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FDF6EC;
+    --sky:#7ec8e3; --sky-soft:#EAF5F9;
+    --sage:#8fbf8f; --sage-soft:#F1F7EF;
+    --lavender:#c3a6e0; --lavender-soft:#F3EEF9;
+    --gold:#f5b942; --gold-soft:#FBF1DE;
+    --peach:#ee8e7b; --peach-soft:#FBEFEC;
+    --ink:#3A3A3A; --ink-soft:#6b6560;
+    --shadow:0 8px 24px rgba(58,58,58,0.08);
+    --shadow-lift:0 14px 34px rgba(58,58,58,0.14);
+    --r-lg:26px; --r-md:20px; --r-sm:14px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:#e7e2d8;font-family:'Nunito',system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);padding:18px 14px 60px;min-height:100vh;}
+  .container{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
+  .screen{background:var(--cream);border-radius:var(--r-lg);padding:28px 22px;box-shadow:var(--shadow-lift);position:relative;overflow:hidden;animation:rise .35s ease;}
+  @keyframes rise{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+  h1,h2,h3{font-family:'Fraunces',Georgia,serif;margin:0;color:var(--ink);font-weight:600;}
+  p{margin:0;}
+  .eyebrow{font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:11px;color:var(--ink-soft);margin-bottom:12px;}
+  .screen-title{font-size:21px;line-height:1.3;margin-bottom:10px;}
+  .prog-label{font-size:12px;font-weight:700;color:var(--ink-soft);letter-spacing:1px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;}
+  .gentle{background:#fff;border-radius:var(--r-sm);padding:11px 14px;margin-bottom:16px;border-left:4px solid var(--accent,#7ec8e3);font-size:13px;color:var(--ink-soft);line-height:1.5;box-shadow:var(--shadow);}
+
+  .option-btn{background:#fff;border:2px solid transparent;border-radius:var(--r-sm);padding:15px 18px;font-size:15px;font-weight:600;color:var(--ink);box-shadow:var(--shadow);margin-bottom:11px;cursor:pointer;transition:.15s ease;display:block;width:100%;text-align:left;font-family:'Nunito',sans-serif;line-height:1.35;}
+  .option-btn:hover{border-color:var(--accent,#7ec8e3);transform:translateY(-2px);}
+  .option-btn.selected{border-color:var(--accent,#7ec8e3);background:var(--soft,#EAF5F9);box-shadow:var(--shadow-lift);}
+  .option-btn .check{float:right;opacity:0;font-weight:800;}
+  .option-btn.selected .check{opacity:1;}
+
+  .scale-row{display:flex;justify-content:space-between;gap:8px;margin:18px 0 8px;}
+  .scale-btn{flex:1;max-width:58px;aspect-ratio:1;border-radius:50%;background:#fff;border:2px solid transparent;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;box-shadow:var(--shadow);cursor:pointer;transition:.15s ease;color:var(--ink);}
+  .scale-btn:hover{border-color:var(--accent,#7ec8e3);}
+  .scale-btn.selected{background:var(--accent,#7ec8e3);color:#fff;transform:scale(1.08);box-shadow:var(--shadow-lift);}
+  .scale-ends{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-soft);font-weight:600;}
+
+  .nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:10px;}
+  .btn{border:none;border-radius:var(--r-sm);padding:14px 18px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:.18s ease;box-shadow:var(--shadow);}
+  .btn-primary{background:var(--ink);color:#fff;flex:1;}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:var(--shadow-lift);}
+  .btn-primary:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:var(--shadow);}
+  .btn-ghost{background:transparent;box-shadow:none;color:var(--ink-soft);}
+  .btn-ghost:hover{color:var(--ink);}
+  .btn-accent{background:var(--accent,#7ec8e3);color:var(--ink);flex:1;}
+  .btn-accent:hover{transform:translateY(-2px);box-shadow:var(--shadow-lift);}
+
+  .brand{display:flex;align-items:center;gap:12px;}
+  .logo{width:46px;height:46px;border-radius:15px;background:var(--ink);display:flex;align-items:center;justify-content:center;font-size:24px;}
+  .app-name{font-family:'Fraunces',serif;font-weight:700;font-size:23px;}
+  .stats{display:flex;gap:10px;margin-top:12px;}
+  .stat{flex:1;background:#fff;border-radius:var(--r-md);padding:10px;text-align:center;box-shadow:var(--shadow);}
+  .stat b{display:block;font-size:20px;}
+  .stat span{font-size:11px;font-weight:700;color:var(--ink-soft);}
+
+  .journey{position:relative;padding-left:8px;}
+  .leg{display:flex;align-items:flex-start;gap:14px;position:relative;padding-bottom:6px;}
+  .leg::before{content:'';position:absolute;left:21px;top:40px;bottom:-6px;width:3px;background:#e0d8c8;border-radius:2px;}
+  .leg:last-child::before{display:none;}
+  .node{width:44px;height:44px;border-radius:50%;flex:none;background:#fff;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;position:relative;z-index:1;color:var(--ink-soft);}
+  .node.done{background:var(--accent,#7ec8e3);color:#fff;}
+  .node.now{background:var(--ink);color:#fff;box-shadow:0 0 0 5px rgba(58,58,58,.12);}
+  .leginfo{flex:1;background:#fff;border-radius:var(--r-md);padding:11px 14px;box-shadow:var(--shadow);cursor:pointer;border:2px solid transparent;}
+  .leginfo:hover{border-color:var(--accent,#7ec8e3);}
+  .leginfo.locked{opacity:.55;cursor:not-allowed;}
+  .leginfo.locked:hover{border-color:transparent;}
+  .leg-title{font-weight:800;font-size:14px;}
+  .leg-sub{font-size:11px;color:var(--ink-soft);font-weight:600;margin-top:2px;}
+  .leg-tag{display:inline-block;background:var(--soft,#EAF5F9);border-radius:99px;padding:2px 9px;font-size:10px;font-weight:800;margin-top:6px;}
+
+  .insight-card{background:linear-gradient(180deg,#fff 0%,var(--soft,#EAF5F9) 130%);border-radius:var(--r-md);padding:22px;border:2px solid var(--accent,#7ec8e3);}
+  .insight-title{font-family:'Fraunces',serif;font-size:21px;font-weight:700;margin-bottom:10px;}
+  .insight-text{font-size:15px;color:var(--ink);line-height:1.55;}
+  .insight-text b{color:var(--ink);}
+  .mantra{font-family:'Caveat',cursive;font-size:24px;color:var(--ink);line-height:1.5;margin:14px 0;background:#fff;border-radius:var(--r-md);padding:16px 18px;box-shadow:var(--shadow);}
+  .kchip{display:inline-block;background:#fff;border-radius:99px;padding:7px 12px;font-size:12px;font-weight:700;box-shadow:var(--shadow);border:2px solid var(--sage);color:#2c5a2c;background:#e9f5e9;margin:3px;}
+  .divider{border-top:1px solid var(--accent,#7ec8e3);margin:18px 0;opacity:.6;}
+  .meta{font-size:12px;color:var(--ink-soft);line-height:1.55;}
+  .center{text-align:center;}
+  .celebrate{text-align:center;font-family:'Caveat',cursive;font-size:26px;color:var(--ink);}
+  .xpfloat{position:absolute;right:14px;top:14px;background:var(--gold);color:#fff;border-radius:99px;padding:4px 10px;font-size:12px;font-weight:800;box-shadow:var(--shadow);}
+  .confetti{position:fixed;top:-10px;width:10px;height:14px;pointer-events:none;z-index:999;border-radius:2px;animation:fall linear forwards;}
+  @keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:.4;}}
+</style>
+</head>
+<body>
+<div class="container" id="app"></div>
+
+<script>
+/* ============================================================
+   CLARITY — a 7-day self-awareness journey.
+   The book is only a reference for the journey's arc (noticing
+   yourself -> understanding patterns -> values -> relationships
+   -> edges -> full clarity). Questions are simple, one-tap
+   reflection prompts about the person's own life. No right or
+   wrong answers. Ends in a personal clarity blueprint.
+   ============================================================ */
+const STORE_KEY='clarity_v1';
+
+const DAYS=[
+{theme:'Looking in the Mirror',sub:'How clearly do I see myself?',ex:'Reflection',exIcon:'🪞',accent:'#7ec8e3',soft:'#EAF5F9',icon:'🔍',
+ gentle:'No right answers here — just honest, gentle noticing.',
+ qs:[
+  {type:'SL',low:'Hazy',high:'Crystal clear',text:'Right now, how clearly do I know what I actually want in my life?'},
+  {type:'SC',text:'If a close friend described me in one word, I\u2019d guess they\u2019d say…',options:['Kind','Driven','Thoughtful','Playful','Steady','Hard to say']},
+  {type:'MS',text:'Which of these sounds most like me? (pick all that apply)',options:['I think before I speak','I act on impulse','I plan ahead','I go with the flow']},
+  {type:'TF',text:'I have a clear sense of my own strengths.'},
+  {type:'SC',text:'The side of me people rarely see is…',options:['My worries','My ambitions','My tenderness','My playfulness','I\u2019m pretty open']},
+  {type:'RK',text:'What I\u2019d most like to understand better about myself:',options:['My reactions','My motivation','My habits','My relationships']}
+ ]},
+{theme:'The Inner Weather',sub:'Noticing my thoughts & feelings',ex:'Observation',exIcon:'👀',accent:'#8fbf8f',soft:'#F1F7EF',icon:'🌤️',
+ gentle:'Feelings are weather — they pass. We\u2019re just noticing them.',
+ qs:[
+  {type:'SL',low:'Stormy',high:'Sunny',text:'Today, my inner weather felt like…'},
+  {type:'MS',text:'Which emotions have I felt in the last day or two? (pick all that apply)',options:['Joy','Anxiety','Frustration','Calm','Sadness','Excitement']},
+  {type:'SC',text:'When a strong emotion arrives, my first move is usually to…',options:['Feel it fully','Push it away','Analyze it','Distract myself']},
+  {type:'TF',text:'I can usually name what I\u2019m feeling in the moment.'},
+  {type:'SC',text:'The thought that most often repeats in my head sounds like…',options:['\u201cI can handle this\u201d','\u201cWhat if I fail?\u201d','\u201cI need to be perfect\u201d','\u201cI\u2019m too tired\u201d','\u201cI don\u2019t know\u201d']},
+  {type:'SL',low:'Autopilot',high:'Deliberate',text:'How much of my day runs on autopilot (reacting) vs. deliberate choice?'}
+ ]},
+{theme:'My Patterns & Habits',sub:'Spotting my loops',ex:'Observation',exIcon:'🎯',accent:'#f5b942',soft:'#FBF1DE',icon:'🔄',
+ gentle:'Patterns aren\u2019t flaws — they\u2019re autopilot. Naming them gives you the wheel.',
+ qs:[
+  {type:'SC',text:'When I\u2019m stressed, my go-to response is…',options:['I withdraw','I overthink','I get busy','I seek comfort (food/phone)','I talk it out']},
+  {type:'MS',text:'Which habits quietly run my days? (pick all that apply)',options:['Phone scrolling','Procrastinating','Over-planning','People-pleasing','Worry loops','None stand out']},
+  {type:'TF',text:'I can name one habit that helps me and one that doesn\u2019t.'},
+  {type:'SL',low:'Blind spot',high:'Very aware',text:'In the moment, how aware am I when I\u2019m falling into an old pattern?'},
+  {type:'SC',text:'The pattern I\u2019d most like to shift is…',options:['Reacting before thinking','Putting things off','Being too hard on myself','Avoiding hard talks','Staying on autopilot']},
+  {type:'RK',text:'What would help me break one pattern the most?',options:['A clear trigger','A replacement action','A reminder or cue','Support from someone']}
+ ]},
+{theme:'What Matters to Me',sub:'My values & strengths',ex:'Reflection',exIcon:'💎',accent:'#c3a6e0',soft:'#F3EEF9',icon:'🧭',
+ gentle:'Values are the compass. Strength comes from living by them.',
+ qs:[
+  {type:'RK',text:'The value that matters most to me right now:',options:['Honesty','Freedom','Connection','Growth','Security','Kindness']},
+  {type:'SC',text:'When I feel most like myself, I\u2019m usually…',options:['Helping someone','Creating something','Learning','Connecting deeply','In quiet / nature']},
+  {type:'SL',low:'Off-track',high:'On-track',text:'How aligned is my daily life with what truly matters to me?'},
+  {type:'MS',text:'Strengths I can genuinely feel good about: (pick all that apply)',options:['Kindness','Persistence','Creativity','Honesty','Calm under pressure','Humor']},
+  {type:'TF',text:'I give myself permission to pursue what matters to me, not just what\u2019s expected.'},
+  {type:'SC',text:'The area I\u2019d most like to grow into next:',options:['Work / purpose','Relationships','Health','Inner peace','Confidence']}
+ ]},
+{theme:'Me With Others',sub:'How I relate, react & set limits',ex:'Scenario',exIcon:'🤝',accent:'#ee8e7b',soft:'#FBEFEC',icon:'🌉',
+ gentle:'The way you relate to others often mirrors the way you relate to yourself.',
+ qs:[
+  {type:'SC',text:'When someone disagrees with me, my first reaction is…',options:['I get defensive','I go quiet','I stay curious','I try to win','I shut down']},
+  {type:'TF',text:'I can be my authentic self with the people close to me.'},
+  {type:'SL',low:'Hold back a lot',high:'Always honest',text:'How often do I hold back what I really think or feel?'},
+  {type:'MS',text:'What I value most in relationships: (pick all that apply)',options:['Honesty','Loyalty','Humor','Support','Shared values','Space']},
+  {type:'SC',text:'The boundary I struggle most to set is…',options:['Saying no','Asking for help','Sharing my feelings','Protecting my time']},
+  {type:'TF',text:'I treat myself with the same kindness I show the people I love.'}
+ ]},
+{theme:'Growing Past My Edges',sub:'Fears, blocks & courage',ex:'Action',exIcon:'🌱',accent:'#7ec8e3',soft:'#E7F2F7',icon:'🔥',
+ gentle:'You\u2019re not stuck. Growth is just one small step past the edge.',
+ qs:[
+  {type:'SC',text:'The thing I keep putting off that would move me forward is…',options:['A hard conversation','A new challenge','An honest look at a habit','Asking for help','Starting something new']},
+  {type:'SL',low:'A little',high:'A lot',text:'How much is fear (of failing or being judged) holding me back?'},
+  {type:'SC',text:'My inner voice when facing something hard usually says…',options:['\u201cI can\u2019t\u201d','\u201cI\u2019ll fail\u201d','\u201cI\u2019ve got this\u201d','\u201cLet me try\u201d','\u201cNot yet\u201d']},
+  {type:'MS',text:'What would help me take one small step? (pick all that apply)',options:['A clear plan','Support from someone','Encouragement','Imagining it going well','A tiny first action']},
+  {type:'TF',text:'I believe I can grow and change — I\u2019m not stuck as I am.'},
+  {type:'RK',text:'The quality I most want to grow next:',options:['Confidence','Patience','Courage','Discipline','Self-kindness']}
+ ]},
+{theme:'Full Clarity',sub:'Bring it all together',ex:'Creative',exIcon:'🌟',accent:'#f5b942',soft:'#FBF1DE',icon:'🌅',dynamic:true,
+ gentle:'The journey ends here — in a clearer picture of yourself.',
+ qs:[
+  {type:'SC',text:'Looking back, which day felt most true to my life right now?',options:['Seeing myself (Day 1)','Inner weather (Day 2)','Patterns & habits (Day 3)','What matters to me (Day 4)','Me with others (Day 5)','Growing past my edges (Day 6)']},
+  {type:'SL',low:'No change',high:'Big shift',text:'Overall, how much clearer do I feel about myself than 7 days ago?'},
+  {type:'MS',dynamic:'flags',text:'Which insights do I want to keep living by? (pick all that apply)',options:[]},
+  {type:'RK',dynamic:'commit',text:'Pick the ONE thing I\u2019ll practice this week.',options:[]},
+  {type:'TF',text:'I feel ready to keep this self-awareness practice going.'}
+ ]}
+];
+
+/* ================= STATE ================= */
+let state=load();
+function defaultState(){return{answers:{},xp:0,completed:{},updated:0};}
+function load(){try{const s=JSON.parse(localStorage.getItem(STORE_KEY));return s&&s.answers?s:defaultState();}catch(e){return defaultState();}}
+function save(){state.updated=Date.now();try{localStorage.setItem(STORE_KEY,JSON.stringify(state));}catch(e){}}
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const dayDone=i=>!!state.completed[i];
+const dayUnlocked=i=>i===0||dayDone(i-1);
+const ans=(d,q)=>state.answers[d]&&state.answers[d][q]!==undefined?state.answers[d][q]:null;
+const countDone=()=>Object.values(state.completed).filter(Boolean).length;
+function firstOpen(){for(let i=0;i<7;i++)if(dayUnlocked(i)&&!dayDone(i))return i;return 6;}
+
+/* ================= INSIGHT / FLAGS ================= */
+function flagOf(i){const a=state.answers[i]||{};switch(i){
+ case 0:return a[3]===true?'Knowing my strengths and what I want':'Tuning into my own strengths and wants';
+ case 1:return (a[0]||0)>=4||a[3]===true?'Naming my feelings as they arrive':'Noticing and naming my inner weather';
+ case 2:return (a[3]||0)>=4?'Catching my patterns before they run':'Gently shifting one recurring pattern';
+ case 3:return (a[2]||0)>=4||a[4]===true?'Living close to what matters to me':'Living closer to my true values';
+ case 4:return a[5]===true||(a[2]||0)>=4?'Being kind to myself and honest with others':'Setting one kind boundary with others';
+ case 5:return a[4]===true&&(a[1]||0)<=3?'Taking one small courageous step':'Trusting that I can grow';
+ default:return 'Keeping my self-awareness practice';}}
+function buildFlags(){const out=[];for(let i=0;i<6;i++){if(!dayDone(i))continue;out.push(flagOf(i));}return out;}
+
+function insight(i){const a=state.answers[i]||{};switch(i){
+ case 0:return d1(a);case 1:return d2(a);case 2:return d3(a);case 3:return d4(a);case 4:return d5(a);case 5:return d6(a);}}
+function d1(a){
+ const wants=a[0]||0;const strengths=a[3]===true;const hidden=a[4];
+ const flag=flagOf(0);
+ if(wants>=4&&strengths)return{title:'You see yourself clearly',text:'You know what you want and you can name your strengths — that\u2019s a solid mirror to guide decisions. <b>Hold onto that clarity; it\u2019s rare and valuable.</b>',flag};
+ if(strengths)return{title:'Your strengths are visible to you',text:'You can name your strengths — a real asset. <b>Now bring them to the front more often.</b>',flag};
+ return{title:'A gentle first look',text:'Self-knowledge is built in small honest looks — and you\u2019ve started. <b>Your strengths are there; give yourself permission to see them.</b>',flag};}
+function d2(a){
+ const weather=a[0]||0;const name=a[3]===true;const autopilot=a[5]||0;
+ const flag=flagOf(1);
+ if(name&&autopilot>=4)return{title:'You\u2019re tuning into yourself',text:'You can name your feelings and you\u2019re often off autopilot — a powerful combination. <b>Keep noticing; it turns reactions into choices.</b>',flag};
+ if(name)return{title:'Feelings are becoming nameable',text:'You can often name what you feel — that\u2019s emotional clarity. <b>When you name it, you soften it.</b>',flag};
+ return{title:'Weather is passing',text:'Your inner weather comes and goes. <b>Next time a feeling arrives, try giving it a name.</b> That simple act brings calm and clarity.',flag};}
+function d3(a){
+ const pattern=a[4]||0;const aware=a[3]||0;
+ const flag=flagOf(2);
+ if(aware>=4)return{title:'You can see the loops coming',text:'You\u2019re often aware in the moment before a pattern runs — that\u2019s exactly where change happens. <b>Use that gap to choose something new.</b>',flag};
+ return{title:'Patterns lose power once named',text:'You\u2019ve named a pattern you\u2019d like to shift. <b>Patterns run on autopilot; simply noticing them in the moment gives you back the wheel.</b>',flag};}
+function d4(a){
+ const align=a[2]||0;const perm=a[4]===true;
+ const flag=flagOf(3);
+ if(align>=4)return{title:'Your life is in tune with your values',text:'Your days line up with what matters to you — that\u2019s a foundation of real wellbeing. <b>Protect that alignment.</b>',flag};
+ if(perm)return{title:'Permission to live your values',text:'You\u2019ve given yourself permission to pursue what matters. <b>Now let one small daily choice match that permission.</b>',flag};
+ return{title:'Your compass is pointing somewhere true',text:'You\u2019ve found what matters to you. <b>Narrow the gap between your values and your days, one small step at a time.</b>',flag};}
+function d5(a){
+ const kind=a[5]===true;const holdback=a[2]||0;
+ const flag=flagOf(4);
+ if(kind&&holdback<=2)return{title:'Kind to yourself, honest with others',text:'You treat yourself kindly and don\u2019t over-hold-back — a healthy balance. <b>Keep protecting it.</b>',flag};
+ if(kind)return{title:'Self-kindness is your foundation',text:'You give yourself the kindness you give others — that\u2019s quietly powerful. <b>From here, honest boundaries become easier.</b>',flag};
+ return{title:'A gentler inner voice is available',text:'You\u2019re noticing how you relate to others and to yourself. <b>Try offering yourself the same patience you give someone you love.</b>',flag};}
+function d6(a){
+ const fear=a[1]||0;const growth=a[4]===true;
+ const flag=flagOf(5);
+ if(fear<=3&&growth)return{title:'You\u2019re ready to grow',text:'Fear holds you back less than you think, and you believe you can change. <b>That belief is the launchpad — take one small step.</b>',flag};
+ if(growth)return{title:'You believe in your growth',text:'You trust that you\u2019re not stuck — the most important belief of all. <b>One tiny step past the edge makes it real.</b>',flag};
+ return{title:'Growth begins just past the edge',text:'You\u2019ve named what\u2019s holding you back. <b>Fear shrinks the moment you move toward it — pick the smallest step and take it.</b>',flag};}
+
+/* ================= RENDER ================= */
+let view=null; // null=home | {kind:'q',day,q} | {kind:'result',day}
+function render(){
+ if(view&&view.kind==='q'){renderQ(view.day,view.q);}
+ else if(view&&view.kind==='result'){renderResult(view.day);}
+ else renderHome();
+}
+function renderHome(){
+ const done=countDone();let legs='';
+ DAYS.forEach((d,i)=>{
+  const isdone=dayDone(i),locked=!dayUnlocked(i),now=!locked&&!isdone&&i===firstOpen();
+  const nodeCls=isdone?'done':now?'now':'';
+  const stTxt=isdone?'Done':locked?'Locked':now?'Today':'Ready';
+  legs+=`<div class="leg"><div class="node ${nodeCls}" style="--accent:${d.accent}">${isdone?'✓':i+1}</div>
+   <div class="leginfo ${locked?'locked':''}" data-i="${i}" style="--accent:${d.accent};--soft:${d.soft};">
+     <div class="leg-title">${d.icon} ${esc(d.theme)}</div>
+     <div class="leg-sub">${esc(d.sub)}</div>
+     <span class="leg-tag">${d.exIcon} ${esc(d.ex)} · ${stTxt}</span></div></div>`;
+ });
+ $('#app').innerHTML=`
+ <div class="screen">
+   <div class="brand"><div class="logo">🧭</div><span class="app-name">Clarity</span></div>
+   <div class="stats">
+     <div class="stat"><b>${done}/7</b><span>Days</span></div>
+     <div class="stat"><b>⭐ ${state.xp}</b><span>Insight points</span></div>
+     <div class="stat"><b>${Math.round(done/7*100)}%</b><span>Journey</span></div>
+   </div>
+ </div>
+ <div class="screen" style="background:linear-gradient(180deg,#FDF6EC,#FBF1E1);">
+   <div class="center">
+     <div class="celebrate">${done===0?'A 7-day journey to see yourself more clearly.':'Welcome back to your journey.'}</div>
+     <p style="font-size:14px;color:var(--ink-soft);margin-top:6px;">${done===0?'Six small steps inward, one tap at a time — ending in full clarity. No typing, no wrong answers.':'You\u2019ve earned ⭐ ${state.xp}. Keep going — clarity is close.'}</p>
+   </div>
+ </div>
+ <div class="screen">
+   <div class="eyebrow">Your journey</div>
+   <div class="journey">${legs}</div>
+   <div class="divider"></div>
+   <p class="meta">A gentle, self-guided reflection practice. Every answer is about you — there\u2019s no pass or fail, only noticing. Each day builds on the last and the journey ends in a clearer picture of yourself.</p>
+   <div style="text-align:center;margin-top:12px;"><button class="btn btn-ghost" id="resetBtn" style="font-size:12px;">Start over</button></div>
+ </div>`;
+ document.querySelectorAll('.leginfo').forEach(c=>c.onclick=()=>{const i=+c.dataset.i;if(!dayUnlocked(i))return;view={kind:'q',day:i,q:0};render();});
+ const rb=$('#resetBtn');if(rb)rb.onclick=()=>{if(confirm('Clear all progress and start over?')){state=defaultState();save();render();}};
+}
+
+function renderQ(day,q){
+ const d=DAYS[day],Q=d.qs[q];const opts=resolveOpts(day,q);const prev=ans(day,q);const isLast=q===d.qs.length-1;
+ $('#app').innerHTML=`
+ <div class="screen" style="--accent:${d.accent};--soft:${d.soft};">
+   <div class="xpfloat">⭐ ${state.xp}</div>
+   <div class="prog-label"><span>Day ${day+1} · ${esc(d.theme)}</span><span>${Math.round((q+1)/d.qs.length*100)}%</span></div>
+   <div class="scale-row" style="height:8px;background:#e0d8c8;border-radius:99px;overflow:hidden;margin:0 0 16px;max-width:none;">
+     <div style="height:100%;width:${(q+1)/d.qs.length*100}%;background:${d.accent};border-radius:99px;"></div>
+   </div>
+   <div class="gentle">${esc(d.gentle)}</div>
+   <h2 class="screen-title">${esc(Q.text)}</h2>
+   <div id="optBox">${renderOpts(Q,opts,prev)}</div>
+   <div class="nav-row" style="margin-top:${Q.type==='SL'?'20px':'14px'};">
+     <button class="btn btn-ghost" id="backBtn" ${q===0?'style="visibility:hidden"':''}>← Back</button>
+     <button class="btn ${isLast?'btn-accent':'btn-primary'}" id="nextBtn" disabled>${isLast?(day===6?'Reveal my clarity':'Reveal today\u2019s insight'):'Continue →'}</button>
+   </div>
+ </div>`;
+ $('#backBtn').onclick=()=>{if(q>0){view={kind:'q',day,q:q-1};render();}};
+ const next=$('#nextBtn');
+ next.onclick=()=>{if(ans(day,q)===null)return;if(isLast){view={kind:'result',day};}else{view={kind:'q',day,q:q+1};}render();};
+ bindOpts(day,q,next);
+}
+function resolveOpts(day,q){const Q=DAYS[day].qs[q];
+ if(Q.dynamic==='flags'){const f=buildFlags();return f.length?f:['Pausing to notice my inner weather']; }
+ if(Q.dynamic==='commit'){const f=buildFlags();return f.length?f:['Pausing to notice my inner weather']; }
+ return Q.options||[];}
+function renderOpts(Q,opts,prev){
+ switch(Q.type){
+  case 'TF':return `<button class="option-btn ${prev===true?'selected':''}" data-v="true">Yes, that\u2019s me <span class="check">✓</span></button>
+    <button class="option-btn ${prev===false?'selected':''}" data-v="false">Not really <span class="check">✓</span></button>`;
+  case 'SL':{let b='';for(let i=1;i<=5;i++)b+=`<button class="scale-btn ${prev===i?'selected':''}" data-v="${i}">${i}</button>`;return `<div class="scale-row">${b}</div><div class="scale-ends"><span>${esc(Q.low)}</span><span>${esc(Q.high)}</span></div>`;}
+  case 'RK':
+  case 'SC':return opts.map((o,i)=>`<button class="option-btn ${prev===i?'selected':''}" data-i="${i}">${esc(o)} <span class="check">✓</span></button>`).join('');
+  case 'MS':{const cur=prev instanceof Array?prev:[];return opts.map((o,i)=>`<button class="option-btn ${cur.includes(i)?'selected':''}" data-i="${i}">${esc(o)} <span class="check">✓</span></button>`).join('');}
+ }return '';}
+function bindOpts(day,q,next){
+ const Q=DAYS[day].qs[q];const setAns=v=>{if(!state.answers[day])state.answers[day]={};state.answers[day][q]=v;save();next.disabled=false;};
+ const box=$('#optBox');const refresh=()=>{box.querySelectorAll('.option-btn,.scale-btn').forEach(b=>{const cur=ans(day,q);
+  if(b.dataset.i!==undefined)b.classList.toggle('selected',cur instanceof Array?cur.includes(+b.dataset.i):cur===+b.dataset.i);
+  else if(b.dataset.v!==undefined)b.classList.toggle('selected',cur===(b.dataset.v==='true')||cur===b.dataset.v);});};
+ if(Q.type==='MS'){box.querySelectorAll('.option-btn').forEach(b=>b.onclick=()=>{let cur=ans(day,q);if(!(cur instanceof Array))cur=[];const i=+b.dataset.i;cur=cur.includes(i)?cur.filter(x=>x!==i):[...cur,i];setAns(cur);refresh();});}
+ else{box.querySelectorAll('.option-btn,.scale-btn').forEach(b=>b.onclick=()=>{let v=b.dataset.i!==undefined?+b.dataset.i:(b.dataset.v==='true'?true:(b.dataset.v==='false'?false:+b.dataset.v));setAns(v);refresh();});}
+}
+
+function renderResult(day){
+ const d=DAYS[day];if(!state.completed[day]){state.completed[day]=true;state.xp+=10;save();}confetti();
+ $('#app').innerHTML=`
+ <div class="screen" style="--accent:${d.accent};--soft:${d.soft};">
+   <div class="xpfloat">⭐ ${state.xp}</div>
+   <div class="eyebrow">Day ${day+1} · ${d.exIcon} ${esc(d.ex)}</div>
+   ${day===6?renderCapstone():renderDayInsight(day)}
+   <div class="nav-row" style="margin-top:20px;">
+     <button class="btn btn-ghost" id="backQ">← Back</button>
+     ${day===6?`<button class="btn btn-accent" id="homeEnd">Reach clarity ✓</button>`
+      :`<button class="btn btn-accent" id="nextDay">${dayDone(day+1)?'Review Day '+(day+2):'Begin Day '+(day+2)+' →'}</button>`}
+   </div>
+   <div style="text-align:center;margin-top:12px;"><button class="btn btn-ghost" id="editBtn" style="font-size:12px;">Edit today\u2019s answers</button></div>
+ </div>`;
+ $('#backQ').onclick=()=>{view={kind:'q',day,q:d.qs.length-1};render();};
+ $('#editBtn').onclick=()=>{view={kind:'q',day,q:0};render();};
+ const nx=$('#nextDay');if(nx)nx.onclick=()=>{view={kind:'q',day:day+1,q:0};render();};
+ const he=$('#homeEnd');if(he)he.onclick=()=>{view=null;render();};
+}
+function renderDayInsight(day){const ins=insight(day);
+ return `<div class="insight-card">
+  <div class="insight-title">${ins?esc(ins.title):''}</div>
+  <p class="insight-text">${ins?ins.text:''}</p>
+  <div class="divider"></div>
+  <p class="insight-text"><b>Keep this thread:</b> ${esc(flagOf(day))}.</p>
+ </div>`;}
+
+function renderCapstone(){
+ const a=state.answers[6]||{};const flags=buildFlags();
+ const commit=flags.length?flags[0]:'Pausing to notice my inner weather';
+ const which=['Seeing myself (Day 1)','Inner weather (Day 2)','Patterns & habits (Day 3)','What matters to me (Day 4)','Me with others (Day 5)','Growing past my edges (Day 6)'][a[0]||0]||'';
+ const shift=a[1]||0;
+ // personal clarity affirmation
+ const lines=[];
+ lines.push('I am getting to know myself, honestly and kindly.');
+ if(state.answers[1]&&(state.answers[1][5]||0)>=4)lines.push('I choose deliberately more than I react.');
+ else lines.push('I am learning to choose more and react less.');
+ if(state.answers[3]&&(state.answers[3][2]||0)>=4)lines.push('I live close to what matters to me.');
+ else lines.push('I am moving closer to what matters to me.');
+ if(state.answers[4]&&state.answers[4][5]===true)lines.push('I am as kind to myself as I am to others.');
+ if(state.answers[5]&&state.answers[5][4]===true)lines.push('I believe I can grow, one small step at a time.');
+ lines.push('And I carry my clarity with me, gently, every day.');
+ const mantra=lines.join(' ');
+ return `<div class="insight-card">
+  <div class="insight-title">Full clarity — you see yourself more clearly.</div>
+  <p class="insight-text">You traveled from <b>seeing yourself</b>, to <b>noticing your inner weather</b>, to <b>spotting patterns</b>, to <b>your values</b>, to <b>how you relate</b>, to <b>growing past your edges</b>. Now you hold the whole picture.</p>
+  <div class="divider"></div>
+  <p class="insight-text"><b>Your most resonant step:</b> ${esc(which)}.</p>
+  <p class="insight-text" style="margin-top:6px;"><b>Insights you\u2019re keeping:</b></p>
+  <p>${flags.map(f=>`<span class="kchip">✓ ${esc(f)}</span>`).join('')}</p>
+  <div class="divider"></div>
+  <p class="insight-text"><b>Your ONE practice for the next week:</b> ${esc(commit)}.</p>
+  <p class="insight-text" style="margin-top:8px;">Your clarity, in your own words:</p>
+  <div class="mantra">${esc(mantra)}</div>
+  <p class="insight-text">You feel ${shift}/5 clearer than a week ago — and that shift is real. This isn\u2019t a grade; it\u2019s a mirror you now know how to use. 🪞</p>
+ </div>`;}
+
+function confetti(){for(let i=0;i<60;i++){const c=document.createElement('div');c.className='confetti';
+ const colors=['#7ec8e3','#8fbf8f','#f5b942','#ee8e7b','#c3a6e0'];c.style.left=Math.random()*100+'vw';c.style.background=colors[Math.floor(Math.random()*colors.length)];
+ c.style.animationDuration=(1.4+Math.random()*1.4)+'s';c.style.animationDelay=(Math.random()*0.3)+'s';document.body.appendChild(c);setTimeout(()=>c.remove(),3200);}}
+
+render();
+</script>
+</body>
+</html>
