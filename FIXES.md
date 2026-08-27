@@ -174,6 +174,69 @@ Root causes found & fixed:
     saved answer → edit it → re-save → the edited answer is restored and
     the old one is gone.
 
+## UI redesign (2026-08-27): the 4-screen design (Today / Check-In / My Path / Insights)
+
+Implemented the attached design mockup end-to-end. All existing data flows
+(saves, streak, revisit/edit, delete) are untouched — this is a
+presentation layer re-skin on top of the same engine hooks.
+
+1. **Tabs are now Today / Check-In / My Path / Insights / You.**
+   `src/navigation/TabLayout.tsx` rewritten: `home`→"Today",
+   `on-the-spot`→"Check-In", `journal`→"My Path", `insights`→"Insights",
+   `settings`→"You". Active tab is leaf-green (`#7C9A72`, with a new
+   `leafSoft` tint) and every screen draws its own header
+   (`headerShown: false`), matching the mockup's in-screen titles.
+
+2. **Today (Home).** `HomeScreen.tsx` rewritten to the mockup: top row is
+   menu → My Path and bell → You; time-aware greeting ("Good morning,
+   {name} ☀️/🌤️/🌙"); "Take a breath. You're exactly where you need to
+   be."; an illustrated card — `assets/images/blossom-home.png`, a new
+   AI-generated blob-blossom illustration (swap the file to change the art;
+   `types/assets.d.ts` declares `*.png`/`*.jpg` imports for TS).
+   "YOUR RHYTHM" card shows the live streak (big serif number, "Longest N
+   days", 🌿 badge) and whether today's loop is done. "TODAY'S PATH" lists
+   the day's three parts (morning/exercise/evening) with real titles from
+   the content, live "Completed ✓" state, and tapping a row opens that
+   part's session; the green "See your path" button goes to My Path.
+
+3. **Check-In.** `OnTheSpotScreen.tsx` rewritten to the mockup: back
+   arrow → Today; five progress dots that fill as sections get touched;
+   mood faces now label the selection ("Sad"…"Great"); Energy and Stress
+   cards with icon rows (flash/pulse) and gold/peach sliders; Sleep as
+   4h–8h pills (stored 1–5, unchanged engine model); "Anything on your
+   mind? / Optional" free line; leaf "Continue" button saves the
+   check-in and briefly shows "Saved ✓" (no dialog).
+
+4. **My Path.** `PathScreen.tsx` rewritten to the mockup: Day/Week/Month
+   segment. Week view: Mon–Sun circles driven by *real* check-in and
+   reflection dates (green check = something was saved that day, gold ring
+   = today), "This week / N of 7 days" progress bar, the three part nodes
+   with connector lines and completion checks, and the "Day N begins
+   tomorrow" card that deep-links to the next open part. Month view keeps
+   the unit cards with per-day chips. The old winding `PathMap.tsx` was
+   removed (survives in git history) since the design replaces it.
+
+5. **Insights.** `InsightsScreen.tsx` rewritten to the mockup:
+   "Here's what your recent days are showing you."; the "AWESOME
+   PROGRESS" card charts the last 7 days from real saved data (best day
+   highlighted with ⭐); three insight rows are *computed* — emotional
+   clarity from named feelings (check-in "one word" + on-the-spot notes),
+   energy pattern from morning vs. afternoon check-in averages, sleep &
+   stress from sleep vs. stress averages; "View all insights" expands to
+   recent check-ins, awareness dimensions, and saved reflections.
+   Added the missing `useOnTheSpot` hook (`src/hooks/useJournal.ts` —
+   the engine had `listOnTheSpot` but no hook).
+
+6. **Shared bits.** `MoodFacePicker` gained an optional `labels` prop and
+   a leaf selection ring (gold badge removed); `PillSlider`'s label is
+   optional. `SettingsScreen` is unchanged behind the "You" tab.
+
+7. **Verification.** `typecheck` 0 errors, jest 14/14, lint 0 errors, and
+   the jsdom end-to-end run passes all 38 checks (the 8 revisit/edit
+   checks from the previous pass still pass, plus fresh tab-render
+   checks for Check-In / My Path / Insights and streak reset/re-accrual
+   after "Delete All Data").
+
 ## How to build (from the repo root)
 
 ```bash

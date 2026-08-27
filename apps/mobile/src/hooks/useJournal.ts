@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getInwardEngine } from '../native/InwardEngineProvider';
-import type { JournalProgress, Reflection } from '../native/InwardEngine';
+import type { JournalProgress, OnTheSpotEntry, Reflection } from '../native/InwardEngine';
 
 export function useJournalProgress(journalId: string) {
   const [data, setData] = useState<JournalProgress | null>(null);
@@ -66,6 +66,30 @@ export function useReflections(journalId?: string) {
       setLoading(false);
     }
   }, [journalId]);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  return { data, loading, refresh };
+}
+
+export function useOnTheSpot(limit = 50) {
+  const [data, setData] = useState<OnTheSpotEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const refresh = useCallback(async () => {
+    setLoading(true);
+    try {
+      const engine = await getInwardEngine();
+      const result = await engine.listOnTheSpot(limit);
+      setData(result);
+    } catch (e) {
+      console.warn('Failed to load on-the-spot entries:', e);
+    } finally {
+      setLoading(false);
+    }
+  }, [limit]);
 
   useEffect(() => {
     refresh();

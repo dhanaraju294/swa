@@ -1,218 +1,335 @@
 import React, { useCallback, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useIsFocused } from '@react-navigation/native';
-import { colors, spacing, radius, shadow } from '../../design-system/tokens';
+import { Ionicons } from '@expo/vector-icons';
+import { colors, spacing, radius } from '../../design-system/tokens';
 import { Card } from '../../design-system/Card';
 import { EyebrowLabel } from '../../design-system/EyebrowLabel';
-import { PetalMark } from '../../design-system/PetalMark';
 import { Button } from '../../design-system/Button';
-import { useStreak, useAwarenessSnapshot } from '../../hooks/useAwareness';
-import { useLatestCheckin } from '../../hooks/useCheckins';
+import { useStreak } from '../../hooks/useAwareness';
 import { useProfile } from '../../hooks/useProfile';
 import { useDailyCatalog, useDailyDay } from '../../hooks/useDailyJourney';
-import { allPartsComplete, partOfDay, type JourneyPart } from '../../journey/types';
+import { allPartsComplete, type JourneyPart } from '../../journey/types';
+import blossomHome from '../../../assets/images/blossom-home.png';
 
 const greetingFor = (hours: number) =>
   hours < 12 ? 'Good morning' : hours < 18 ? 'Good afternoon' : 'Good evening';
 
-const PART_COPY: Record<JourneyPart, { title: string; sub: string; tint: string }> = {
-  morning: { title: 'Morning reflection', sub: 'What state am I entering?', tint: '#FBF1DE' },
-  exercise: { title: "Today's practice", sub: 'One tiny noticing', tint: '#F1F7EF' },
-  evening: { title: 'Evening reflection', sub: 'What did I notice?', tint: '#F3EEF9' },
+const GREETING_EMOJI: Record<string, string> = {
+  'Good morning': '☀️',
+  'Good afternoon': '🌤️',
+  'Good evening': '🌙',
 };
+
+const PART_META: Record<JourneyPart, { icon: string; tint: string; sub: string }> = {
+  morning: { icon: 'sunny', tint: '#FBF1DE', sub: 'Start your day with awareness' },
+  exercise: { icon: 'leaf', tint: '#F1F7EF', sub: "Explore what's within" },
+  evening: { icon: 'moon', tint: '#F3EEF9', sub: 'Close your day with clarity' },
+};
+
+const PARTS: JourneyPart[] = ['morning', 'exercise', 'evening'];
 
 export default function HomeScreen() {
   const router = useRouter();
   const isFocused = useIsFocused();
   const now = new Date();
-  const { data: profile, refresh: refreshProfile } = useProfile();
+  const { data: profile } = useProfile();
   const { data: streak, refresh: refreshStreak } = useStreak();
-  const { data: latestCheckin, refresh: refreshLatest } = useLatestCheckin();
-  const { data: awareness, refresh: refreshAwareness } = useAwarenessSnapshot();
-  const { catalog, unlockedDay, statusByDay, completedDays, refresh, total } = useDailyCatalog();
+  const { catalog, unlockedDay, statusByDay, completedDays, total, refresh } = useDailyCatalog();
   const { content } = useDailyDay(unlockedDay);
 
-  const refreshAll = useCallback(async () => {
-    await Promise.all([refreshProfile(), refreshStreak(), refreshLatest(), refreshAwareness(), refresh()]);
-  }, [refresh, refreshAwareness, refreshLatest, refreshProfile, refreshStreak]);
-
   useEffect(() => {
-    if (isFocused) refreshAll();
-  }, [isFocused, refreshAll]);
+    if (isFocused) {
+      refreshStreak();
+      refresh();
+    }
+  }, [isFocused, refresh, refreshStreak]);
 
   const status = statusByDay[unlockedDay];
-  const suggested = partOfDay(now);
   const todayDone = completedDays.includes(unlockedDay) || allPartsComplete(status);
-  const dateStr = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-  const greeting = profile?.displayName
-    ? `${greetingFor(now.getHours())}, ${profile.displayName}`
-    : greetingFor(now.getHours());
+  const greeting = greetingFor(now.getHours());
+  const name = profile?.displayName?.trim();
 
   const open = (part: JourneyPart) => {
     router.push({ pathname: '/session', params: { day: String(unlockedDay), part } });
   };
 
+  const titleFor = (part: JourneyPart): string => {
+    const session = part === 'morning' ? content?.morning : part === 'exercise' ? content?.exercise : content?.evening;
+    return (
+      session?.title ||
+      catalog?.days.find((d) => d.day === unlockedDay)?.theme ||
+      PART_META[part].sub
+    );
+  };
+
+  const streakNum = streak?.currentStreak || 0;
+  const longest = streak?.longestStreak || 0;
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <View style={styles.header}>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.greeting}>{greeting}</Text>
-          <Text style={styles.date}>{dateStr}</Text>
-        </View>
-        <PetalMark size={32} />
+      {/* Top row: menu + bell */}
+      <View style={styles.topRow}>
+        <TouchableOpacity
+          onPress={() => router.push('/(tabs)/journal')}
+          hitSlop={10}
+          style={styles.topIcon}
+          accessibilityLabel="My Path"
+        >
+          <Ionicons name="menu" size={22} color={colors.ink} />
+        </TouchableOpacity>
+        <View style={{ flex: 1 }} />
+        <TouchableOpacity
+          onPress={() => router.push('/(tabs)/settings')}
+          hitSlop={10}
+          style={styles.topIcon}
+          accessibilityLabel="Reminders"
+        >
+          <Ionicons name="notifications-outline" size={22} color={colors.ink} />
+        </TouchableOpacity>
       </View>
 
-      <Card style={styles.streakCard}>
-        <View style={styles.streakRow}>
-          <View>
-            <EyebrowLabel label="SHOWING UP" />
-            <Text style={styles.streakNumber}>{streak?.currentStreak || 0}</Text>
-            <Text style={styles.streakLabel}>days you returned to yourself</Text>
-          </View>
-          <View style={styles.streakMeta}>
-            <Text style={styles.streakMetaLabel}>Longest</Text>
-            <Text style={styles.streakMetaValue}>{streak?.longestStreak || 0}</Text>
+      {/* Greeting */}
+      <Text style={styles.greeting}>
+        {greeting}
+        {name ? `, ${name}` : ''} {GREETING_EMOJI[greeting]}
+      </Text>
+      <Text style={styles.greetingSub}>Take a breath. You're exactly where you need to be.</Text>
+
+      {/* Illustration */}
+      <View style={styles.illustrationCard}>
+        <Image source={blossomHome} style={styles.illustration} resizeMode="cover" />
+      </View>
+
+      {/* Your rhythm */}
+      <Card style={styles.rhythmCard}>
+        <View style={styles.rhythmTop}>
+          <EyebrowLabel label="YOUR RHYTHM" />
+          <View style={styles.leafBadge}>
+            <Text style={styles.leafBadgeIcon}>🌿</Text>
           </View>
         </View>
-        <Text style={styles.streakNote}>Missed a day? Nothing is broken. Continue when you're ready.</Text>
+        <View style={styles.rhythmRow}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.rhythmNumber}>{streakNum}</Text>
+            <Text style={styles.rhythmLabel}>days showing up for yourself</Text>
+          </View>
+          <View style={styles.rhythmMeta}>
+            <Text style={styles.rhythmMetaLabel}>Longest</Text>
+            <Text style={styles.rhythmMetaValue}>{longest} days</Text>
+          </View>
+        </View>
+        <View style={styles.rhythmDivider} />
+        <Text style={styles.rhythmNote}>
+          {todayDone
+            ? 'You lived the loop today. The next node opens tomorrow.'
+            : 'Today is a new day to continue your path.'}
+        </Text>
       </Card>
 
-      <EyebrowLabel label="TODAY'S RITUAL" />
-      <Text style={styles.sectionTitle}>{content?.theme || catalog?.days.find((d) => d.day === unlockedDay)?.theme || 'A quiet practice'}</Text>
-      <Text style={styles.sectionSub}>
-        {todayDone
-          ? 'You lived the loop today. The next node opens tomorrow.'
-          : `Day ${unlockedDay} of ${total} · morning, a tiny practice, evening.`}
-      </Text>
-
-      {(['morning', 'exercise', 'evening'] as JourneyPart[]).map((part, i) => {
-        const copy = PART_COPY[part];
-        const done = Boolean(status?.[part]);
-        const title =
-          part === 'morning' && content?.morning?.title
-            ? content.morning.title
-            : part === 'exercise' && content?.exercise?.title
-            ? content.exercise.title
-            : part === 'evening' && content?.evening?.title
-            ? content.evening.title
-            : copy.title;
-        const glow = suggested === part && !done && !todayDone;
-        return (
-          <TouchableOpacity key={part} onPress={() => open(part)} activeOpacity={0.88}>
-            <View style={[styles.ritual, { backgroundColor: copy.tint }, glow && styles.ritualGlow]}>
-              <View style={styles.ritualIndex}>
-                <Text style={styles.ritualIndexText}>{done ? '✓' : i + 1}</Text>
+      {/* Today's path */}
+      <EyebrowLabel label="TODAY'S PATH" />
+      <Card style={styles.pathCard}>
+        {PARTS.map((part, i) => {
+          const meta = PART_META[part];
+          const done = Boolean(status?.[part]);
+          return (
+            <TouchableOpacity key={part} onPress={() => open(part)} activeOpacity={0.85}>
+              <View style={[styles.pathRow, i > 0 && styles.pathRowGap]}>
+                <View style={[styles.pathIcon, { backgroundColor: meta.tint }]}>
+                  <Ionicons name={meta.icon as 'sunny' | 'leaf' | 'moon'} size={18} color={colors.ink} />
+                </View>
+                <View style={styles.pathText}>
+                  <Text style={styles.pathTitle}>{titleFor(part)}</Text>
+                  <Text style={[styles.pathSub, done && styles.pathSubDone]}>{done ? 'Completed' : meta.sub}</Text>
+                </View>
+                {done ? (
+                  <View style={styles.pathCheck}>
+                    <Ionicons name="checkmark" size={14} color="#fff" />
+                  </View>
+                ) : null}
               </View>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.ritualTitle}>{title}</Text>
-                <Text style={styles.ritualSub}>{done ? 'Saved · revisit anytime' : copy.sub}</Text>
-              </View>
-              <Text style={styles.ritualCta}>{done ? 'View' : 'Begin'}</Text>
-            </View>
-          </TouchableOpacity>
-        );
-      })}
+            </TouchableOpacity>
+          );
+        })}
+      </Card>
 
       <Button
-        title={todayDone ? 'See your path' : suggested === 'evening' ? 'Open evening' : 'Continue the path'}
-        onPress={() => (todayDone ? router.push('/(tabs)/journal') : open(suggested))}
-        color={colors.gold}
-        style={{ marginTop: spacing.md }}
+        title="See your path"
+        onPress={() => router.push('/(tabs)/journal')}
+        color={colors.leaf}
+        style={{ marginTop: spacing.lg }}
       />
 
-      <TouchableOpacity onPress={() => router.push('/(tabs)/on-the-spot')} style={{ marginTop: spacing.xl }}>
-        <Card style={styles.spot}>
-          <EyebrowLabel label="ANYTIME" />
-          <Text style={styles.spotTitle}>On-the-spot</Text>
-          <Text style={styles.spotSub}>
-            A 30-second pause when something snags. Not part of today's path — just a pocket.
-          </Text>
-          {latestCheckin ? (
-            <Text style={styles.spotMeta}>
-              Last check-in · mood {latestCheckin.mood}/5
-            </Text>
-          ) : null}
-        </Card>
-      </TouchableOpacity>
-
-      {awareness.length > 0 && (
-        <Card style={styles.awarenessCard}>
-          <EyebrowLabel label="THIS WEEK" />
-          {awareness.slice(0, 4).map((dim) => (
-            <View key={dim.dimension} style={styles.awarenessRow}>
-              <Text style={styles.awarenessDim}>{dim.dimension.replace(/_/g, ' ')}</Text>
-              <View style={styles.awarenessBarBg}>
-                <View style={[styles.awarenessBarFill, { width: `${dim.score}%` }]} />
-              </View>
-              <Text style={styles.awarenessScore}>{dim.score}</Text>
-            </View>
-          ))}
-        </Card>
-      )}
+      <Text style={styles.dayMeta}>
+        Day {unlockedDay} of {total} · no rush, no catch-up
+      </Text>
+      <View style={{ height: 24 }} />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.outerBg },
+  container: { flex: 1, backgroundColor: colors.cream },
   content: { padding: spacing.lg, paddingBottom: 110 },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: spacing.xl,
-    marginTop: spacing.md,
-  },
-  greeting: { fontFamily: 'Fraunces', fontSize: 28, fontWeight: '600', color: colors.ink },
-  date: { fontFamily: 'Nunito', fontSize: 14, color: colors.inkSoft, marginTop: 2 },
-  streakCard: { padding: spacing.lg, marginBottom: spacing.xl },
-  streakRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' },
-  streakNumber: { fontFamily: 'Fraunces', fontSize: 48, fontWeight: '700', color: colors.gold, lineHeight: 52 },
-  streakLabel: { fontFamily: 'Nunito', fontSize: 13, color: colors.inkSoft },
-  streakMeta: { alignItems: 'center' },
-  streakMetaLabel: { fontFamily: 'Nunito', fontSize: 10, color: colors.inkSoft, textTransform: 'uppercase' },
-  streakMetaValue: { fontFamily: 'Fraunces', fontSize: 20, fontWeight: '600', color: colors.ink },
-  streakNote: { fontFamily: 'Nunito', fontSize: 12, color: colors.inkSoft, marginTop: spacing.md, lineHeight: 17 },
-  sectionTitle: { fontFamily: 'Fraunces', fontSize: 22, fontWeight: '600', color: colors.ink, marginTop: 6 },
-  sectionSub: { fontFamily: 'Nunito', fontSize: 13, color: colors.inkSoft, marginBottom: spacing.md, marginTop: 4 },
-  ritual: {
+  topRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
-    padding: spacing.md,
-    borderRadius: radius.md,
-    marginBottom: spacing.sm,
-    ...shadow.soft,
+    justifyContent: 'space-between',
+    marginTop: spacing.xs,
   },
-  ritualGlow: { borderWidth: 1.5, borderColor: colors.gold },
-  ritualIndex: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#fff',
+  topIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.white,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  ritualIndexText: { fontFamily: 'Nunito', fontSize: 14, fontWeight: '800', color: colors.ink },
-  ritualTitle: { fontFamily: 'Nunito', fontSize: 15, fontWeight: '800', color: colors.ink },
-  ritualSub: { fontFamily: 'Nunito', fontSize: 12, color: colors.inkSoft, marginTop: 1 },
-  ritualCta: { fontFamily: 'Nunito', fontSize: 12, fontWeight: '700', color: colors.inkSoft },
-  spot: { padding: spacing.lg },
-  spotTitle: { fontFamily: 'Fraunces', fontSize: 20, fontWeight: '600', color: colors.ink, marginTop: 4 },
-  spotSub: { fontFamily: 'Nunito', fontSize: 13, color: colors.inkSoft, lineHeight: 19, marginTop: 4 },
-  spotMeta: { fontFamily: 'Nunito', fontSize: 11, color: colors.ghost, marginTop: 8 },
-  awarenessCard: { padding: spacing.lg, marginTop: spacing.lg },
-  awarenessRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8, gap: spacing.sm },
-  awarenessDim: {
-    fontFamily: 'Nunito',
-    fontSize: 11,
+  greeting: {
+    fontFamily: 'Fraunces',
+    fontSize: 30,
     fontWeight: '600',
     color: colors.ink,
-    width: 100,
-    textTransform: 'capitalize',
+    marginTop: spacing.xl,
+    lineHeight: 38,
   },
-  awarenessBarBg: { flex: 1, height: 6, borderRadius: 3, backgroundColor: '#EDE8DD' },
-  awarenessBarFill: { height: 6, borderRadius: 3, backgroundColor: colors.sage },
-  awarenessScore: { fontFamily: 'Nunito', fontSize: 11, fontWeight: '700', color: colors.inkSoft, width: 24, textAlign: 'right' },
+  greetingSub: {
+    fontFamily: 'Nunito',
+    fontSize: 13.5,
+    color: colors.inkSoft,
+    marginTop: 4,
+    lineHeight: 19,
+  },
+  illustrationCard: {
+    marginTop: spacing.lg,
+    borderRadius: radius.lg,
+    overflow: 'hidden',
+    height: 190,
+    backgroundColor: '#FBF3E4',
+  },
+  illustration: { width: '100%', height: '100%' },
+  rhythmCard: {
+    padding: spacing.lg,
+    marginTop: spacing.lg,
+  },
+  rhythmTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  leafBadge: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: colors.leafSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  leafBadgeIcon: { fontSize: 15 },
+  rhythmRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    marginTop: spacing.sm,
+  },
+  rhythmNumber: {
+    fontFamily: 'Fraunces',
+    fontSize: 46,
+    fontWeight: '700',
+    color: colors.ink,
+    lineHeight: 52,
+  },
+  rhythmLabel: {
+    fontFamily: 'Nunito',
+    fontSize: 13,
+    color: colors.inkSoft,
+    marginTop: 2,
+  },
+  rhythmMeta: {
+    alignItems: 'flex-end',
+  },
+  rhythmMetaLabel: {
+    fontFamily: 'Nunito',
+    fontSize: 10.5,
+    fontWeight: '800',
+    color: colors.inkSoft,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  rhythmMetaValue: {
+    fontFamily: 'Fraunces',
+    fontSize: 17,
+    fontWeight: '600',
+    color: colors.ink,
+    marginTop: 2,
+  },
+  rhythmDivider: {
+    height: 1,
+    backgroundColor: '#F0EBE1',
+    marginTop: spacing.md,
+    marginBottom: spacing.md,
+  },
+  rhythmNote: {
+    fontFamily: 'Nunito',
+    fontSize: 12.5,
+    fontWeight: '600',
+    color: colors.ink,
+    lineHeight: 18,
+  },
+  pathCard: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    marginTop: 6,
+  },
+  pathRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    paddingVertical: spacing.md,
+  },
+  pathRowGap: {
+    borderTopWidth: 1,
+    borderTopColor: '#F0EBE1',
+  },
+  pathIcon: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pathText: { flex: 1 },
+  pathTitle: {
+    fontFamily: 'Nunito',
+    fontSize: 15,
+    fontWeight: '800',
+    color: colors.ink,
+  },
+  pathSub: {
+    fontFamily: 'Nunito',
+    fontSize: 12,
+    color: colors.inkSoft,
+    marginTop: 1,
+  },
+  pathSubDone: {
+    color: colors.leaf,
+    fontWeight: '800',
+  },
+  pathCheck: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: colors.leaf,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dayMeta: {
+    fontFamily: 'Nunito',
+    fontSize: 11.5,
+    color: colors.ghost,
+    textAlign: 'center',
+    marginTop: spacing.md,
+  },
 });

@@ -3,8 +3,30 @@ import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../design-system/tokens';
 
-const ACTIVE_COLOR = '#D9A05B'; // Warm gold / muted amber
+const ACTIVE_COLOR = colors.leaf; // Sage green — the design's active tab tint
 const INACTIVE_COLOR = '#A39E93'; // Muted taupe / cream gray
+
+type TabName = 'home' | 'heart' | 'book' | 'stats-chart' | 'person';
+type TabIconName =
+  | 'home' | 'home-outline'
+  | 'heart' | 'heart-outline'
+  | 'book' | 'book-outline'
+  | 'stats-chart' | 'stats-chart-outline'
+  | 'person' | 'person-outline';
+
+const OUTLINE: Record<TabName, TabIconName> = {
+  home: 'home-outline',
+  heart: 'heart-outline',
+  book: 'book-outline',
+  'stats-chart': 'stats-chart-outline',
+  person: 'person-outline',
+};
+
+function tabIcon(name: TabName) {
+  return ({ focused }: { focused: boolean }) => (
+    <Ionicons name={focused ? name : OUTLINE[name]} size={22} color={focused ? ACTIVE_COLOR : INACTIVE_COLOR} />
+  );
+}
 
 export default function TabLayout() {
   return (
@@ -23,70 +45,30 @@ export default function TabLayout() {
         tabBarLabelStyle: {
           fontFamily: 'Nunito',
           fontSize: 11,
-          fontWeight: '600',
+          fontWeight: '700',
         },
-        headerStyle: {
-          backgroundColor: colors.cream,
-        },
-        headerTitleStyle: {
-          fontFamily: 'Fraunces',
-          fontSize: 18,
-          fontWeight: '600',
-          color: colors.ink,
-        },
-        headerShadowVisible: false,
+        headerShown: false, // every tab draws its own header per the design
       }}
     >
       <Tabs.Screen
         name="index"
-        options={{
-          title: 'Home',
-          headerShown: false,
-          tabBarIcon: ({ focused }) => (
-            <Ionicons name={focused ? 'home' : 'home-outline'} size={22} color={focused ? ACTIVE_COLOR : INACTIVE_COLOR} />
-          ),
-        }}
+        options={{ title: 'Today', tabBarIcon: tabIcon('home') }}
       />
       <Tabs.Screen
         name="on-the-spot"
-        options={{
-          title: 'Check-In',
-          headerTitle: 'Quick Check-In',
-          tabBarIcon: ({ focused }) => (
-            <Ionicons name={focused ? 'heart' : 'heart-outline'} size={22} color={focused ? ACTIVE_COLOR : INACTIVE_COLOR} />
-          ),
-        }}
+        options={{ title: 'Check-In', tabBarIcon: tabIcon('heart') }}
       />
       <Tabs.Screen
         name="journal"
-        options={{
-          title: 'Path',
-          headerTitle: 'Your Path',
-          headerShown: false,
-          tabBarIcon: ({ focused }) => (
-            <Ionicons name={focused ? 'map' : 'map-outline'} size={22} color={focused ? ACTIVE_COLOR : INACTIVE_COLOR} />
-          ),
-        }}
+        options={{ title: 'My Path', tabBarIcon: tabIcon('book') }}
       />
       <Tabs.Screen
         name="insights"
-        options={{
-          title: 'Insights',
-          headerTitle: 'Your Insights',
-          tabBarIcon: ({ focused }) => (
-            <Ionicons name={focused ? 'stats-chart' : 'stats-chart-outline'} size={22} color={focused ? ACTIVE_COLOR : INACTIVE_COLOR} />
-          ),
-        }}
+        options={{ title: 'Insights', tabBarIcon: tabIcon('stats-chart') }}
       />
       <Tabs.Screen
         name="settings"
-        options={{
-          title: 'Settings',
-          headerTitle: 'Settings',
-          tabBarIcon: ({ focused }) => (
-            <Ionicons name={focused ? 'settings' : 'settings-outline'} size={22} color={focused ? ACTIVE_COLOR : INACTIVE_COLOR} />
-          ),
-        }}
+        options={{ title: 'You', tabBarIcon: tabIcon('person') }}
       />
     </Tabs>
   );
