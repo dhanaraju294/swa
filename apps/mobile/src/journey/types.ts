@@ -4,6 +4,8 @@ export type StepOption = {
   id: string;
   label: string;
   sub?: string;
+  emoji?: string;
+  isOther?: boolean;
 };
 
 export type JourneyStep = {
@@ -14,8 +16,19 @@ export type JourneyStep = {
     | 'this-or-that'
     | 'scale'
     | 'one-line'
-    | 'notice';
+    | 'notice'
+    | 'tap'
+    | 'multitap'
+    | 'slider'
+    | 'text'
+    | 'breathe'
+    | 'spin'
+    | 'countdown'
+    | 'info'
+    | 'truefalse'
+    | 'quiz';
   prompt: string;
+  kicker?: string;
   allowSkip?: boolean;
   optional?: boolean;
   hint?: string;
@@ -26,6 +39,14 @@ export type JourneyStep = {
   labels?: string[];
   left?: StepOption;
   right?: StepOption;
+  low?: string;
+  high?: string;
+  faces?: string[];
+  seconds?: number;
+  insightTitle?: string;
+  reveal?: string;
+  answer?: boolean;
+  fact?: string;
 };
 
 export type JourneySession = {

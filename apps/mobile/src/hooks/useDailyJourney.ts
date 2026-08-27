@@ -151,16 +151,12 @@ export function useSaveJourneyPart() {
       setError(null);
       try {
         const engine = await getInwardEngine();
-        const existing = await engine.listReflections(PART_JOURNALS[part]);
-        const already = existing.some((r) => r.dayNumber === day);
-        if (!already) {
-          await engine.saveReflection(
-            PART_JOURNALS[part],
-            day,
-            SESSION_PROMPT,
-            JSON.stringify({ part, day, answers, completedAt: new Date().toISOString() }),
-          );
-        }
+        await engine.saveReflection(
+          PART_JOURNALS[part],
+          day,
+          SESSION_PROMPT,
+          JSON.stringify({ part, day, answers, completedAt: new Date().toISOString() }),
+        );
 
         const [morning, exercise, evening, progress] = await Promise.all([
           engine.listReflections(PART_JOURNALS.morning),

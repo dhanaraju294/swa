@@ -15,13 +15,28 @@ function prettyReflection(prompt: string, response: string): { title: string; bo
     return { title: prompt, body: response };
   }
   try {
-    const parsed = JSON.parse(response) as { part?: string; answers?: Record<string, string> };
+    const parsed = JSON.parse(response) as { part?: string; day?: number; answers?: Record<string, string> };
     const answers = parsed.answers || {};
     const bits = Object.values(answers)
       .filter((v) => v && v !== '__skip__')
+      .map((v) => {
+        if (typeof v === 'string' && v.startsWith('other:')) {
+          return v.replace('other:', '').trim();
+        }
+        if (typeof v === 'string' && v.startsWith('[') && v.endsWith(']')) {
+          try {
+            const arr = JSON.parse(v);
+            if (Array.isArray(arr)) return arr.join(', ');
+          } catch {}
+        }
+        return v;
+      })
+      .filter(Boolean)
       .slice(0, 3);
+    const dayLabel = parsed.day ? `Day ${parsed.day} · ` : '';
+    const partLabel = parsed.part ? `${parsed.part.charAt(0).toUpperCase() + parsed.part.slice(1)}` : 'Session';
     return {
-      title: parsed.part ? `${parsed.part} session` : 'Session',
+      title: `${dayLabel}${partLabel}`,
       body: bits.length ? bits.join(' · ') : 'Completed, mostly skipped.',
     };
   } catch {
