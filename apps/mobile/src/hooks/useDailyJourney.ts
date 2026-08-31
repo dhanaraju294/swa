@@ -3,13 +3,21 @@ import { getInwardEngine } from '../native/InwardEngineProvider';
 import { seededJournalDay } from '../native/seedContent';
 import type { InwardEngine, JournalDay, JournalProgress, Reflection } from '../native/InwardEngine';
 import {
+  calendarUnlockedDay,
+  kindOfDay,
+  localIsoDate,
+  missedDays as missedDaysOf,
+  notDoneDays,
+  type DayKind,
+} from '../journey/calendar';
+import { ensureJourneyStartedOn } from '../journey/startDate';
+import {
   allPartsComplete,
   JOURNEY_ID,
   PART_JOURNALS,
   parseCatalog,
   parseDayContent,
   parseStoredPart,
-  unlockedDayOf,
   type DailyDayContent,
   type JourneyCatalog,
   type JourneyPart,
@@ -74,6 +82,7 @@ export function useDailyCatalog() {
   const [catalog, setCatalog] = useState<JourneyCatalog | null>(null);
   const [progress, setProgress] = useState<JournalProgress | null>(null);
   const [reflections, setReflections] = useState<Reflection[]>([]);
+  const [startedOn, setStartedOn] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -97,6 +106,9 @@ export function useDailyCatalog() {
       }
       setProgress(prog);
       setReflections([...morning, ...exercise, ...evening]);
+      const totalDays = parsed?.totalDays ?? 28;
+      const origin = await ensureJourneyStartedOn(prog.completedDays || [], prog.updatedAt, totalDays);
+      setStartedOn(origin);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not load journey.');
     } finally {
@@ -113,7 +125,8 @@ export function useDailyCatalog() {
 
   const total = catalog?.totalDays ?? 28;
   const completedDays = progress?.completedDays ?? [];
-  const unlockedDay = unlockedDayOf(completedDays, progress?.updatedAt, total);
+  const today = localIsoDate();
+  const unlockedDay = startedOn ? calendarUnlockedDay(startedOn, today, total) : 1;
 
   const statusByDay = useMemo(() => {
     const map: Record<number, PartStatus> = {};
@@ -122,6 +135,23 @@ export function useDailyCatalog() {
     }
     return map;
   }, [reflections, total]);
+
+  const kindByDay = useMemo(() => {
+    const map: Record<number, DayKind> = {};
+    for (let d = 1; d <= total; d += 1) {
+      map[d] = kindOfDay(d, unlockedDay, completedDays, statusByDay[d]);
+    }
+    return map;
+  }, [completedDays, statusByDay, total, unlockedDay]);
+
+  const missed = useMemo(
+    () => missedDaysOf(unlockedDay, completedDays, statusByDay),
+    [completedDays, statusByDay, unlockedDay],
+  );
+  const notDone = useMemo(
+    () => notDoneDays(unlockedDay, completedDays, statusByDay),
+    [completedDays, statusByDay, unlockedDay],
+  );
 
   return {
     catalog,
@@ -134,6 +164,10 @@ export function useDailyCatalog() {
     completedDays,
     unlockedDay,
     statusByDay,
+    kindByDay,
+    startedOn,
+    missedDays: missed,
+    notDoneDays: notDone,
   };
 }
 

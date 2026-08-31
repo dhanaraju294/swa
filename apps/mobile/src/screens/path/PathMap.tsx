@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions } from '
 import Svg, { Path } from 'react-native-svg';
 import { colors, spacing, shadow } from '../../design-system/tokens';
 import { PetalMark } from '../../design-system/PetalMark';
+import { kindOfDay, partsCompleteCount } from '../../journey/calendar';
 import type { JourneyCatalog, PartStatus } from '../../journey/types';
 
 type Props = {
@@ -139,16 +140,35 @@ export function PathMap({ catalog, unlockedDay, completedDays, statusByDay, onPr
         const current = node.day === unlockedDay;
         const locked = node.day > unlockedDay;
         const status = statusByDay[node.day];
+        const kind = kindOfDay(node.day, unlockedDay, completedDays, status);
         // How many of the day's three parts have been submitted — the node
         // reflects every submission, not just a fully-completed day, so the
         // map visibly updates as soon as a part is saved.
-        const partsDone = status
-          ? Number(Boolean(status.morning)) + Number(Boolean(status.exercise)) + Number(Boolean(status.evening))
-          : 0;
+        const partsDone = partsCompleteCount(status);
         const partial = !done && partsDone > 0;
+        const missed = kind === 'missed';
+        const incomplete = kind === 'incomplete';
         const catalogDay = catalog.days.find((d) => d.day === node.day);
-        const fill = done ? '#DCE9D4' : current ? (partial ? '#EFB93F' : '#F6C453') : partial ? '#F4A896' : '#EFE8DC';
-        const ring = current ? (partial ? '#D99A22' : '#E8B23C') : done ? colors.leaf : '#D8CFC0';
+        const fill = done
+          ? '#DCE9D4'
+          : current
+            ? partial
+              ? '#EFB93F'
+              : '#F6C453'
+            : incomplete
+              ? '#F4A896'
+              : missed
+                ? '#F6E4DC'
+                : '#EFE8DC';
+        const ring = current
+          ? partial
+            ? '#D99A22'
+            : '#E8B23C'
+          : done
+            ? colors.leaf
+            : missed || incomplete
+              ? colors.peach
+              : '#D8CFC0';
 
         const inner = (
           <View style={[styles.node, { left: node.x, top: node.y }]}>
@@ -156,18 +176,25 @@ export function PathMap({ catalog, unlockedDay, completedDays, statusByDay, onPr
               {done ? (
                 <Text style={styles.nodeCheck}>✓</Text>
               ) : (
-                <Text style={[styles.nodeNum, current && styles.nodeNumCurrent, locked && styles.nodeNumLocked]}>
+                <Text style={[styles.nodeNum, current && styles.nodeNumCurrent, locked && styles.nodeNumLocked, missed && styles.nodeNumMissed]}>
                   {node.day}
                 </Text>
               )}
-              {current && partial && (
+              {!done && partsDone > 0 && (
                 <View style={styles.progressBadge}>
                   <Text style={styles.progressBadgeText}>{partsDone}/3</Text>
                 </View>
               )}
+              {missed && (
+                <View style={styles.missedBadge}>
+                  <Text style={styles.missedBadgeText}>–</Text>
+                </View>
+              )}
             </View>
-            <Text style={[styles.nodeLabel, locked && styles.nodeLabelLocked]} numberOfLines={2}>
-              {catalogDay?.exerciseTitle || catalogDay?.theme || `Day ${node.day}`}
+            <Text style={[styles.nodeLabel, locked && styles.nodeLabelLocked, missed && styles.nodeLabelMissed]} numberOfLines={2}>
+              {missed
+                ? 'Not done'
+                : catalogDay?.exerciseTitle || catalogDay?.theme || `Day ${node.day}`}
             </Text>
             {current && (
               <View style={styles.character}>
@@ -265,6 +292,9 @@ const styles = StyleSheet.create({
   nodeNumLocked: {
     color: '#B9B2A8',
   },
+  nodeNumMissed: {
+    color: '#9A6A58',
+  },
   nodeLabel: {
     marginTop: 6,
     fontFamily: 'Nunito',
@@ -276,6 +306,27 @@ const styles = StyleSheet.create({
   },
   nodeLabelLocked: {
     color: colors.ghost,
+  },
+  nodeLabelMissed: {
+    color: '#9A6A58',
+  },
+  missedBadge: {
+    position: 'absolute',
+    right: -8,
+    top: -4,
+    backgroundColor: colors.peach,
+    borderRadius: 8,
+    width: 16,
+    height: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  missedBadgeText: {
+    fontFamily: 'Nunito',
+    fontSize: 11,
+    fontWeight: '800',
+    color: colors.ink,
+    lineHeight: 13,
   },
   progressBadge: {
     position: 'absolute',
