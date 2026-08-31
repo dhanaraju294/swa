@@ -42,3 +42,19 @@ export async function setSecureFlag(key: string, value: string): Promise<void> {
     // non-fatal
   }
 }
+
+export async function deleteSecureFlag(key: string): Promise<void> {
+  if (!isWeb) {
+    try {
+      await SecureStore.deleteItemAsync(key);
+    } catch {
+      /* non-fatal */
+    }
+    return;
+  }
+  try {
+    if (typeof localStorage !== 'undefined') localStorage.removeItem(key);
+  } catch {
+    /* non-fatal */
+  }
+}

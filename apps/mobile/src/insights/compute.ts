@@ -7,6 +7,8 @@ import {
   partsCompleteCount,
 } from '../journey/calendar';
 import { allPartsComplete, type PartStatus } from '../journey/types';
+import type { OnboardingDraft } from '../onboarding/types';
+import { CHALLENGES, GOALS } from '../onboarding/options';
 import type {
   AwarenessDimensionScore,
   Checkin,
@@ -193,6 +195,8 @@ export function namedFeelings(checkins: Checkin[], onTheSpot: OnTheSpotEntry[]):
   return [...counts.values()].sort((a, b) => b.count - a.count || a.word.localeCompare(b.word));
 }
 
+export type InsightKind = 'evidence' | 'nudge';
+
 export type InsightCard = {
   id: string;
   icon: 'heart' | 'leaf' | 'moon' | 'sunny' | 'pulse' | 'eye' | 'footsteps' | 'chatbubble-ellipses';
@@ -202,6 +206,7 @@ export type InsightCard = {
   body: string;
   tag: string;
   tagColor: string;
+  kind: InsightKind;
 };
 
 const TINTS = {
@@ -221,9 +226,14 @@ function card(
   title: string,
   body: string,
   tag: string,
+  kind: InsightKind = 'nudge',
 ): InsightCard {
   const t = icon === 'chatbubble-ellipses' ? TINTS.chat : TINTS[icon];
-  return { id, icon, title, body, tag, ...t };
+  return { id, icon, title, body, tag, kind, ...t };
+}
+
+function labelOf(id: string, table: Array<{ id: string; label: string }>): string | undefined {
+  return table.find((x) => x.id === id)?.label;
 }
 
 export function computeInsightCards(args: {
@@ -235,6 +245,8 @@ export function computeInsightCards(args: {
   completedDays: number[];
   streak: Streak | null;
   spot: SpotCheckin | null;
+  draft?: OnboardingDraft | null;
+  now?: Date;
 }): InsightCard[] {
   const {
     checkins,
@@ -245,6 +257,7 @@ export function computeInsightCards(args: {
     completedDays,
     streak,
     spot,
+    draft,
   } = args;
   const cards: InsightCard[] = [];
   const todayStatus = statusByDay[unlockedDay];
@@ -256,10 +269,19 @@ export function computeInsightCards(args: {
   const afternoon = checkins.filter((c) => new Date(c.createdAt).getHours() >= 12);
   const lowSleep = checkins.filter((c) => c.sleep <= 2);
   const highSleep = checkins.filter((c) => c.sleep >= 4);
+  const goals = draft?.goals || [];
+  const challenges = draft?.challenges || [];
 
   if (todayParts === 3) {
     cards.push(
-      card('loop-today', 'sunny', "Today's loop", 'Morning, practice, and evening are all in. Tomorrow opens a new set.', 'Lived'),
+      card(
+        'loop-today',
+        'sunny',
+        "Today's loop",
+        'Morning, practice, and evening are all in. Tomorrow opens a new set.',
+        'Lived',
+        'evidence',
+      ),
     );
   } else if (todayParts === 0) {
     cards.push(
@@ -269,6 +291,7 @@ export function computeInsightCards(args: {
         "Today's loop",
         'Morning, practice, and evening are still open. Nothing carries over — this is a fresh set.',
         'Open',
+        'nudge',
       ),
     );
   } else {
@@ -279,6 +302,7 @@ export function computeInsightCards(args: {
         "Today's loop",
         `${todayParts} of 3 parts done. The rest stay open until you finish them — or until tomorrow notes them as not done.`,
         `${todayParts}/3`,
+        'evidence',
       ),
     );
   }
@@ -291,6 +315,7 @@ export function computeInsightCards(args: {
         'Noted, not carried',
         `Day ${fullyMissed[0]} had no morning, practice, or evening. It is marked not done. Today's loop is new.`,
         'Not done',
+        'evidence',
       ),
     );
   } else if (fullyMissed.length > 1) {
@@ -301,6 +326,7 @@ export function computeInsightCards(args: {
         'Noted, not carried',
         `${fullyMissed.length} days had none of the three parts. They stay on your path as not done. You can revisit them anytime.`,
         'Not done',
+        'evidence',
       ),
     );
   } else if (missed.length > 0) {
@@ -311,21 +337,28 @@ export function computeInsightCards(args: {
         'An unfinished loop',
         `Day${missed.length === 1 ? '' : 's'} ${missed.join(', ')} still have open parts. Marked not done — not lost.`,
         'Open parts',
+        'evidence',
       ),
     );
   }
 
   if (named.length >= 2) {
+    const words = named
+      .slice(0, 3)
+      .map((n) => n.word)
+      .join(', ');
+    const lens =
+      goals.includes('emotional_awareness') || challenges.includes('understanding_emotions')
+        ? ' You asked to work on emotional awareness — this is that work.'
+        : '';
     cards.push(
       card(
         'feelings',
         'heart',
         'Emotional clarity',
-        `Words you keep reaching for: ${named
-          .slice(0, 3)
-          .map((n) => n.word)
-          .join(', ')}. Naming is the start of seeing.`,
+        `Words you keep reaching for: ${words}. Naming is the start of seeing.${lens}`,
         'Improving',
+        'evidence',
       ),
     );
   } else if (named.length === 1) {
@@ -336,6 +369,7 @@ export function computeInsightCards(args: {
         'Emotional clarity',
         `You named a feeling as “${named[0].word}”. Keep naming — the pattern only appears with a few more.`,
         'Starting',
+        'evidence',
       ),
     );
   } else {
@@ -346,22 +380,34 @@ export function computeInsightCards(args: {
         'Emotional clarity',
         'Name one feeling in your next check-in — that is where this starts.',
         'Start here',
+        'nudge',
       ),
     );
   }
 
   if (morning.length >= 1 && afternoon.length >= 1) {
     const diff = avg(morning.map((c) => c.energy)) - avg(afternoon.map((c) => c.energy));
-    const body =
+    const focus = goals.includes('focus') || challenges.includes('difficulty_focusing');
+    let body =
       diff >= 5
         ? 'Your energy tends to dip in the afternoons.'
         : diff <= -5
           ? 'Your energy picks up in the afternoons.'
           : 'Your energy looks steady across the day.';
-    cards.push(card('energy', 'leaf', 'Energy pattern', body, 'Notice'));
+    if (focus && Math.abs(diff) >= 5) {
+      body += ` You chose ${labelOf('focus', GOALS) || 'Focus'} — afternoon is a useful time to notice, not a failing.`;
+    }
+    cards.push(card('energy', 'leaf', 'Energy pattern', body, 'Notice', 'evidence'));
   } else {
     cards.push(
-      card('energy', 'leaf', 'Energy pattern', 'Check in on a couple of days to reveal your energy curve.', 'Notice'),
+      card(
+        'energy',
+        'leaf',
+        'Energy pattern',
+        'Check in on a couple of days to reveal your energy curve.',
+        'Notice',
+        'nudge',
+      ),
     );
   }
 
@@ -376,11 +422,19 @@ export function computeInsightCards(args: {
           ? 'On days you sleep less, stress tends to be higher.'
           : 'Sleep and stress look unrelated for now — keep watching.',
         'Explore',
+        'evidence',
       ),
     );
   } else {
     cards.push(
-      card('sleep', 'pulse', 'Sleep & stress', 'Track sleep and stress for a few days to find the link.', 'Explore'),
+      card(
+        'sleep',
+        'pulse',
+        'Sleep & stress',
+        'Track sleep and stress for a few days to find the link.',
+        'Explore',
+        'nudge',
+      ),
     );
   }
 
@@ -392,6 +446,7 @@ export function computeInsightCards(args: {
         'Showing up',
         `${streak.currentStreak} days in a row. Longest is ${streak.longestStreak}. The streak only asks that you appear.`,
         `${streak.currentStreak}d`,
+        'evidence',
       ),
     );
   } else if (reflections.length + checkins.length + onTheSpot.length > 0) {
@@ -404,6 +459,7 @@ export function computeInsightCards(args: {
           ? `${streak.currentStreak} day${streak.currentStreak === 1 ? '' : 's'} in a row. Come back tomorrow and it grows.`
           : 'You have traces here. A streak starts the next day you show up.',
         'Quiet',
+        'nudge',
       ),
     );
   }
@@ -416,6 +472,7 @@ export function computeInsightCards(args: {
         'What you might need',
         `In your first inward check-in you named a need: ${spot.emotionNeed}. Worth glancing at when a day feels off.`,
         'Remember',
+        'evidence',
       ),
     );
   } else if (spot?.tinyExperiment) {
@@ -426,6 +483,7 @@ export function computeInsightCards(args: {
         'Tiny experiment',
         `You chose to try: ${spot.tinyExperiment}.`,
         'Remember',
+        'evidence',
       ),
     );
   }
@@ -439,11 +497,62 @@ export function computeInsightCards(args: {
         'On-the-spot',
         `${onTheSpot.length} in-the-moment notes. Average intensity ${mean.toFixed(1)} / 5.`,
         'Logged',
+        'evidence',
+      ),
+    );
+  }
+
+  if (checkins.length >= 2) {
+    const meanStress = avg(checkins.map((c) => c.stress));
+    const pressure = challenges.find((id) =>
+      ['academic_pressure', 'career_uncertainty', 'procrastination'].includes(id),
+    );
+    if (pressure && meanStress >= 60) {
+      const label = labelOf(pressure, CHALLENGES) || 'pressure';
+      cards.push(
+        card(
+          'challenge-stress',
+          'pulse',
+          'Against what you named',
+          `You flagged ${label.toLowerCase()}. Stress has averaged ${Math.round(meanStress)} across your check-ins — a signal to notice, not a diagnosis.`,
+          'Lens',
+          'evidence',
+        ),
+      );
+    }
+    const meanConf = avg(checkins.map((c) => c.confidence));
+    if (goals.includes('confidence') && checkins.length >= 3) {
+      cards.push(
+        card(
+          'goal-confidence',
+          'heart',
+          'Confidence, as logged',
+          `You chose Confidence. Your check-ins average ${Math.round(meanConf)} / 100. Watch the week-to-week move more than any one day.`,
+          'Lens',
+          'evidence',
+        ),
+      );
+    }
+  }
+
+  if (draft?.firstIntention?.trim() && checkins.length === 0 && todayParts === 0) {
+    cards.push(
+      card(
+        'intention',
+        'eye',
+        'What you asked of today',
+        `When you began, you wrote: “${draft.firstIntention.trim()}”.`,
+        'Remember',
+        'nudge',
       ),
     );
   }
 
   return cards;
+}
+
+export function evidenceCards(cards: InsightCard[]): InsightCard[] {
+  return cards.filter((c) => c.kind === 'evidence');
 }
 
 const DIM_LABELS: Record<string, string> = {

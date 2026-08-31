@@ -1,27 +1,25 @@
 import { useEffect, useState } from 'react';
 import { Redirect } from 'expo-router';
 import { getSecureFlag } from '../src/native/secureFlag';
-import { getInwardEngine } from '../src/native/InwardEngineProvider';
+import { ONBOARDING_FLAG_KEY, readOnboardingRecord } from '../src/onboarding/store';
+import { flushPendingOnboarding } from '../src/onboarding/sync';
 
-const ONBOARDING_KEY = 'inward-has-onboarded-v1';
-
-// First launch: onboarding. Right after onboarding the first inward
-// check-in (spot check-in) runs once; afterwards the app opens on the tabs.
-async function resolveTarget(): Promise<'/onboarding' | '/(tabs)' | '/spot-checkin'> {
-  const flag = await getSecureFlag(ONBOARDING_KEY).catch(() => null);
-  if (flag !== 'true') return '/onboarding';
-  try {
-    const engine = await getInwardEngine();
-    const done = await engine.latestSpotCheckin();
-    return done ? '/(tabs)' : '/spot-checkin';
-  } catch (e) {
-    console.warn('Failed to check spot check-in status:', e);
+async function resolveTarget(): Promise<'/onboarding' | '/(tabs)'> {
+  const flag = await getSecureFlag(ONBOARDING_FLAG_KEY).catch(() => null);
+  if (flag === 'true') {
+    void flushPendingOnboarding();
     return '/(tabs)';
   }
+  const local = await readOnboardingRecord().catch(() => null);
+  if (local?.completed) {
+    void flushPendingOnboarding();
+    return '/(tabs)';
+  }
+  return '/onboarding';
 }
 
 export default function Index() {
-  const [target, setTarget] = useState<'/onboarding' | '/(tabs)' | '/spot-checkin' | null>(null);
+  const [target, setTarget] = useState<'/onboarding' | '/(tabs)' | null>(null);
 
   useEffect(() => {
     const timeout = setTimeout(() => setTarget('/onboarding'), 3000);
@@ -32,7 +30,6 @@ export default function Index() {
     return () => clearTimeout(timeout);
   }, []);
 
-  // Render nothing while we check — avoids a flash of the wrong screen.
   if (!target) return null;
 
   return <Redirect href={target} />;

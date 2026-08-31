@@ -1,4 +1,6 @@
 import { computeInsightCards, namedFeelings, pathStats } from '../src/insights/compute';
+import { bestAndHardest, buildHeadline, formatDelta, weekCompare } from '../src/insights/story';
+import { emptyDraft } from '../src/onboarding/types';
 import type { PartStatus } from '../src/journey/types';
 import type { Checkin, OnTheSpotEntry } from '../src/native/InwardEngine';
 
@@ -80,5 +82,92 @@ describe('computeInsightCards', () => {
     const feelings = cards.find((c) => c.id === 'feelings');
     expect(feelings?.body).toMatch(/tender/);
     expect(namedFeelings([checkin({ oneWord: 'tender' })], [])).toEqual([{ word: 'tender', count: 1 }]);
+  });
+
+  it('ties a high-stress pattern to a challenge the user actually named', () => {
+    const draft = emptyDraft();
+    draft.challenges = ['academic_pressure'];
+    const cards = computeInsightCards({
+      ...base,
+      checkins: [
+        checkin({ id: 'a', stress: 72, createdAt: '2026-08-30T08:00:00.000Z' }),
+        checkin({ id: 'b', stress: 80, createdAt: '2026-08-31T08:00:00.000Z' }),
+      ],
+      draft,
+    });
+    const lens = cards.find((c) => c.id === 'challenge-stress');
+    expect(lens).toBeDefined();
+    expect(lens?.kind).toBe('evidence');
+    expect(lens?.body).toMatch(/academic pressure/i);
+    expect(lens?.body).toMatch(/not a diagnosis/);
+  });
+
+  it('does not invent a goal lens without the matching onboarding choice', () => {
+    const cards = computeInsightCards({
+      ...base,
+      checkins: [
+        checkin({ id: 'a', stress: 80, createdAt: '2026-08-30T08:00:00.000Z' }),
+        checkin({ id: 'b', stress: 80, createdAt: '2026-08-31T08:00:00.000Z' }),
+      ],
+    });
+    expect(cards.find((c) => c.id === 'challenge-stress')).toBeUndefined();
+  });
+});
+
+describe('weekCompare', () => {
+  const now = new Date(2026, 7, 31, 12, 0, 0);
+
+  function daysAgo(n: number, over: Partial<Checkin> = {}): Checkin {
+    const d = new Date(now);
+    d.setDate(now.getDate() - n);
+    d.setHours(9, 0, 0, 0);
+    return checkin({ id: `d${n}`, createdAt: d.toISOString(), ...over });
+  }
+
+  it('does not invent a week-over-week move when last week is empty', () => {
+    const cmp = weekCompare([daysAgo(0, { mood: 4 }), daysAgo(1, { mood: 5 })], now);
+    expect(cmp.thisWeek.count).toBe(2);
+    expect(cmp.lastWeek.count).toBe(0);
+    expect(cmp.dMood).toBeNull();
+  });
+
+  it('compares this week to last week from real logs only', () => {
+    const cmp = weekCompare(
+      [daysAgo(0, { mood: 4 }), daysAgo(1, { mood: 4 }), daysAgo(10, { mood: 2 }), daysAgo(11, { mood: 2 })],
+      now,
+    );
+    expect(cmp.thisWeek.count).toBe(2);
+    expect(cmp.lastWeek.count).toBe(2);
+    expect(cmp.dMood).toBeCloseTo(2);
+  });
+});
+
+describe('headline and poles', () => {
+  it('does not invent a lightest/heaviest day from a single log', () => {
+    expect(bestAndHardest([{ iso: '2026-08-31', label: 'M', mood: 4 }])).toEqual({});
+  });
+
+  it('stays empty-honest when there is nothing to plot', () => {
+    const h = buildHeadline({
+      checkinCount: 0,
+      lived: 0,
+      notDone: 0,
+      compare: weekCompare([], new Date(2026, 7, 31)),
+      days: [],
+      named: [],
+      draft: null,
+      onTheSpot: [],
+    });
+    expect(h.title).toMatch(/mirror/i);
+    expect(h.body).toMatch(/invented/i);
+  });
+});
+
+describe('formatDelta', () => {
+  it('renders a signed move and hides a true zero as 0', () => {
+    expect(formatDelta(0.41)).toBe('+0.4');
+    expect(formatDelta(-6, 0)).toBe('−6');
+    expect(formatDelta(0)).toBe('0');
+    expect(formatDelta(null)).toBeNull();
   });
 });

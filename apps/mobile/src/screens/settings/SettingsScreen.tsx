@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert, Switch, TouchableOpacity } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { colors, spacing } from '../../design-system/tokens';
 import { Card } from '../../design-system/Card';
 import { EyebrowLabel } from '../../design-system/EyebrowLabel';
@@ -23,6 +24,7 @@ import { requestReminderPermission, syncReflectionReminders } from '../../notifi
 type PasscodeMode = 'create' | 'verify' | null;
 
 export default function SettingsScreen() {
+  const router = useRouter();
   const isFocused = useIsFocused();
   const { data: profile, update: updateProfile, refresh: refreshProfile } = useProfile();
   const { data: settings, update: updateSettings, refresh: refreshSettings } = useSettings();
@@ -36,7 +38,6 @@ export default function SettingsScreen() {
   const [savingReminders, setSavingReminders] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [deleteError, setDeleteError] = useState('');
-  const [deleteNotice, setDeleteNotice] = useState(false);
 
   useEffect(() => {
     if (isFocused) {
@@ -89,15 +90,8 @@ export default function SettingsScreen() {
     try {
       await deleteAll();
       setConfirmingDelete(false);
-      setDeleteNotice(true);
-      setTimeout(() => setDeleteNotice(false), 5000);
-      // The profile reset also turns app lock off; make sure no reminder is
-      // left scheduled under the old preferences.
       await syncReflectionReminders(DEFAULT_REMINDERS);
-      // Refresh the other screens' data so the UI reflects the clean slate
-      // immediately instead of on the next focus change.
-      refreshProfile();
-      refreshSettings();
+      router.replace('/onboarding');
     } catch (e) {
       console.warn('Failed to delete all data:', e);
       setDeleteError('Could not delete your data. Please try again in a moment.');
@@ -283,7 +277,6 @@ export default function SettingsScreen() {
           disabled={deleting || confirmingDelete}
           style={{ marginTop: spacing.md }}
         />
-        {deleteNotice ? <Text style={styles.deleteNotice}>All data has been cleared.</Text> : null}
       </Card>
 
       <Card style={styles.card}>
@@ -531,13 +524,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#D4795F',
     marginTop: spacing.sm,
-  },
-  deleteNotice: {
-    fontFamily: 'Nunito',
-    fontSize: 12,
-    fontWeight: '700',
-    color: colors.sage,
-    marginTop: spacing.md,
   },
   modalButtons: {
     flexDirection: 'row',

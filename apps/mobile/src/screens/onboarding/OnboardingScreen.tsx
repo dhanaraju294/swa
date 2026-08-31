@@ -1,232 +1,784 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TextInput, TouchableOpacity } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import { useRouter } from 'expo-router';
-import { colors, typography, spacing, radius } from '../../design-system/tokens';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { colors, spacing, radius, shadow } from '../../design-system/tokens';
 import { Button } from '../../design-system/Button';
+import { Card } from '../../design-system/Card';
+import { EyebrowLabel } from '../../design-system/EyebrowLabel';
 import { PetalMark } from '../../design-system/PetalMark';
-import { useProfile } from '../../hooks/useProfile';
+import { MoodFacePicker } from '../../design-system/MoodFacePicker';
+import { PillSlider } from '../../design-system/PillSlider';
+import { WritingLineInput } from '../../design-system/WritingLineInput';
 import { setSecureFlag } from '../../native/secureFlag';
+import { useSaveCheckin } from '../../hooks/useCheckins';
+import { emptyDraft, type OnboardingDraft } from '../../onboarding/types';
+import { ONBOARDING_FLAG_KEY, readOnboardingRecord } from '../../onboarding/store';
+import { saveOnboardingLocalThenSync } from '../../onboarding/sync';
+import {
+  CHALLENGES,
+  EVENING_TIMES,
+  FIELDS,
+  FREQUENCIES,
+  GOALS,
+  LENGTHS,
+  MORNING_TIMES,
+  ROLES,
+  YEARS,
+  formatClock,
+} from '../../onboarding/options';
 
-const ONBOARDING_KEY = 'inward-has-onboarded-v1';
+const MOOD_LABELS = ['Sad', 'Low', 'Neutral', 'Good', 'Great'];
 
-const STEPS = [
-  {
-    eyebrow: 'WELCOME',
-    title: 'The Inward\nJourney',
-    body: 'A quiet space to pause, notice, and understand yourself — without judgment or pressure.',
-    quote: '"Answers begin within."',
-  },
-  {
-    eyebrow: 'YOUR SPACE',
-    title: 'Private &\nSacred',
-    body: 'Everything stays on your device. No account, no cloud, no data leaves your hands. Your reflections are yours alone.',
-    quote: '',
-  },
-  {
-    eyebrow: 'GET STARTED',
-    title: 'Begin\nWhenever',
-    body: 'Each day is three small doors: a morning arrival, one tiny practice, an evening look-back. Skip anything. Nothing is homework.',
-    quote: '"What you notice, you can change."',
-  },
+type Step = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+
+const STEP_META: Array<{ title: string; body: string }> = [
+  { title: '', body: '' },
+  { title: 'About you', body: 'Tell us a little about yourself.' },
+  { title: 'What do you want to improve?', body: 'Pick what matters most — you can choose more than one.' },
+  { title: "What's on your mind right now?", body: "Select what you're currently struggling with." },
+  { title: 'Your preference', body: 'How would you like to use SWA?' },
+  { title: 'Check-in time', body: 'When would you like SWA to check in with you?' },
+  { title: 'First check-in', body: "Let's understand how you're feeling right now." },
+  { title: 'Your SWA journey begins now', body: "We're here to support you, every step of the way." },
 ];
+
+function toggleIn(list: string[], id: string): string[] {
+  return list.includes(id) ? list.filter((x) => x !== id) : [...list, id];
+}
 
 export default function OnboardingScreen() {
   const router = useRouter();
-  const { update } = useProfile();
-  const [step, setStep] = useState(0);
-  const [displayName, setDisplayName] = useState('');
-  const [showName, setShowName] = useState(false);
+  const { save: saveCheckin } = useSaveCheckin();
+  const [step, setStep] = useState<Step>(0);
+  const [draft, setDraft] = useState<OnboardingDraft>(emptyDraft);
+  const draftRef = useRef(draft);
+  draftRef.current = draft;
   const [finishing, setFinishing] = useState(false);
 
-  const current = STEPS[step];
+  useEffect(() => {
+    readOnboardingRecord().then((row) => {
+      if (!row) return;
+      setDraft(row.draft);
+      if (!row.completed && row.step >= 1 && row.step <= 7) {
+        setStep(row.step as Step);
+      }
+    });
+  }, []);
 
-  const finishOnboarding = async (name: string) => {
+  const patch = (partial: Partial<OnboardingDraft>) => setDraft((d) => ({ ...d, ...partial }));
+
+  const persistStep = (nextStep: number, completed = false) => {
+    void saveOnboardingLocalThenSync(draftRef.current, { step: nextStep, completed });
+  };
+
+  const canContinue = useMemo(() => {
+    if (step === 1) {
+      if (!draft.role || !draft.fieldOfStudy) return false;
+      if (draft.role === 'college_student' && !draft.yearOfStudy) return false;
+      return true;
+    }
+    if (step === 2) return draft.goals.length > 0;
+    if (step === 3) return draft.challenges.length > 0;
+    if (step === 4) return Boolean(draft.experienceLength && draft.reflectFrequency);
+    return true;
+  }, [step, draft]);
+
+  const goNext = () => {
+    if (step >= 7) return;
+    const next = (step + 1) as Step;
+    persistStep(next);
+    setStep(next);
+  };
+
+  const goBack = () => {
+    if (step <= 0) return;
+    setStep((step - 1) as Step);
+  };
+
+  const finish = async () => {
     if (finishing) return;
     setFinishing(true);
-    console.log('[Onboarding] starting finishOnboarding', { name });
     try {
-      console.log('[Onboarding] saving profile');
-      await update({ displayName: name.trim() || undefined, appLockEnabled: false });
-      console.log('[Onboarding] profile saved successfully');
-    } catch (e) {
-      console.warn('Failed to save profile during onboarding:', e);
-      // Still continue — the name is also backed up locally by useProfile.
-    } finally {
+      await saveOnboardingLocalThenSync(draftRef.current, { step: 7, completed: true });
       try {
-        console.log('[Onboarding] writing onboarding flag');
-        await setSecureFlag(ONBOARDING_KEY, 'true');
-        console.log('[Onboarding] navigating to the first spot check-in');
-        // First launch continues into the one-time spot check-in; the tabs
-        // open afterwards (and directly on every later launch).
-        router.replace('/spot-checkin');
+        await saveCheckin({
+          mood: draft.firstMood,
+          energy: draft.firstEnergy,
+          stress: draft.firstStress,
+          sleep: 3,
+          confidence: 50,
+          oneWord: draft.firstIntention.trim() || undefined,
+        });
       } catch (e) {
-        console.warn('Failed to finalize onboarding transition:', e);
+        console.warn('First check-in local save failed (non-fatal):', e);
       }
+      await setSecureFlag(ONBOARDING_FLAG_KEY, 'true');
+      router.replace('/(tabs)');
+    } catch (e) {
+      console.warn('Failed to finish onboarding locally:', e);
+      setFinishing(false);
     }
   };
 
-  if (showName) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.content}>
-          <View style={styles.topSection}>
-            <PetalMark size={40} />
-          </View>
-
-          <Text style={styles.eyebrow}>OPTIONAL</Text>
-          <Text style={styles.title}>What should{'\n'}we call you?</Text>
-          <Text style={styles.body}>
-            This name appears on your home screen. It never leaves your device.
-          </Text>
-
-          <TextInput
-            style={styles.input}
-            placeholder="Your name (optional)"
-            placeholderTextColor={colors.ghost}
-            value={displayName}
-            onChangeText={setDisplayName}
-            autoFocus
-          />
-
-          <View style={styles.buttonGroup}>
-            <Button
-              title="Continue"
-              onPress={() => finishOnboarding(displayName)}
-              color={colors.gold}
-              disabled={finishing}
-            />
-            <Button
-              title="Skip"
-              onPress={() => finishOnboarding('')}
-              variant="ghost"
-              disabled={finishing}
-            />
-          </View>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <View style={styles.topSection}>
-          {step === 0 && <PetalMark size={40} />}
-        </View>
-
-        <Text style={styles.eyebrow}>{current.eyebrow}</Text>
-        <Text style={styles.title}>{current.title}</Text>
-        <Text style={styles.body}>{current.body}</Text>
-
-        {current.quote ? (
-          <Text style={styles.quote}>{current.quote}</Text>
+    <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        {step === 0 ? (
+          <Welcome onContinue={goNext} />
         ) : (
-          <View style={{ height: 40 }} />
+          <>
+            <View style={styles.topBar}>
+              <TouchableOpacity onPress={goBack} hitSlop={12} style={styles.backBtn} accessibilityLabel="Back">
+                <Ionicons name="chevron-back" size={22} color={colors.ink} />
+              </TouchableOpacity>
+              <View style={styles.barTrack}>
+                <View style={[styles.barFill, { width: `${Math.round((step / 7) * 100)}%` }]} />
+              </View>
+              <Text style={styles.stepLabel}>Step {step} of 7</Text>
+            </View>
+
+            <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+              {step < 7 ? (
+                <>
+                  <Text style={styles.title}>{STEP_META[step].title}</Text>
+                  <Text style={styles.body}>{STEP_META[step].body}</Text>
+                </>
+              ) : null}
+
+              {step === 1 && <AboutStep draft={draft} patch={patch} />}
+              {step === 2 && (
+                <ChipGrid
+                  items={GOALS}
+                  selected={draft.goals}
+                  onToggle={(id) => patch({ goals: toggleIn(draft.goals, id) })}
+                />
+              )}
+              {step === 3 && (
+                <ChipGrid
+                  items={CHALLENGES}
+                  selected={draft.challenges}
+                  onToggle={(id) => patch({ challenges: toggleIn(draft.challenges, id) })}
+                  twoCol
+                />
+              )}
+              {step === 4 && <PrefsStep draft={draft} patch={patch} />}
+              {step === 5 && <TimesStep draft={draft} patch={patch} />}
+              {step === 6 && <CheckinStep draft={draft} patch={patch} />}
+              {step === 7 && <BeginStep />}
+            </ScrollView>
+
+            <View style={styles.footer}>
+              {step < 7 ? (
+                <Button
+                  title="Continue"
+                  onPress={goNext}
+                  color={colors.gold}
+                  disabled={!canContinue}
+                />
+              ) : (
+                <Button
+                  title={finishing ? 'Opening…' : "Let's begin  →"}
+                  onPress={finish}
+                  color={colors.gold}
+                  disabled={finishing}
+                  loading={finishing}
+                />
+              )}
+            </View>
+          </>
         )}
-
-        <View style={styles.dots}>
-          {STEPS.map((_, i) => (
-            <View key={i} style={[styles.dot, i === step && styles.dotActive]} />
-          ))}
-        </View>
-
-        <View style={styles.buttonGroup}>
-          {step < STEPS.length - 1 ? (
-            <Button
-              title="Next"
-              onPress={() => setStep(step + 1)}
-              color={colors.gold}
-            />
-          ) : (
-            <Button
-              title="Get Started"
-              onPress={() => setShowName(true)}
-              color={colors.gold}
-            />
-          )}
-          {step > 0 && (
-            <Button
-              title="Back"
-              onPress={() => setStep(step - 1)}
-              variant="ghost"
-            />
-          )}
-        </View>
-      </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
+function Welcome({ onContinue }: { onContinue: () => void }) {
+  return (
+    <View style={styles.welcome}>
+      <View style={styles.welcomeArt}>
+        <PetalMark size={88} />
+      </View>
+      <Text style={styles.brand}>SWA</Text>
+      <Text style={styles.welcomeLine}>Understand yourself{'\n'}one step at a time</Text>
+      <View style={{ flex: 1 }} />
+      <Button title="Continue" onPress={onContinue} color={colors.gold} />
+      <View style={styles.privacy}>
+        <Ionicons name="shield-checkmark" size={16} color={colors.leaf} />
+        <Text style={styles.privacyText}>
+          Your journal stays on this device. This setup is saved locally even without internet, and sent when you are back online.
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+function AboutStep({
+  draft,
+  patch,
+}: {
+  draft: OnboardingDraft;
+  patch: (p: Partial<OnboardingDraft>) => void;
+}) {
+  return (
+    <View>
+      <EyebrowLabel label="I AM A" />
+      {ROLES.map((r) => (
+        <ChoiceRow
+          key={r.id}
+          label={r.label}
+          sub={r.sub}
+          selected={draft.role === r.id}
+          onPress={() =>
+            patch({
+              role: r.id,
+              yearOfStudy: r.id === 'working_professional' ? null : draft.yearOfStudy,
+            })
+          }
+        />
+      ))}
+
+      {draft.role === 'college_student' ? (
+        <>
+          <View style={{ height: spacing.lg }} />
+          <EyebrowLabel label="YEAR OF STUDY" />
+          <View style={styles.wrapRow}>
+            {YEARS.map((y) => (
+              <Pill
+                key={y.id}
+                label={y.label}
+                selected={draft.yearOfStudy === y.id}
+                onPress={() => patch({ yearOfStudy: y.id })}
+              />
+            ))}
+          </View>
+        </>
+      ) : null}
+
+      <View style={{ height: spacing.lg }} />
+      <EyebrowLabel label={draft.role === 'working_professional' ? 'FIELD OF WORK' : 'FIELD OF STUDY'} />
+      {FIELDS.map((f) => (
+        <ChoiceRow
+          key={f}
+          label={f}
+          selected={draft.fieldOfStudy === f}
+          onPress={() => patch({ fieldOfStudy: f })}
+        />
+      ))}
+    </View>
+  );
+}
+
+function PrefsStep({
+  draft,
+  patch,
+}: {
+  draft: OnboardingDraft;
+  patch: (p: Partial<OnboardingDraft>) => void;
+}) {
+  return (
+    <View>
+      <EyebrowLabel label="PREFERRED EXPERIENCE LENGTH" />
+      {LENGTHS.map((x) => (
+        <ChoiceRow
+          key={x.id}
+          label={x.label}
+          sub={x.sub}
+          selected={draft.experienceLength === x.id}
+          onPress={() => patch({ experienceLength: x.id })}
+        />
+      ))}
+      <View style={{ height: spacing.lg }} />
+      <EyebrowLabel label="HOW OFTEN WOULD YOU LIKE TO REFLECT?" />
+      {FREQUENCIES.map((x) => (
+        <ChoiceRow
+          key={x.id}
+          label={x.label}
+          sub={x.sub}
+          selected={draft.reflectFrequency === x.id}
+          onPress={() => patch({ reflectFrequency: x.id })}
+        />
+      ))}
+    </View>
+  );
+}
+
+function TimesStep({
+  draft,
+  patch,
+}: {
+  draft: OnboardingDraft;
+  patch: (p: Partial<OnboardingDraft>) => void;
+}) {
+  return (
+    <View>
+      <Card style={styles.timeCard}>
+        <View style={styles.timeHead}>
+          <View style={[styles.timeIcon, { backgroundColor: '#FBF1DE' }]}>
+            <Ionicons name="sunny" size={16} color="#C99A2C" />
+          </View>
+          <Text style={styles.timeTitle}>Morning check-in</Text>
+        </View>
+        {MORNING_TIMES.map((t) => (
+          <ChoiceRow
+            key={t}
+            label={formatClock(t)}
+            selected={draft.morningCheckinTime === t}
+            onPress={() => patch({ morningCheckinTime: t })}
+          />
+        ))}
+      </Card>
+      <Card style={styles.timeCard}>
+        <View style={styles.timeHead}>
+          <View style={[styles.timeIcon, { backgroundColor: '#F3EEF9' }]}>
+            <Ionicons name="moon" size={16} color="#8D7FAE" />
+          </View>
+          <Text style={styles.timeTitle}>Evening check-in</Text>
+        </View>
+        {EVENING_TIMES.map((t) => (
+          <ChoiceRow
+            key={t}
+            label={formatClock(t)}
+            selected={draft.eveningCheckinTime === t}
+            onPress={() => patch({ eveningCheckinTime: t })}
+          />
+        ))}
+      </Card>
+    </View>
+  );
+}
+
+function CheckinStep({
+  draft,
+  patch,
+}: {
+  draft: OnboardingDraft;
+  patch: (p: Partial<OnboardingDraft>) => void;
+}) {
+  return (
+    <View>
+      <EyebrowLabel label="HOW ARE YOU FEELING TODAY?" />
+      <Card style={styles.padCard}>
+        <Text style={styles.fieldLabel}>Mood</Text>
+        <MoodFacePicker
+          value={draft.firstMood}
+          onChange={(v) => patch({ firstMood: v })}
+          labels={MOOD_LABELS}
+        />
+      </Card>
+      <Card style={styles.padCard}>
+        <View style={styles.sliderLabels}>
+          <Text style={styles.fieldLabel}>Energy</Text>
+          <Text style={styles.sliderEnds}>Low → High</Text>
+        </View>
+        <PillSlider value={draft.firstEnergy} onChange={(v) => patch({ firstEnergy: v })} color={colors.gold} />
+      </Card>
+      <Card style={styles.padCard}>
+        <View style={styles.sliderLabels}>
+          <Text style={styles.fieldLabel}>Stress</Text>
+          <Text style={styles.sliderEnds}>Low → High</Text>
+        </View>
+        <PillSlider value={draft.firstStress} onChange={(v) => patch({ firstStress: v })} color={colors.peach} />
+      </Card>
+      <Card style={styles.padCard}>
+        <Text style={styles.fieldLabel}>What's one thing you want today to go better?</Text>
+        <WritingLineInput
+          value={draft.firstIntention}
+          onChangeText={(t) => patch({ firstIntention: t })}
+          placeholder="A few honest words are enough"
+          multiline
+        />
+      </Card>
+    </View>
+  );
+}
+
+function BeginStep() {
+  return (
+    <View style={styles.begin}>
+      <PetalMark size={72} />
+      <Text style={styles.beginTitle}>Your SWA journey{'\n'}begins now</Text>
+      <Text style={styles.body}>We're here to support you, every step of the way.</Text>
+      <View style={styles.beginList}>
+        <BeginRow icon="heart" text="Daily check-ins — understand your mind" />
+        <BeginRow icon="sparkles" text="Personalized insights — just for you" />
+        <BeginRow icon="trending-up" text="Growth over time — reflect, learn, grow" />
+      </View>
+    </View>
+  );
+}
+
+function BeginRow({ icon, text }: { icon: 'heart' | 'sparkles' | 'trending-up'; text: string }) {
+  return (
+    <View style={styles.beginRow}>
+      <View style={styles.beginIcon}>
+        <Ionicons name={icon} size={16} color={colors.leaf} />
+      </View>
+      <Text style={styles.beginText}>{text}</Text>
+    </View>
+  );
+}
+
+function ChipGrid({
+  items,
+  selected,
+  onToggle,
+  twoCol,
+}: {
+  items: Array<{ id: string; label: string }>;
+  selected: string[];
+  onToggle: (id: string) => void;
+  twoCol?: boolean;
+}) {
+  if (twoCol) {
+    return (
+      <View style={styles.grid}>
+        {items.map((item) => {
+          const on = selected.includes(item.id);
+          return (
+            <TouchableOpacity
+              key={item.id}
+              onPress={() => onToggle(item.id)}
+              style={[styles.gridCell, on && styles.choiceOn]}
+              activeOpacity={0.85}
+            >
+              <Text style={[styles.choiceLabel, on && styles.choiceLabelOn]}>{item.label}</Text>
+              <View style={[styles.check, on && styles.checkOn]}>
+                {on ? <Ionicons name="checkmark" size={12} color="#fff" /> : null}
+              </View>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    );
+  }
+  return (
+    <View>
+      {items.map((item) => (
+        <ChoiceRow
+          key={item.id}
+          label={item.label}
+          selected={selected.includes(item.id)}
+          onPress={() => onToggle(item.id)}
+        />
+      ))}
+    </View>
+  );
+}
+
+function ChoiceRow({
+  label,
+  sub,
+  selected,
+  onPress,
+}: {
+  label: string;
+  sub?: string;
+  selected: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <TouchableOpacity onPress={onPress} style={[styles.choice, selected && styles.choiceOn]} activeOpacity={0.85}>
+      <View style={{ flex: 1 }}>
+        <Text style={[styles.choiceLabel, selected && styles.choiceLabelOn]}>{label}</Text>
+        {sub ? <Text style={styles.choiceSub}>{sub}</Text> : null}
+      </View>
+      <View style={[styles.check, selected && styles.checkOn]}>
+        {selected ? <Ionicons name="checkmark" size={12} color="#fff" /> : null}
+      </View>
+    </TouchableOpacity>
+  );
+}
+
+function Pill({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
+  return (
+    <TouchableOpacity onPress={onPress} style={[styles.pill, selected && styles.choiceOn]} activeOpacity={0.85}>
+      <Text style={[styles.pillText, selected && styles.choiceLabelOn]}>{label}</Text>
+    </TouchableOpacity>
+  );
+}
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.cream,
-  },
-  content: {
+  safe: { flex: 1, backgroundColor: colors.cream },
+  welcome: {
     flex: 1,
     paddingHorizontal: spacing.xxl,
-    paddingTop: spacing.xxl,
+    paddingTop: spacing.xxxl,
+    paddingBottom: spacing.lg,
   },
-  topSection: {
+  welcomeArt: {
     alignItems: 'center',
-    marginBottom: spacing.xxxl,
+    marginTop: spacing.xxl,
+    marginBottom: spacing.xl,
   },
-  eyebrow: {
+  brand: {
+    fontFamily: 'Fraunces',
+    fontSize: 42,
+    fontWeight: '700',
+    color: colors.ink,
+    textAlign: 'center',
+    letterSpacing: 4,
+  },
+  welcomeLine: {
+    fontFamily: 'Fraunces',
+    fontSize: 22,
+    fontWeight: '600',
+    color: colors.inkSoft,
+    textAlign: 'center',
+    marginTop: spacing.md,
+    lineHeight: 30,
+  },
+  privacy: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    marginTop: spacing.lg,
+    alignItems: 'flex-start',
+  },
+  privacyText: {
+    flex: 1,
     fontFamily: 'Nunito',
-    fontSize: 10.5,
+    fontSize: 12,
+    color: colors.inkSoft,
+    lineHeight: 17,
+  },
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.sm,
+  },
+  backBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: colors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  barTrack: {
+    flex: 1,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#EDE8DD',
+    overflow: 'hidden',
+  },
+  barFill: {
+    height: 6,
+    backgroundColor: colors.gold,
+    borderRadius: 3,
+  },
+  stepLabel: {
+    fontFamily: 'Nunito',
+    fontSize: 11,
     fontWeight: '800',
     color: colors.inkSoft,
-    letterSpacing: 3.5,
-    textTransform: 'uppercase',
-    marginBottom: spacing.md,
+    width: 72,
+    textAlign: 'right',
+  },
+  scroll: {
+    paddingHorizontal: spacing.lg,
+    paddingBottom: 24,
   },
   title: {
     fontFamily: 'Fraunces',
-    fontSize: 36,
+    fontSize: 26,
     fontWeight: '600',
     color: colors.ink,
-    lineHeight: 42,
-    marginBottom: spacing.lg,
+    lineHeight: 32,
+    marginTop: spacing.sm,
   },
   body: {
     fontFamily: 'Nunito',
-    fontSize: 15,
+    fontSize: 14,
     color: colors.inkSoft,
-    lineHeight: 22,
-    marginBottom: spacing.xl,
+    lineHeight: 21,
+    marginTop: 6,
+    marginBottom: spacing.lg,
   },
-  quote: {
-    fontFamily: 'Caveat',
-    fontSize: 22,
-    fontWeight: '600',
-    color: '#7D5A45',
-    marginBottom: spacing.xxl,
+  footer: {
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.md,
+    paddingTop: spacing.sm,
   },
-  dots: {
+  choice: {
     flexDirection: 'row',
-    gap: 8,
-    marginBottom: spacing.xxl,
+    alignItems: 'center',
+    gap: spacing.md,
+    backgroundColor: colors.white,
+    borderRadius: radius.sm,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    marginBottom: 10,
+    borderWidth: 2,
+    borderColor: 'transparent',
+    ...shadow.soft,
   },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: colors.writingLine,
+  choiceOn: {
+    borderColor: colors.ink,
+    backgroundColor: '#FFF',
   },
-  dotActive: {
-    backgroundColor: colors.gold,
-    width: 24,
-  },
-  buttonGroup: {
-    gap: spacing.sm,
-  },
-  input: {
+  choiceLabel: {
     fontFamily: 'Nunito',
-    fontSize: 16,
+    fontSize: 15,
+    fontWeight: '700',
     color: colors.ink,
-    borderBottomWidth: 1.5,
-    borderBottomColor: colors.writingLine,
-    paddingVertical: spacing.md,
-    marginBottom: spacing.xxl,
+  },
+  choiceLabelOn: {
+    color: colors.ink,
+  },
+  choiceSub: {
+    fontFamily: 'Nunito',
+    fontSize: 12,
+    color: colors.inkSoft,
+    marginTop: 2,
+  },
+  check: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 2,
+    borderColor: '#D8CFC0',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkOn: {
+    backgroundColor: colors.leaf,
+    borderColor: colors.leaf,
+  },
+  wrapRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  pill: {
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 999,
+    backgroundColor: colors.white,
+    borderWidth: 2,
+    borderColor: 'transparent',
+    ...shadow.soft,
+  },
+  pillText: {
+    fontFamily: 'Nunito',
+    fontSize: 13,
+    fontWeight: '800',
+    color: colors.ink,
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  gridCell: {
+    width: '48%',
+    flexGrow: 1,
+    backgroundColor: colors.white,
+    borderRadius: radius.sm,
+    padding: 14,
+    borderWidth: 2,
+    borderColor: 'transparent',
+    minHeight: 88,
+    justifyContent: 'space-between',
+    ...shadow.soft,
+  },
+  timeCard: {
+    padding: spacing.lg,
+    marginBottom: spacing.md,
+  },
+  timeHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  timeIcon: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  timeTitle: {
+    fontFamily: 'Nunito',
+    fontSize: 15,
+    fontWeight: '800',
+    color: colors.ink,
+  },
+  padCard: {
+    padding: spacing.lg,
+    marginBottom: spacing.md,
+  },
+  fieldLabel: {
+    fontFamily: 'Nunito',
+    fontSize: 13,
+    fontWeight: '800',
+    color: colors.ink,
+    marginBottom: spacing.sm,
+  },
+  sliderLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  sliderEnds: {
+    fontFamily: 'Nunito',
+    fontSize: 11,
+    color: colors.inkSoft,
+    fontWeight: '700',
+  },
+  begin: {
+    alignItems: 'center',
+    paddingTop: spacing.xl,
+  },
+  beginTitle: {
+    fontFamily: 'Fraunces',
+    fontSize: 28,
+    fontWeight: '600',
+    color: colors.ink,
+    textAlign: 'center',
+    marginTop: spacing.lg,
+    lineHeight: 34,
+  },
+  beginList: {
+    alignSelf: 'stretch',
+    marginTop: spacing.lg,
+    gap: spacing.md,
+  },
+  beginRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    backgroundColor: colors.white,
+    borderRadius: radius.sm,
+    padding: spacing.lg,
+    ...shadow.soft,
+  },
+  beginIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: colors.leafSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  beginText: {
+    flex: 1,
+    fontFamily: 'Nunito',
+    fontSize: 13.5,
+    fontWeight: '700',
+    color: colors.ink,
+    lineHeight: 19,
   },
 });

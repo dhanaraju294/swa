@@ -4,6 +4,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import { emitJourneyChanged } from './useDailyJourney';
 import { clearJourneyStartedOn } from '../journey/startDate';
+import { clearOnboardingLocal, ONBOARDING_FLAG_KEY } from '../onboarding/store';
+import { deleteSecureFlag } from '../native/secureFlag';
 import { getInwardEngine } from '../native/InwardEngineProvider';
 import type { AppSettings, AppSettingsInput, Profile, ProfileInput } from '../native/InwardEngine';
 import { normalizeProfile, useAppStore } from '../state/appStore';
@@ -160,6 +162,8 @@ export function useDeleteAllData() {
       // Journey calendar origin lives in AsyncStorage (not the engine) so a
       // deleted user does not keep advancing through empty days.
       await clearJourneyStartedOn();
+      await clearOnboardingLocal();
+      await deleteSecureFlag(ONBOARDING_FLAG_KEY);
       emitJourneyChanged();
 
       // 2) Reset the in-memory mirrors of that data.
