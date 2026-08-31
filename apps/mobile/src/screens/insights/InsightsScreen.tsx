@@ -10,10 +10,12 @@ import { useReflections, useOnTheSpot } from '../../hooks/useJournal';
 import { useAwarenessSnapshot, useStreak } from '../../hooks/useAwareness';
 import { useDailyCatalog } from '../../hooks/useDailyJourney';
 import { useLatestSpotCheckin } from '../../hooks/useSpotCheckins';
+import { useOnboardingProfile } from '../../onboarding/useOnboardingProfile';
 import { partsCompleteCount } from '../../journey/calendar';
 import {
   computeInsightCards,
   dimensionLabel,
+  evidenceCards,
   innerWeather,
   moodFace,
   namedFeelings,
@@ -21,6 +23,14 @@ import {
   resolveAwareness,
   weekLoop,
 } from '../../insights/compute';
+import {
+  awarenessLine,
+  bestAndHardest,
+  buildHeadline,
+  formatDelta,
+  lensChips,
+  weekCompare,
+} from '../../insights/story';
 import type { Checkin } from '../../native/InwardEngine';
 
 function prettyReflection(prompt: string, response: string): { title: string; body: string } {
@@ -71,6 +81,7 @@ export default function InsightsScreen() {
   const { data: awarenessSnap, refresh: refreshAwareness } = useAwarenessSnapshot();
   const { data: streak, refresh: refreshStreak } = useStreak();
   const { data: spot, refresh: refreshSpot } = useLatestSpotCheckin();
+  const { draft, refresh: refreshOnboarding } = useOnboardingProfile();
   const {
     completedDays,
     statusByDay,
@@ -82,6 +93,7 @@ export default function InsightsScreen() {
   } = useDailyCatalog();
   const [showMoreReflections, setShowMoreReflections] = useState(false);
   const [showMoreCheckins, setShowMoreCheckins] = useState(false);
+  const [showLogs, setShowLogs] = useState(false);
 
   useEffect(() => {
     if (isFocused) {
@@ -92,12 +104,14 @@ export default function InsightsScreen() {
       refreshPath();
       refreshStreak();
       refreshSpot();
+      refreshOnboarding();
     }
   }, [
     isFocused,
     refreshAwareness,
     refreshCheckins,
     refreshOnTheSpot,
+    refreshOnboarding,
     refreshPath,
     refreshReflections,
     refreshSpot,
@@ -124,7 +138,10 @@ export default function InsightsScreen() {
     [startedOn, statusByDay, completedDays, unlockedDay, total, checkins, onTheSpot],
   );
   const weather = useMemo(() => innerWeather(checkins), [checkins]);
+  const compare = useMemo(() => weekCompare(checkins), [checkins]);
   const feelings = useMemo(() => namedFeelings(checkins, onTheSpot), [checkins, onTheSpot]);
+  const poles = useMemo(() => bestAndHardest(weather.days), [weather.days]);
+  const chips = useMemo(() => lensChips(draft), [draft]);
   const awareness = useMemo(
     () => resolveAwareness(awarenessSnap, checkins, reflections, streak, completedDays),
     [awarenessSnap, checkins, reflections, streak, completedDays],
@@ -140,21 +157,34 @@ export default function InsightsScreen() {
         completedDays,
         streak,
         spot,
+        draft,
       }),
-    [checkins, onTheSpot, reflections, statusByDay, unlockedDay, completedDays, streak, spot],
+    [checkins, onTheSpot, reflections, statusByDay, unlockedDay, completedDays, streak, spot, draft],
+  );
+  const headline = useMemo(
+    () =>
+      buildHeadline({
+        checkinCount: checkins.length,
+        lived: stats.lived,
+        notDone: stats.notDone,
+        compare,
+        days: weather.days,
+        named: feelings,
+        draft,
+        onTheSpot,
+      }),
+    [checkins.length, stats.lived, stats.notDone, compare, weather.days, feelings, draft, onTheSpot],
   );
 
   const overall = awareness.find((d) => d.dimension === 'overall');
   const dims = awareness.filter((d) => d.dimension !== 'overall');
   const lastCheckins = showMoreCheckins ? checkins.slice(0, 14) : checkins.slice(0, 5);
   const lastReflections = showMoreReflections ? reflections.slice(0, 16) : reflections.slice(0, 6);
-
-  const lead =
-    stats.lived + stats.notDone === 0 && checkins.length === 0
-      ? 'Nothing to plot yet. Live a loop or check in, and this page becomes a mirror.'
-      : stats.notDone > 0
-        ? 'Here is what your days have been teaching you — including the ones you left undone.'
-        : "Here's what your recent days are showing you.";
+  const story = evidenceCards(insightCards)
+    .filter((c) => c.id !== 'loop-today')
+    .slice(0, 5);
+  const fallbackNudge = insightCards.find((c) => c.kind === 'nudge' && c.id !== 'loop-today');
+  const thisWeek = compare.thisWeek;
 
   return (
     <View style={styles.container}>
@@ -164,7 +194,82 @@ export default function InsightsScreen() {
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.lead}>{lead}</Text>
+        <Text style={styles.lead}>{headline.title}</Text>
+        <Text style={styles.leadBody}>{headline.body}</Text>
+
+        {chips.length > 0 ? (
+          <View style={styles.lensWrap}>
+            <Text style={styles.lensKicker}>Looking through</Text>
+            <View style={styles.feelWrap}>
+              {chips.map((c) => (
+                <View key={c.id} style={[styles.lensChip, c.kind === 'challenge' && styles.lensChipChallenge]}>
+                  <Text style={styles.lensChipText}>{c.label}</Text>
+                </View>
+              ))}
+            </View>
+            {draft?.firstIntention?.trim() ? (
+              <Text style={styles.intention}>“{draft.firstIntention.trim()}”</Text>
+            ) : null}
+          </View>
+        ) : null}
+
+        {/* This week vs last week */}
+        <Card style={styles.card}>
+          <EyebrowLabel label="THIS WEEK" />
+          <Text style={styles.cardHead}>
+            {thisWeek.count === 0
+              ? 'No check-ins in the last 7 days yet.'
+              : `${thisWeek.count} check-in${thisWeek.count === 1 ? '' : 's'} · compared with the week before.`}
+          </Text>
+          <View style={styles.weatherGrid}>
+            <MetricTile
+              label="Mood"
+              value={thisWeek.avgMood != null ? `${moodFace(thisWeek.avgMood)} ${thisWeek.avgMood.toFixed(1)}` : '—'}
+              delta={formatDelta(compare.dMood)}
+              invert={false}
+              series={weather.days.map((d) => d.mood)}
+              max={5}
+              color={colors.gold}
+            />
+            <MetricTile
+              label="Energy"
+              value={thisWeek.avgEnergy != null ? `${Math.round(thisWeek.avgEnergy)}` : '—'}
+              delta={formatDelta(compare.dEnergy, 0)}
+              invert={false}
+              series={weather.days.map((d) => d.energy)}
+              max={100}
+              color={colors.gold}
+            />
+            <MetricTile
+              label="Stress"
+              value={thisWeek.avgStress != null ? `${Math.round(thisWeek.avgStress)}` : '—'}
+              delta={formatDelta(compare.dStress, 0)}
+              invert
+              series={weather.days.map((d) => d.stress)}
+              max={100}
+              color={colors.peach}
+            />
+            <MetricTile
+              label="Sleep"
+              value={thisWeek.avgSleepHours != null ? `${thisWeek.avgSleepHours.toFixed(1)}h` : '—'}
+              delta={formatDelta(compare.dSleep)}
+              invert={false}
+              series={weather.days.map((d) => (d.sleep != null ? d.sleep + 3 : undefined))}
+              max={8}
+              color="#8D7FAE"
+            />
+          </View>
+          <MoodWeek days={weather.days} />
+          {poles.best && poles.hardest ? (
+            <Text style={styles.hint}>
+              Lightest: {poles.best.label} · heaviest: {poles.hardest.label}. Contrast, not a verdict.
+            </Text>
+          ) : (
+            <Text style={styles.hint}>
+              Week-over-week moves only appear once both weeks have check-ins. Empty days stay empty.
+            </Text>
+          )}
+        </Card>
 
         {/* Today's loop */}
         <Card style={styles.card}>
@@ -180,9 +285,7 @@ export default function InsightsScreen() {
               return (
                 <View key={part} style={[styles.loopChip, done ? styles.loopChipDone : styles.loopChipOpen]}>
                   <Ionicons name={meta.icon} size={14} color={done ? colors.leaf : colors.inkSoft} />
-                  <Text style={[styles.loopChipText, done && styles.loopChipTextDone]}>
-                    {meta.label}
-                  </Text>
+                  <Text style={[styles.loopChipText, done && styles.loopChipTextDone]}>{meta.label}</Text>
                   <Text style={[styles.loopChipState, done ? styles.loopDone : styles.loopNot]}>
                     {done ? 'done' : 'not done'}
                   </Text>
@@ -190,14 +293,11 @@ export default function InsightsScreen() {
               );
             })}
           </View>
-          <Text style={styles.hint}>
-            A new morning, practice, and evening open every calendar day. Yesterday is noted, never carried.
-          </Text>
         </Card>
 
         {/* This week — three marks per day */}
         <Card style={styles.card}>
-          <EyebrowLabel label="THIS WEEK" />
+          <EyebrowLabel label="SEVEN DAYS" />
           <Text style={styles.cardHead}>Sun, leaf, moon — the three marks of a day.</Text>
           <View style={styles.week}>
             {week.map((d) => {
@@ -206,18 +306,83 @@ export default function InsightsScreen() {
               return (
                 <View key={d.iso} style={styles.weekCol}>
                   <Text style={[styles.weekLabel, isToday && styles.weekLabelToday]}>{d.label}</Text>
-                  <View style={[styles.petalStack, isToday && styles.petalStackToday, missed && styles.petalStackMissed]}>
+                  <View
+                    style={[styles.petalStack, isToday && styles.petalStackToday, missed && styles.petalStackMissed]}
+                  >
                     <PetalDot filled={d.morning} tone="sun" />
                     <PetalDot filled={d.exercise} tone="leaf" />
                     <PetalDot filled={d.evening} tone="moon" />
                   </View>
                   <Text style={[styles.weekFoot, missed && styles.weekFootMissed]}>
-                    {d.journeyDay == null ? '—' : missed ? 'not done' : d.kind === 'lived' ? 'lived' : `${Number(d.morning) + Number(d.exercise) + Number(d.evening)}/3`}
+                    {d.journeyDay == null
+                      ? '—'
+                      : missed
+                        ? 'not done'
+                        : d.kind === 'lived'
+                          ? 'lived'
+                          : `${Number(d.morning) + Number(d.exercise) + Number(d.evening)}/3`}
                   </Text>
                 </View>
               );
             })}
           </View>
+        </Card>
+
+        {/* Evidence-backed observations */}
+        <EyebrowLabel label="WHAT THIS IS SHOWING YOU" />
+        {story.length === 0 ? (
+          <Card style={styles.insightRow}>
+            <View style={[styles.insightIcon, { backgroundColor: '#FBF1DE' }]}>
+              <Ionicons name="eye" size={17} color="#C99A2C" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.insightTitle}>Waiting on a pattern</Text>
+              <Text style={styles.insightBody}>
+                {fallbackNudge?.body ||
+                  'A few check-ins across different days is enough. This page will not invent a story.'}
+              </Text>
+            </View>
+          </Card>
+        ) : (
+          story.map((ins) => (
+            <Card key={ins.id} style={styles.insightRow}>
+              <View style={[styles.insightIcon, { backgroundColor: ins.tint }]}>
+                <Ionicons name={ins.icon} size={17} color={ins.iconColor} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <View style={styles.insightTitleRow}>
+                  <Text style={styles.insightTitle}>{ins.title}</Text>
+                  <Text style={[styles.insightTag, { color: ins.tagColor }]}>{ins.tag}</Text>
+                </View>
+                <Text style={styles.insightBody}>{ins.body}</Text>
+              </View>
+            </Card>
+          ))
+        )}
+
+        {/* Named feelings */}
+        <Card style={styles.card}>
+          <EyebrowLabel label="FEELINGS YOU'VE NAMED" />
+          {feelings.length === 0 ? (
+            <Text style={styles.emptyText}>
+              One-word check-ins and on-the-spot notes collect here. Naming is how patterns get visible.
+            </Text>
+          ) : (
+            <View style={styles.feelWrap}>
+              {feelings.slice(0, 12).map((f) => (
+                <View key={f.word} style={styles.feelChip}>
+                  <Text style={styles.feelWord}>{f.word}</Text>
+                  {f.count > 1 ? <Text style={styles.feelCount}>×{f.count}</Text> : null}
+                </View>
+              ))}
+            </View>
+          )}
+          {onTheSpot.length > 0 ? (
+            <Text style={styles.hint}>
+              {onTheSpot.length} on-the-spot note{onTheSpot.length === 1 ? '' : 's'} · avg intensity{' '}
+              {(onTheSpot.reduce((a, s) => a + s.intensity, 0) / onTheSpot.length).toFixed(1)}/5.
+            </Text>
+          ) : null}
         </Card>
 
         {/* Path stats */}
@@ -254,83 +419,16 @@ export default function InsightsScreen() {
           )}
         </Card>
 
-        {/* Inner weather */}
-        <Card style={styles.card}>
-          <EyebrowLabel label="INNER WEATHER" />
-          {weather.count === 0 ? (
-            <Text style={styles.emptyText}>
-              Check-ins (mood, energy, stress, sleep) will plot here. Start from the Check-In tab.
-            </Text>
-          ) : (
-            <>
-              <View style={styles.weatherGrid}>
-                <WeatherStat
-                  label="Mood"
-                  value={weather.avgMood != null ? `${moodFace(weather.avgMood)} ${weather.avgMood.toFixed(1)}` : '—'}
-                  series={weather.days.map((d) => d.mood)}
-                  max={5}
-                  color={colors.gold}
-                />
-                <WeatherStat
-                  label="Energy"
-                  value={weather.avgEnergy != null ? `${Math.round(weather.avgEnergy)}` : '—'}
-                  series={weather.days.map((d) => d.energy)}
-                  max={100}
-                  color={colors.gold}
-                />
-                <WeatherStat
-                  label="Stress"
-                  value={weather.avgStress != null ? `${Math.round(weather.avgStress)}` : '—'}
-                  series={weather.days.map((d) => d.stress)}
-                  max={100}
-                  color={colors.peach}
-                />
-                <WeatherStat
-                  label="Sleep"
-                  value={weather.avgSleepHours != null ? `${weather.avgSleepHours.toFixed(1)}h` : '—'}
-                  series={weather.days.map((d) => (d.sleep != null ? d.sleep + 3 : undefined))}
-                  max={8}
-                  color="#8D7FAE"
-                />
-              </View>
-              <Text style={styles.hint}>
-                {weather.count} check-in{weather.count === 1 ? '' : 's'} · averages across everything you have logged.
-              </Text>
-            </>
-          )}
-        </Card>
-
-        {/* Named feelings */}
-        <Card style={styles.card}>
-          <EyebrowLabel label="FEELINGS YOU'VE NAMED" />
-          {feelings.length === 0 ? (
-            <Text style={styles.emptyText}>
-              One-word check-ins and on-the-spot notes collect here. Naming is how patterns get visible.
-            </Text>
-          ) : (
-            <View style={styles.feelWrap}>
-              {feelings.slice(0, 12).map((f) => (
-                <View key={f.word} style={styles.feelChip}>
-                  <Text style={styles.feelWord}>{f.word}</Text>
-                  {f.count > 1 ? <Text style={styles.feelCount}>×{f.count}</Text> : null}
-                </View>
-              ))}
-            </View>
-          )}
-          {onTheSpot.length > 0 ? (
-            <Text style={styles.hint}>
-              {onTheSpot.length} on-the-spot note{onTheSpot.length === 1 ? '' : 's'} · avg intensity{' '}
-              {(onTheSpot.reduce((a, s) => a + s.intensity, 0) / onTheSpot.length).toFixed(1)}/5.
-            </Text>
-          ) : null}
-        </Card>
-
         {/* Awareness */}
         <Card style={styles.card}>
           <EyebrowLabel label="AWARENESS DIMENSIONS" />
           {overall ? (
-            <Text style={styles.cardHead}>Overall {overall.score} · grown from showing up, not from a grade.</Text>
-          ) : null}
+            <Text style={styles.cardHead}>
+              Overall {overall.score} · {awarenessLine(overall.score)}
+            </Text>
+          ) : (
+            <Text style={styles.cardHead}>{awarenessLine(undefined)}</Text>
+          )}
           {dims.map((dim) => (
             <View key={dim.dimension} style={styles.dimRow}>
               <Text style={styles.dimName}>{dimensionLabel(dim.dimension)}</Text>
@@ -342,24 +440,6 @@ export default function InsightsScreen() {
           ))}
         </Card>
 
-        {/* Computed observations */}
-        <EyebrowLabel label="WHAT THIS IS SHOWING YOU" />
-        {insightCards.map((ins) => (
-          <Card key={ins.id} style={styles.insightRow}>
-            <View style={[styles.insightIcon, { backgroundColor: ins.tint }]}>
-              <Ionicons name={ins.icon} size={17} color={ins.iconColor} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <View style={styles.insightTitleRow}>
-                <Text style={styles.insightTitle}>{ins.title}</Text>
-                <Text style={[styles.insightTag, { color: ins.tagColor }]}>{ins.tag}</Text>
-              </View>
-              <Text style={styles.insightBody}>{ins.body}</Text>
-            </View>
-          </Card>
-        ))}
-
-        {/* First inward check-in */}
         {spot ? (
           <Card style={styles.card}>
             <EyebrowLabel label="YOU NOTICED" />
@@ -369,12 +449,14 @@ export default function InsightsScreen() {
             <SpotLine label="Self-trust" value={`${spot.selfTrust} / 5`} />
             <SpotLine label="A need" value={spot.emotionNeed} />
             <SpotLine label="Stress pattern" value={spot.stressPattern} />
-            <SpotLine label="Values" value={`${spot.valueSuccessVsPeace} · ${spot.valueRecognitionVsPride} · ${spot.valueSecurityVsExploration}`} />
+            <SpotLine
+              label="Values"
+              value={`${spot.valueSuccessVsPeace} · ${spot.valueRecognitionVsPride} · ${spot.valueSecurityVsExploration}`}
+            />
             <SpotLine label="Tiny experiment" value={spot.tinyExperiment} />
           </Card>
         ) : null}
 
-        {/* Streak */}
         <Card style={styles.card}>
           <EyebrowLabel label="SHOWING UP" />
           <View style={styles.statRow}>
@@ -384,62 +466,143 @@ export default function InsightsScreen() {
           </View>
         </Card>
 
-        {/* Reflections */}
-        <Card style={styles.card}>
-          <EyebrowLabel label="YOUR REFLECTIONS" />
-          {reflections.length === 0 ? (
-            <Text style={styles.emptyText}>Finish a morning, practice, or evening to leave a trace.</Text>
-          ) : (
-            lastReflections.map((r) => {
-              const pretty = prettyReflection(r.prompt, r.response);
-              return (
-                <View key={r.id} style={styles.reflectionItem}>
-                  <Text style={styles.reflectionPrompt}>{pretty.title}</Text>
-                  <Text style={styles.reflectionResponse}>{pretty.body}</Text>
-                  <Text style={styles.reflectionDate}>
-                    {r.journalId} · day {r.dayNumber} · {new Date(r.createdAt).toLocaleDateString()}
-                  </Text>
-                </View>
-              );
-            })
-          )}
-          {reflections.length > 6 ? (
-            <TouchableOpacity onPress={() => setShowMoreReflections((s) => !s)} style={styles.moreBtn}>
-              <Text style={styles.moreText}>{showMoreReflections ? 'Show less' : 'More reflections'}</Text>
-            </TouchableOpacity>
-          ) : null}
-        </Card>
+        <TouchableOpacity onPress={() => setShowLogs((s) => !s)} style={styles.logToggle} activeOpacity={0.8}>
+          <Text style={styles.moreText}>{showLogs ? 'Hide the log' : 'See the log behind this'}</Text>
+          <Ionicons name={showLogs ? 'chevron-up' : 'chevron-down'} size={16} color={colors.ink} />
+        </TouchableOpacity>
 
-        {/* Check-ins */}
-        <Card style={styles.card}>
-          <EyebrowLabel label="RECENT CHECK-INS" />
-          {checkins.length === 0 ? (
-            <Text style={styles.emptyText}>No check-ins yet. Start your first one from the Check-In tab.</Text>
-          ) : (
-            lastCheckins.map((c: Checkin) => (
-              <View key={c.id} style={styles.checkinRow}>
-                <Text style={styles.checkinDate}>
-                  {new Date(c.createdAt).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-                </Text>
-                <View style={styles.checkinMood}>
-                  <Text style={styles.moodEmoji}>{moodFace(c.mood)}</Text>
-                </View>
-                <Text style={styles.checkinWord}>{c.oneWord || '—'}</Text>
-                <Text style={styles.checkinMeta}>
-                  E{c.energy} · S{c.stress} · {c.sleep + 3}h
-                </Text>
-              </View>
-            ))
-          )}
-          {checkins.length > 5 ? (
-            <TouchableOpacity onPress={() => setShowMoreCheckins((s) => !s)} style={styles.moreBtn}>
-              <Text style={styles.moreText}>{showMoreCheckins ? 'Show less' : 'More check-ins'}</Text>
-            </TouchableOpacity>
-          ) : null}
-        </Card>
+        {showLogs ? (
+          <>
+            <Card style={styles.card}>
+              <EyebrowLabel label="YOUR REFLECTIONS" />
+              {reflections.length === 0 ? (
+                <Text style={styles.emptyText}>Finish a morning, practice, or evening to leave a trace.</Text>
+              ) : (
+                lastReflections.map((r) => {
+                  const pretty = prettyReflection(r.prompt, r.response);
+                  return (
+                    <View key={r.id} style={styles.reflectionItem}>
+                      <Text style={styles.reflectionPrompt}>{pretty.title}</Text>
+                      <Text style={styles.reflectionResponse}>{pretty.body}</Text>
+                      <Text style={styles.reflectionDate}>
+                        {r.journalId} · day {r.dayNumber} · {new Date(r.createdAt).toLocaleDateString()}
+                      </Text>
+                    </View>
+                  );
+                })
+              )}
+              {reflections.length > 6 ? (
+                <TouchableOpacity onPress={() => setShowMoreReflections((s) => !s)} style={styles.moreBtn}>
+                  <Text style={styles.moreText}>{showMoreReflections ? 'Show less' : 'More reflections'}</Text>
+                </TouchableOpacity>
+              ) : null}
+            </Card>
+
+            <Card style={styles.card}>
+              <EyebrowLabel label="RECENT CHECK-INS" />
+              {checkins.length === 0 ? (
+                <Text style={styles.emptyText}>No check-ins yet. Start your first one from the Check-In tab.</Text>
+              ) : (
+                lastCheckins.map((c: Checkin) => (
+                  <View key={c.id} style={styles.checkinRow}>
+                    <Text style={styles.checkinDate}>
+                      {new Date(c.createdAt).toLocaleDateString('en-US', {
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric',
+                      })}
+                    </Text>
+                    <View style={styles.checkinMood}>
+                      <Text style={styles.moodEmoji}>{moodFace(c.mood)}</Text>
+                    </View>
+                    <Text style={styles.checkinWord}>{c.oneWord || '—'}</Text>
+                    <Text style={styles.checkinMeta}>
+                      E{c.energy} · S{c.stress} · {c.sleep + 3}h
+                    </Text>
+                  </View>
+                ))
+              )}
+              {checkins.length > 5 ? (
+                <TouchableOpacity onPress={() => setShowMoreCheckins((s) => !s)} style={styles.moreBtn}>
+                  <Text style={styles.moreText}>{showMoreCheckins ? 'Show less' : 'More check-ins'}</Text>
+                </TouchableOpacity>
+              ) : null}
+            </Card>
+          </>
+        ) : null}
 
         <View style={{ height: 40 }} />
       </ScrollView>
+    </View>
+  );
+}
+
+function MoodWeek({ days }: { days: Array<{ iso: string; label: string; mood?: number }> }) {
+  return (
+    <View style={styles.moodWeek}>
+      {days.map((d) => {
+        const h = d.mood == null ? 4 : Math.max(6, Math.round((d.mood / 5) * 36));
+        return (
+          <View key={d.iso} style={styles.moodWeekCol}>
+            <View style={styles.moodWeekTrack}>
+              <View
+                style={[
+                  styles.moodWeekFill,
+                  { height: h, backgroundColor: d.mood == null ? '#EFE9DC' : colors.gold },
+                ]}
+              />
+            </View>
+            <Text style={styles.moodWeekFace}>{d.mood == null ? '·' : moodFace(d.mood)}</Text>
+            <Text style={styles.weekLabel}>{d.label}</Text>
+          </View>
+        );
+      })}
+    </View>
+  );
+}
+
+function MetricTile({
+  label,
+  value,
+  delta,
+  invert,
+  series,
+  max,
+  color,
+}: {
+  label: string;
+  value: string;
+  delta: string | null;
+  invert: boolean;
+  series: Array<number | undefined>;
+  max: number;
+  color: string;
+}) {
+  const up = delta != null && delta.startsWith('+');
+  const down = delta != null && delta.startsWith('−');
+  const good = invert ? down : up;
+  const bad = invert ? up : down;
+  const deltaColor = good ? colors.leaf : bad ? '#C46A52' : colors.inkSoft;
+  return (
+    <View style={styles.weatherCell}>
+      <Text style={styles.weatherLabel}>{label}</Text>
+      <View style={styles.metricRow}>
+        <Text style={styles.weatherValue}>{value}</Text>
+        {delta && delta !== '0' ? (
+          <Text style={[styles.delta, { color: deltaColor }]}>{delta}</Text>
+        ) : null}
+      </View>
+      <View style={styles.spark}>
+        {series.map((v, i) => {
+          const h = v == null ? 3 : Math.max(4, Math.round((v / max) * 22));
+          return (
+            <View
+              key={i}
+              style={[styles.sparkBar, { height: h, backgroundColor: v == null ? '#EFE9DC' : color }]}
+            />
+          );
+        })}
+      </View>
     </View>
   );
 }
@@ -454,38 +617,6 @@ function Stat({ n, label, warn }: { n: number; label: string; warn?: boolean }) 
     <View style={styles.stat}>
       <Text style={[styles.statN, warn && { color: '#C46A52' }]}>{n}</Text>
       <Text style={styles.statL}>{label}</Text>
-    </View>
-  );
-}
-
-function WeatherStat({
-  label,
-  value,
-  series,
-  max,
-  color,
-}: {
-  label: string;
-  value: string;
-  series: Array<number | undefined>;
-  max: number;
-  color: string;
-}) {
-  return (
-    <View style={styles.weatherCell}>
-      <Text style={styles.weatherLabel}>{label}</Text>
-      <Text style={styles.weatherValue}>{value}</Text>
-      <View style={styles.spark}>
-        {series.map((v, i) => {
-          const h = v == null ? 3 : Math.max(4, Math.round((v / max) * 22));
-          return (
-            <View
-              key={i}
-              style={[styles.sparkBar, { height: h, backgroundColor: v == null ? '#EFE9DC' : color }]}
-            />
-          );
-        })}
-      </View>
     </View>
   );
 }
@@ -525,11 +656,53 @@ const styles = StyleSheet.create({
   },
   lead: {
     fontFamily: 'Fraunces',
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: '600',
     color: colors.ink,
-    lineHeight: 28,
+    lineHeight: 32,
+    marginBottom: 6,
+  },
+  leadBody: {
+    fontFamily: 'Nunito',
+    fontSize: 14,
+    color: colors.inkSoft,
+    lineHeight: 21,
     marginBottom: spacing.lg,
+  },
+  lensWrap: {
+    marginBottom: spacing.lg,
+  },
+  lensKicker: {
+    fontFamily: 'Nunito',
+    fontSize: 10.5,
+    fontWeight: '800',
+    color: colors.inkSoft,
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    marginBottom: spacing.sm,
+  },
+  lensChip: {
+    backgroundColor: colors.leafSoft,
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  lensChipChallenge: {
+    backgroundColor: '#FBEFEC',
+  },
+  lensChipText: {
+    fontFamily: 'Nunito',
+    fontSize: 12,
+    fontWeight: '800',
+    color: colors.ink,
+  },
+  intention: {
+    fontFamily: 'Fraunces',
+    fontSize: 15,
+    fontWeight: '600',
+    color: colors.ink,
+    lineHeight: 22,
+    marginTop: spacing.md,
   },
   card: {
     padding: spacing.lg,
@@ -709,6 +882,17 @@ const styles = StyleSheet.create({
     color: colors.ink,
     marginTop: 2,
   },
+  metricRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    justifyContent: 'space-between',
+    gap: 6,
+  },
+  delta: {
+    fontFamily: 'Nunito',
+    fontSize: 11,
+    fontWeight: '800',
+  },
   spark: {
     flexDirection: 'row',
     alignItems: 'flex-end',
@@ -719,6 +903,30 @@ const styles = StyleSheet.create({
   sparkBar: {
     flex: 1,
     borderRadius: 2,
+  },
+  moodWeek: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: spacing.lg,
+    gap: 4,
+  },
+  moodWeekCol: {
+    flex: 1,
+    alignItems: 'center',
+    gap: 4,
+  },
+  moodWeekTrack: {
+    height: 40,
+    width: '70%',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  moodWeekFill: {
+    width: '100%',
+    borderRadius: 4,
+  },
+  moodWeekFace: {
+    fontSize: 11,
   },
   feelWrap: {
     flexDirection: 'row',
@@ -912,5 +1120,13 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '800',
     color: colors.ink,
+  },
+  logToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: spacing.md,
+    marginBottom: spacing.sm,
   },
 });

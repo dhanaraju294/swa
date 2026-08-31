@@ -15,6 +15,7 @@ import {
   syncReflectionReminders,
 } from '../src/notifications/reminders';
 import { useDynamicAppIcon } from '../src/hooks/useDynamicAppIcon';
+import { startOnboardingSyncListener } from '../src/onboarding/sync';
 
 export default function RootLayout() {
   const [ready, setReady] = useState(false);
@@ -52,6 +53,10 @@ export default function RootLayout() {
     configureNotificationHandler();
     initDatabase();
   }, [initDatabase]);
+
+  useEffect(() => {
+    return startOnboardingSyncListener();
+  }, []);
 
   useEffect(() => {
     return subscribeToReminderTaps((part) => {
