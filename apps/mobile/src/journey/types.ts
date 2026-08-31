@@ -140,19 +140,6 @@ export function parseDayContent(contentJson: string): DailyDayContent | null {
   }
 }
 
-export function unlockedDayOf(
-  completedDays: number[],
-  updatedAt: string | undefined,
-  total: number,
-): number {
-  const maxCompleted = completedDays.length ? Math.max(...completedDays) : 0;
-  const todayStr = new Date().toISOString().slice(0, 10);
-  const lastDate = completedDays.length ? (updatedAt || '').slice(0, 10) : null;
-  const todayDone = lastDate === todayStr && maxCompleted > 0;
-  if (maxCompleted === 0) return 1;
-  return Math.min(maxCompleted + (todayDone ? 0 : 1), total);
-}
-
 export function partOfDay(now = new Date()): JourneyPart {
   const hour = now.getHours();
   if (hour < 12) return 'morning';

@@ -15,6 +15,7 @@ export default function PathScreen() {
   const focused = useIsFocused();
   const {
     catalog, loading, error, refresh, unlockedDay, completedDays, statusByDay, total,
+    notDoneDays,
   } = useDailyCatalog();
 
   // Refresh when the tab gains focus (coming back from any session).
@@ -80,7 +81,9 @@ export default function PathScreen() {
           onPressDay={openDay}
         />
         <Text style={styles.foot}>
-          {completedDays.length} of {total} days lived · tap an open day to start it.
+          {completedDays.length} of {total} days lived
+          {notDoneDays.length ? ` · ${notDoneDays.length} not done` : ''}
+          {' · tap an open day to start it.'}
         </Text>
 
         {/* Next-up card */}
@@ -97,8 +100,10 @@ export default function PathScreen() {
                 </Text>
                 <Text style={styles.tomorrowSub}>
                   {todayDone
-                    ? 'Every day is a new chance to come back to yourself.'
-                    : 'Morning, practice, and evening — whenever you are ready.'}
+                    ? 'Tomorrow brings a new morning, practice, and evening — even if a past day was left undone.'
+                    : notDoneDays.length
+                      ? "Yesterday's unfinished loop stays noted as not done. Today's three parts are new."
+                      : 'Morning, practice, and evening — whenever you are ready. Skip a day and tomorrow still opens a new loop.'}
                 </Text>
               </View>
               <Text style={styles.tomorrowLeaf}>🌿</Text>

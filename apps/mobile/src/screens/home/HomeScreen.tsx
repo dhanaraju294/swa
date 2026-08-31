@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useIsFocused } from '@react-navigation/native';
@@ -36,7 +36,8 @@ export default function HomeScreen() {
   const now = new Date();
   const { data: profile } = useProfile();
   const { data: streak, refresh: refreshStreak } = useStreak();
-  const { catalog, unlockedDay, statusByDay, completedDays, total, refresh } = useDailyCatalog();
+  const { catalog, unlockedDay, statusByDay, completedDays, total, notDoneDays, refresh } =
+    useDailyCatalog();
   const { content } = useDailyDay(unlockedDay);
 
   useEffect(() => {
@@ -123,13 +124,25 @@ export default function HomeScreen() {
         <View style={styles.rhythmDivider} />
         <Text style={styles.rhythmNote}>
           {todayDone
-            ? 'You lived the loop today. The next node opens tomorrow.'
-            : 'Today is a new day to continue your path.'}
+            ? 'You lived the loop today. Tomorrow opens a new morning, practice, and evening.'
+            : 'Today is a new loop. Unfinished days stay noted — they do not block tomorrow.'}
         </Text>
+        {notDoneDays.length > 0 ? (
+          <Text style={styles.missedNote}>
+            {notDoneDays.length === 1
+              ? `Day ${notDoneDays[0]} was not done.`
+              : `${notDoneDays.length} days noted as not done.`}{' '}
+            Today's morning, practice, and evening are new. Revisit missed days on your path anytime.
+          </Text>
+        ) : null}
       </Card>
 
-      {/* Today's path */}
+      {/* Today's path — always today's journey day, even if yesterday was skipped. */}
       <EyebrowLabel label="TODAY'S PATH" />
+      <Text style={styles.pathKicker}>
+        Day {unlockedDay} · {PARTS.filter((p) => status?.[p]).length}/3 done
+        {todayDone ? ' · lived' : ''}
+      </Text>
       <Card style={styles.pathCard}>
         {PARTS.map((part, i) => {
           const meta = PART_META[part];
@@ -142,13 +155,19 @@ export default function HomeScreen() {
                 </View>
                 <View style={styles.pathText}>
                   <Text style={styles.pathTitle}>{titleFor(part)}</Text>
-                  <Text style={[styles.pathSub, done && styles.pathSubDone]}>{done ? 'Completed' : meta.sub}</Text>
+                  <Text style={[styles.pathSub, done && styles.pathSubDone]}>
+                    {done ? 'Completed' : 'Not done yet'}
+                  </Text>
                 </View>
                 {done ? (
                   <View style={styles.pathCheck}>
                     <Ionicons name="checkmark" size={14} color="#fff" />
                   </View>
-                ) : null}
+                ) : (
+                  <View style={styles.pathOpen}>
+                    <Ionicons name="ellipse-outline" size={14} color={colors.ghost} />
+                  </View>
+                )}
               </View>
             </TouchableOpacity>
           );
@@ -163,7 +182,7 @@ export default function HomeScreen() {
       />
 
       <Text style={styles.dayMeta}>
-        Day {unlockedDay} of {total} · no rush, no catch-up
+        Day {unlockedDay} of {total} · a new loop each day · no catch-up required
       </Text>
       <View style={{ height: 24 }} />
     </ScrollView>
@@ -278,6 +297,21 @@ const styles = StyleSheet.create({
     color: colors.ink,
     lineHeight: 18,
   },
+  missedNote: {
+    fontFamily: 'Nunito',
+    fontSize: 12,
+    color: colors.inkSoft,
+    lineHeight: 18,
+    marginTop: spacing.sm,
+  },
+  pathKicker: {
+    fontFamily: 'Nunito',
+    fontSize: 12,
+    fontWeight: '700',
+    color: colors.inkSoft,
+    marginTop: -2,
+    marginBottom: 4,
+  },
   pathCard: {
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
@@ -322,6 +356,15 @@ const styles = StyleSheet.create({
     height: 26,
     borderRadius: 13,
     backgroundColor: colors.leaf,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pathOpen: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    borderWidth: 1.5,
+    borderColor: '#E4DDD0',
     alignItems: 'center',
     justifyContent: 'center',
   },
