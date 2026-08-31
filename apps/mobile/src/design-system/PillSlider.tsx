@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, PanResponder, Animated } from 'react-native';
 import { colors, spacing } from './tokens';
 
 type Props = {
-  label: string;
+  label?: string;
   value: number;
   onChange?: (val: number) => void;
   color?: string;
@@ -32,7 +32,7 @@ export function PillSlider({ label, value, onChange, color = colors.gold, max = 
 
   return (
     <View style={styles.container} {...panResponder.panHandlers}>
-      <Text style={styles.label}>{label}</Text>
+      {label ? <Text style={styles.label}>{label}</Text> : null}
       <View style={styles.track}>
         <Animated.View style={[styles.fill, { width: `${localPct}%`, backgroundColor: color }]} />
         <Animated.View style={[styles.thumb, { left: `${localPct}%`, backgroundColor: color }]} />

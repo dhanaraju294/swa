@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions } from 'react-native';
-import Svg, { Path, Circle } from 'react-native-svg';
+import Svg, { Path } from 'react-native-svg';
 import { colors, spacing, shadow } from '../../design-system/tokens';
 import { PetalMark } from '../../design-system/PetalMark';
 import type { JourneyCatalog, PartStatus } from '../../journey/types';
@@ -99,14 +99,14 @@ export function PathMap({ catalog, unlockedDay, completedDays, statusByDay, onPr
       <Svg width={width} height={layout.height} style={StyleSheet.absoluteFill}>
         <Path
           d={pathD}
-          stroke="#D9CFBE"
+          stroke="#DCD3C0"
           strokeWidth={10}
           fill="none"
           strokeLinecap="round"
         />
         <Path
           d={pathD}
-          stroke="#C5D6C7"
+          stroke="#A3BD96"
           strokeWidth={4}
           fill="none"
           strokeLinecap="round"
@@ -139,11 +139,16 @@ export function PathMap({ catalog, unlockedDay, completedDays, statusByDay, onPr
         const current = node.day === unlockedDay;
         const locked = node.day > unlockedDay;
         const status = statusByDay[node.day];
-        // The path tracks the daily practice only.
-        const partial = !done && Boolean(status?.exercise);
+        // How many of the day's three parts have been submitted — the node
+        // reflects every submission, not just a fully-completed day, so the
+        // map visibly updates as soon as a part is saved.
+        const partsDone = status
+          ? Number(Boolean(status.morning)) + Number(Boolean(status.exercise)) + Number(Boolean(status.evening))
+          : 0;
+        const partial = !done && partsDone > 0;
         const catalogDay = catalog.days.find((d) => d.day === node.day);
-        const fill = done ? '#B7CDBA' : current ? '#F6C453' : partial ? '#F4A896' : '#EFE8DC';
-        const ring = current ? '#E8B23C' : done ? '#8FA992' : '#D8CFC0';
+        const fill = done ? '#DCE9D4' : current ? (partial ? '#EFB93F' : '#F6C453') : partial ? '#F4A896' : '#EFE8DC';
+        const ring = current ? (partial ? '#D99A22' : '#E8B23C') : done ? colors.leaf : '#D8CFC0';
 
         const inner = (
           <View style={[styles.node, { left: node.x, top: node.y }]}>
@@ -154,6 +159,11 @@ export function PathMap({ catalog, unlockedDay, completedDays, statusByDay, onPr
                 <Text style={[styles.nodeNum, current && styles.nodeNumCurrent, locked && styles.nodeNumLocked]}>
                   {node.day}
                 </Text>
+              )}
+              {current && partial && (
+                <View style={styles.progressBadge}>
+                  <Text style={styles.progressBadgeText}>{partsDone}/3</Text>
+                </View>
               )}
             </View>
             <Text style={[styles.nodeLabel, locked && styles.nodeLabelLocked]} numberOfLines={2}>
@@ -266,6 +276,22 @@ const styles = StyleSheet.create({
   },
   nodeLabelLocked: {
     color: colors.ghost,
+  },
+  progressBadge: {
+    position: 'absolute',
+    right: -10,
+    bottom: 4,
+    backgroundColor: colors.ink,
+    borderRadius: 9,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    ...shadow.soft,
+  },
+  progressBadgeText: {
+    fontFamily: 'Nunito',
+    fontSize: 10,
+    fontWeight: '800',
+    color: colors.white,
   },
   character: {
     position: 'absolute',

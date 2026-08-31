@@ -3,6 +3,8 @@ export const colors = {
   outerBg: '#E7E2D8',
   sky: '#A8D8EA',
   sage: '#B7CDBA',
+  leaf: '#7C9A72',
+  leafSoft: '#EAF2E4',
   lavender: '#D8C8E8',
   gold: '#F6C453',
   peach: '#F4A896',

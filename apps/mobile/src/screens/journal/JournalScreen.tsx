@@ -43,12 +43,13 @@ function BlockRenderer({
   dayNumber: number;
   onBegin?: () => void;
 }) {
-  // Guard against an undefined block (e.g. stale slide index, empty content).
-  if (!block) return null;
-
   const { journalDrafts, setJournalDraft, checkinDraft, setCheckinDraft } = useUI();
   const [breathingActive, setBreathingActive] = useState(false);
   const [sensesValues, setSensesValues] = useState<Record<string, string>>({});
+
+  // Guard against an undefined block (e.g. stale slide index, empty content).
+  // (After the hooks above: hooks must run on every render, in the same order.)
+  if (!block) return null;
 
   const draftKey = `${journalId}-${dayNumber}`;
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,7 +14,7 @@ import {
   type SpotField,
   type SpotQuestion,
 } from '../../content/spotCheckin';
-import { useSaveSpotCheckin } from '../../hooks/useSpotCheckins';
+import { useLatestSpotCheckin, useSaveSpotCheckin } from '../../hooks/useSpotCheckins';
 import type { SpotCheckinInput } from '../../native/InwardEngine';
 
 // The first inward check-in: shown once, right after onboarding. Twelve small
@@ -27,8 +27,25 @@ type Phase = { kind: 'opening' } | { kind: 'screen'; index: number } | { kind: '
 export default function SpotCheckinScreen() {
   const router = useRouter();
   const { save, saving } = useSaveSpotCheckin();
+  const { data: latest, loading: latestLoading, refresh: refreshLatest } = useLatestSpotCheckin();
   const [phase, setPhase] = useState<Phase>({ kind: 'opening' });
   const [draft, setDraft] = useState<Draft>({});
+
+  // Revisits (after a previous submission) start from the user's own answers
+  // instead of a blank slate: hydrate the draft once the latest entry is
+  // known, exactly once per mount.
+  const hydratedRef = useRef(false);
+  useEffect(() => {
+    if (hydratedRef.current || latestLoading) return;
+    hydratedRef.current = true;
+    if (!latest) return;
+    const hydrated: Draft = {};
+    for (const field of SPOT_FIELDS) {
+      const value = latest[field];
+      if (value !== undefined && value !== null) hydrated[field] = value;
+    }
+    setDraft(hydrated);
+  }, [latest, latestLoading]);
 
   const set = (field: SpotField, value: string | number) =>
     setDraft((d) => ({ ...d, [field]: value }));
@@ -46,6 +63,9 @@ export default function SpotCheckinScreen() {
     if (missing.length > 0) return;
     try {
       await save({ ...(draft as SpotCheckinInput) });
+      // Refresh so a revisit in this session sees the answers just saved
+      // (view + edit) instead of the previous entry.
+      refreshLatest();
       setPhase({ kind: 'closing' });
     } catch (e) {
       Alert.alert('Error', 'Something went wrong saving your check-in. Please try again.');
@@ -71,8 +91,14 @@ export default function SpotCheckinScreen() {
               {line}
             </Text>
           ))}
+          {latest ? (
+            <Text style={styles.resubmitNote}>
+              You've completed this check-in before — your answers are loaded. Review them, change
+              anything, and save again.
+            </Text>
+          ) : null}
           <Button
-            title={SPOT_OPENING.cta}
+            title={latest ? 'Review my answers' : SPOT_OPENING.cta}
             onPress={() => setPhase({ kind: 'screen', index: 0 })}
             color={colors.ink}
             style={styles.cta}
@@ -247,6 +273,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   cta: { marginTop: spacing.xxl, alignSelf: 'stretch' },
+  resubmitNote: {
+    fontFamily: 'Nunito',
+    fontSize: 13.5,
+    fontWeight: '700',
+    color: colors.ink,
+    textAlign: 'center',
+    marginBottom: spacing.sm,
+  },
   progressHint: {
     fontFamily: 'Nunito',
     fontSize: 13,

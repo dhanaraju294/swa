@@ -1,7 +1,8 @@
-// In-memory JS fallback engine for Expo Go / web previews and UI development.
-// It mirrors the shape and semantics of the Rust `CoreEngine` but keeps all
-// data in memory (intentionally not persisted) so previews never crash and
-// never leave test data behind on a real device.
+// JS fallback engine for Expo Go / web previews and UI development.
+// It mirrors the shape and semantics of the Rust `CoreEngine`; data lives in
+// memory and is persisted write-through to AsyncStorage (key
+// `inward-mock-engine-v2`) so previews keep their data across reloads and
+// "Delete All Data" clears it for real.
 import type {
   AppSettings,
   AppSettingsInput,
@@ -61,17 +62,42 @@ export class MockCoreEngine implements InwardEngine {
   private settings: AppSettings = { theme: 'default', reminderTime: undefined, exportFormatPref: 'json' };
   private badges: Badge[] = [];
 
-  private persistTimer: ReturnType<typeof setTimeout> | null = null;
+  /**
+   * Persistence is write-through with same-tick coalescing:
+   *  - every mutation queues a persist on the microtask chain, so state is
+   *    durable as soon as the current tick ends (no debounce window in which
+   *    a killed/reloaded app loses the last save — e.g. finishing a day and
+   *    immediately closing the app);
+   *  - multiple mutations inside one tick collapse into a single write;
+   *  - writes run one after another on the chain, so an in-flight write can
+   *    never land after a later `deleteAllData` and resurrect deleted data.
+   */
+  private persistChain: Promise<void> = Promise.resolve();
+  private persistQueued = false;
 
   private schedulePersist(): void {
-    if (this.persistTimer) clearTimeout(this.persistTimer);
-    this.persistTimer = setTimeout(() => {
-      this.persist().catch(() => undefined);
-    }, 40);
+    if (this.persistQueued) return; // one pending write covers every mutation in the current tick
+    this.persistQueued = true;
+    // Errors are swallowed so a failed write (storage full, etc.) never wedges
+    // the queue; in-memory state stays authoritative and the next mutation
+    // retries.
+    this.persistChain = this.persistChain.then(async () => {
+      this.persistQueued = false;
+      try {
+        await this.persist();
+      } catch {
+        /* non-fatal */
+      }
+    });
   }
 
-  private async persist(): Promise<void> {
-    const payload: PersistedMock = {
+  /** Wait for every queued write to have landed (used by deleteAllData). */
+  private async flushPersist(): Promise<void> {
+    await this.persistChain;
+  }
+
+  private snapshot(): PersistedMock {
+    return {
       checkins: this.checkins,
       onTheSpot: this.onTheSpot,
       spotCheckins: this.spotCheckins,
@@ -82,7 +108,12 @@ export class MockCoreEngine implements InwardEngine {
       settings: this.settings,
       badges: this.badges,
     };
-    await AsyncStorage.setItem(MOCK_STORE_KEY, JSON.stringify(payload));
+  }
+
+  private async persist(): Promise<void> {
+    // Snapshot at write time so a coalesced write always reflects the latest
+    // in-memory state, and never an older one.
+    await AsyncStorage.setItem(MOCK_STORE_KEY, JSON.stringify(this.snapshot()));
   }
 
   async initialize(_documentsDir: string): Promise<void> {
@@ -269,7 +300,16 @@ export class MockCoreEngine implements InwardEngine {
       response,
       createdAt: nowIso(),
     };
-    this.reflections.push(reflection);
+    // Re-saving the same (journal, day, prompt) replaces the earlier answer
+    // instead of piling up duplicate rows — mirrors the Rust upsert.
+    const idx = this.reflections.findIndex(
+      (r) => r.journalId === journalId && r.dayNumber === day && r.prompt === prompt,
+    );
+    if (idx >= 0) {
+      this.reflections[idx] = reflection;
+    } else {
+      this.reflections.push(reflection);
+    }
     this.schedulePersist();
     return reflection;
   }
@@ -333,6 +373,10 @@ export class MockCoreEngine implements InwardEngine {
   }
 
   async deleteAllData(): Promise<void> {
+    // 1) Let any in-flight or queued write finish BEFORE clearing, so a stale
+    //    write cannot land after the deletion and resurrect the data.
+    await this.flushPersist();
+    // 2) Clear the in-memory state.
     this.checkins = [];
     this.onTheSpot = [];
     this.spotCheckins = [];
@@ -342,6 +386,13 @@ export class MockCoreEngine implements InwardEngine {
     this.streak = { currentStreak: 0, longestStreak: 0, lastActiveDate: undefined };
     this.profile = { displayName: undefined, appLockEnabled: false, createdAt: nowIso() };
     this.settings = { theme: 'default', reminderTime: undefined, exportFormatPref: 'json' };
-    await AsyncStorage.removeItem(MOCK_STORE_KEY).catch(() => undefined);
+    // 3) Persist the cleared state through the same chain (no removeItem race:
+    //    the write is ordered after everything queued before it).
+    this.persistChain = this.persistChain
+      .then(() =>
+        AsyncStorage.setItem(MOCK_STORE_KEY, JSON.stringify(this.snapshot())),
+      )
+      .catch(() => undefined);
+    await this.flushPersist();
   }
 }

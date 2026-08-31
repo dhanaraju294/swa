@@ -6,6 +6,8 @@ import { colors, spacing } from './tokens';
 type Props = {
   value: number;
   onChange: (val: number) => void;
+  /** Optional names for each mood (1..5); the selected one is shown under the row. */
+  labels?: string[];
 };
 
 const faces = [
@@ -16,32 +18,34 @@ const faces = [
   { bg: '#FBEFEC', stroke: '#d4795f', mouth: 'M12 19 Q19 27 26 19' },
 ];
 
-export function MoodFacePicker({ value, onChange }: Props) {
+export function MoodFacePicker({ value, onChange, labels }: Props) {
   return (
-    <View style={styles.row}>
-      {faces.map((f, i) => {
-        const selected = value === i + 1;
-        return (
-          <TouchableOpacity
-            key={i}
-            onPress={() => onChange(i + 1)}
-            style={[styles.face, selected && styles.selected]}
-            activeOpacity={0.7}
-          >
-            <View style={[styles.bubble, selected && styles.bubbleSelected, { backgroundColor: f.bg }]}>
-              <Svg width="38" height="38" viewBox="0 0 38 38">
-                <Circle cx="19" cy="19" r="17" fill={f.bg} />
-                <Path d={f.mouth} stroke={f.stroke} strokeWidth="2" fill="none" strokeLinecap="round" />
-              </Svg>
-            </View>
-            {selected && (
-              <View style={styles.checkWrap}>
-                <Text style={styles.check}>✓</Text>
+    <View>
+      <View style={styles.row}>
+        {faces.map((f, i) => {
+          const selected = value === i + 1;
+          return (
+            <TouchableOpacity
+              key={i}
+              onPress={() => onChange(i + 1)}
+              style={[styles.face, selected && styles.selected]}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.bubble, selected && styles.bubbleSelected, { backgroundColor: f.bg }]}>
+                <Svg width="38" height="38" viewBox="0 0 38 38">
+                  <Circle cx="19" cy="19" r="17" fill={f.bg} />
+                  <Path d={f.mouth} stroke={f.stroke} strokeWidth="2" fill="none" strokeLinecap="round" />
+                </Svg>
               </View>
-            )}
-          </TouchableOpacity>
-        );
-      })}
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+      {labels ? (
+        <View style={styles.labelWrap}>
+          <Text style={styles.label}>{labels[Math.min(labels.length - 1, Math.max(0, value - 1))] || ''}</Text>
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -50,7 +54,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    maxWidth: 220,
+    alignItems: 'center',
   },
   face: {
     padding: 2,
@@ -67,24 +71,19 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   bubbleSelected: {
-    borderColor: colors.gold,
+    borderColor: colors.leaf,
     borderWidth: 2.5,
     transform: [{ scale: 1.12 }],
   },
-  checkWrap: {
-    marginTop: 2,
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: colors.gold,
+  labelWrap: {
     alignItems: 'center',
-    justifyContent: 'center',
+    marginTop: 10,
   },
-  check: {
-    color: '#fff',
-    fontSize: 10,
-    fontWeight: '800',
-    lineHeight: 12,
+  label: {
+    fontFamily: 'Nunito',
+    fontSize: 13,
+    fontWeight: '700',
+    color: colors.ink,
   },
   selected: {
     transform: [{ scale: 1.05 }],

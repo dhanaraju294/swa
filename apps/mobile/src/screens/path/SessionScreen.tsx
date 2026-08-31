@@ -17,7 +17,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, spacing, radius, shadow } from '../../design-system/tokens';
 import { Button } from '../../design-system/Button';
 import { WritingLineInput } from '../../design-system/WritingLineInput';
-import { useDailyCatalog, useDailyDay, useSaveJourneyPart } from '../../hooks/useDailyJourney';
+import {
+  useDailyCatalog,
+  useDailyDay,
+  useSaveJourneyPart,
+  useStoredPartAnswers,
+} from '../../hooks/useDailyJourney';
 import type { JourneyPart, JourneySession, JourneyStep, StepOption } from '../../journey/types';
 
 const PARTS: JourneyPart[] = ['morning', 'exercise', 'evening'];
@@ -47,7 +52,9 @@ export default function SessionScreen() {
   const part = (PARTS.includes(partParam as JourneyPart) ? partParam : 'morning') as JourneyPart;
 
   const { content, loading, error } = useDailyDay(day);
-  const { savePart, saving } = useSaveJourneyPart();
+  const { savePart, saving, error: saveError, clearError: clearSaveError } = useSaveJourneyPart();
+  const { stored, storedKey, loading: storedLoading, refresh: refreshStored } =
+    useStoredPartAnswers(day, part);
 
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -95,26 +102,45 @@ export default function SessionScreen() {
 
     const finalAnswers = answersRef.current;
     savingRef.current = true;
+    clearSaveError();
     try {
       const result = await savePart(day, part, finalAnswers);
       if (result.error) {
+        // Alert is a no-op on web, so the error is also rendered inline in the
+        // UI (see saveError below) — it must never be the only feedback.
         Alert.alert('Could not save', result.error);
         return;
       }
       setDone(true);
+      // Keep the stored copy in sync so a later revisit (or re-mount) in this
+      // session sees the fresh answers, not the pre-save ones.
+      refreshStored();
     } catch (e) {
       const message = e instanceof Error ? e.message : 'An unexpected error occurred.';
       Alert.alert('Could not save', message);
     } finally {
       savingRef.current = false;
     }
-  }, [session, content, step, stepIndex, steps.length, savePart, day, part]);
+  }, [session, content, step, stepIndex, steps.length, savePart, day, part, refreshStored]);
 
+  // Hydrate the session once the saved answers for THIS (part, day) are known.
+  // Revisits start from the user's own submitted answers — viewable and
+  // editable — instead of a blank slate that repeats everything. The key
+  // guard stops a stale in-flight fetch (for the previous part/day) from
+  // hydrating the new one, and keeps a post-save refresh from clobbering the
+  // "done" state.
+  const hydratedKey = useRef<string | null>(null);
+  const storedKeyForView = `${part}-${day}`;
+  const storedReady = !storedLoading && storedKey === storedKeyForView;
   useEffect(() => {
+    if (!storedReady) return;
+    if (hydratedKey.current === storedKeyForView) return;
+    hydratedKey.current = storedKeyForView;
     setStepIndex(0);
-    setAnswers({});
     setDone(false);
-  }, [part, day]);
+    clearSaveError();
+    setAnswers(stored ? { ...stored.answers } : {});
+  }, [storedReady, storedKeyForView, stored, clearSaveError]);
 
   if ((loading || catalogLoading) && !content) {
     return (
@@ -164,6 +190,14 @@ export default function SessionScreen() {
           />
         </View>
 
+        {stored && !done ? (
+          <View style={styles.editingBanner}>
+            <Text style={styles.editingText}>
+              ✓ You already completed this — your answers are loaded. Change anything, then save again.
+            </Text>
+          </View>
+        ) : null}
+
         {done ? (
           <View style={styles.doneWrap}>
             <View style={styles.doneCard}>
@@ -208,6 +242,14 @@ export default function SessionScreen() {
                   onChange={write}
                   accent={meta.soft}
                 />
+              ) : null}
+
+              {/* Inline save error (Alert is a no-op on web, so this is the
+                  only feedback there) */}
+              {saveError ? (
+                <View style={styles.saveErrorBox}>
+                  <Text style={styles.saveErrorText}>{saveError}</Text>
+                </View>
               ) : null}
 
               {/* Navigation Action Buttons */}
@@ -913,6 +955,21 @@ const styles = StyleSheet.create({
     height: 6,
     borderRadius: radius.full,
   },
+  editingBanner: {
+    marginHorizontal: spacing.lg,
+    marginTop: spacing.sm,
+    backgroundColor: 'rgba(255,255,255,0.8)',
+    borderRadius: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  editingText: {
+    fontFamily: 'Nunito',
+    fontSize: 12,
+    fontWeight: '700',
+    color: colors.ink,
+    lineHeight: 17,
+  },
   scroll: {
     padding: spacing.md,
     paddingBottom: 40,
@@ -967,6 +1024,20 @@ const styles = StyleSheet.create({
   },
   navRow: {
     marginTop: 24,
+  },
+  saveErrorBox: {
+    backgroundColor: '#FBEAE4',
+    borderLeftWidth: 4,
+    borderLeftColor: '#D4795F',
+    borderRadius: 12,
+    padding: 12,
+    marginTop: 12,
+  },
+  saveErrorText: {
+    fontFamily: 'Nunito',
+    fontSize: 13,
+    color: '#8A3B24',
+    lineHeight: 18,
   },
   primaryBtn: {
     width: '100%',

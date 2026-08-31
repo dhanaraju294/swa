@@ -34,6 +34,9 @@ export default function SettingsScreen() {
   const [displayName, setDisplayName] = useState(profile?.displayName || '');
   const [reminders, setReminders] = useState<ReminderPrefs>(parseReminders(settings?.reminderTime));
   const [savingReminders, setSavingReminders] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+  const [deleteNotice, setDeleteNotice] = useState(false);
 
   useEffect(() => {
     if (isFocused) {
@@ -74,23 +77,31 @@ export default function SettingsScreen() {
     }
   };
 
+  // Confirmation lives in an in-app modal (not Alert.alert): Alert is a
+  // no-op on web, so the destructive flow had to be platform-independent.
   const handleDelete = () => {
-    Alert.alert(
-      'Delete All Data',
-      'This will permanently delete all your reflections, check-ins, and settings. This cannot be undone.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            await deleteAll();
-            await syncReflectionReminders(DEFAULT_REMINDERS);
-            Alert.alert('Deleted', 'All data has been cleared.');
-          },
-        },
-      ],
-    );
+    setDeleteError('');
+    setConfirmingDelete(true);
+  };
+
+  const confirmDelete = async () => {
+    setDeleteError('');
+    try {
+      await deleteAll();
+      setConfirmingDelete(false);
+      setDeleteNotice(true);
+      setTimeout(() => setDeleteNotice(false), 5000);
+      // The profile reset also turns app lock off; make sure no reminder is
+      // left scheduled under the old preferences.
+      await syncReflectionReminders(DEFAULT_REMINDERS);
+      // Refresh the other screens' data so the UI reflects the clean slate
+      // immediately instead of on the next focus change.
+      refreshProfile();
+      refreshSettings();
+    } catch (e) {
+      console.warn('Failed to delete all data:', e);
+      setDeleteError('Could not delete your data. Please try again in a moment.');
+    }
   };
 
   const handleSaveName = async () => {
@@ -269,9 +280,10 @@ export default function SettingsScreen() {
           title={deleting ? 'Deleting...' : 'Delete All Data'}
           onPress={handleDelete}
           color="#D4795F"
-          disabled={deleting}
+          disabled={deleting || confirmingDelete}
           style={{ marginTop: spacing.md }}
         />
+        {deleteNotice ? <Text style={styles.deleteNotice}>All data has been cleared.</Text> : null}
       </Card>
 
       <Card style={styles.card}>
@@ -286,6 +298,35 @@ export default function SettingsScreen() {
 
       <View style={{ height: 80 }} />
     </ScrollView>
+
+    {confirmingDelete && (
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalCard}>
+          <EyebrowLabel label="DELETE ALL DATA" />
+          <Text style={styles.modalTitle}>
+            This will permanently delete all your reflections, check-ins, and settings. This
+            cannot be undone.
+          </Text>
+
+          {deleteError ? <Text style={styles.modalError}>{deleteError}</Text> : null}
+
+          <View style={styles.modalButtons}>
+            <Button
+              title="Cancel"
+              variant="ghost"
+              disabled={deleting}
+              onPress={() => setConfirmingDelete(false)}
+            />
+            <Button
+              title={deleting ? 'Deleting...' : 'Delete'}
+              color="#D4795F"
+              disabled={deleting}
+              onPress={confirmDelete}
+            />
+          </View>
+        </View>
+      </View>
+    )}
 
     {passcodeMode && (
       <View style={styles.modalOverlay}>
@@ -490,6 +531,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#D4795F',
     marginTop: spacing.sm,
+  },
+  deleteNotice: {
+    fontFamily: 'Nunito',
+    fontSize: 12,
+    fontWeight: '700',
+    color: colors.sage,
+    marginTop: spacing.md,
   },
   modalButtons: {
     flexDirection: 'row',

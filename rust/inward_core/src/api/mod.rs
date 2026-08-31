@@ -392,6 +392,14 @@ impl CoreApi {
         response: &str,
     ) -> Result<Reflection> {
         let r = Reflection::new(journal_id.to_string(), day, prompt.to_string(), response.to_string());
+        // Re-saving the same (journal, day, prompt) replaces the earlier
+        // answer instead of stacking duplicate rows — e.g. re-doing a daily
+        // path part. Distinct prompts on the same day still each keep their
+        // own row.
+        conn.execute(
+            "DELETE FROM reflections WHERE journal_id = ?1 AND day_number = ?2 AND prompt = ?3",
+            rusqlite::params![r.journal_id, r.day_number, r.prompt],
+        )?;
         conn.execute(
             "INSERT INTO reflections (id, journal_id, day_number, prompt, response, created_at)
              VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
@@ -653,26 +661,32 @@ impl CoreApi {
         serde_json::to_string_pretty(&export).map_err(CoreError::from)
     }
 
+    /// Wipe every table the user has written to, atomically. All statements
+    /// run in one transaction so a failure mid-way can never leave a mixed
+    /// state (e.g. reflections gone but the profile still set) — the user's
+    /// "Delete All Data" is either fully done or fully not done.
     pub fn delete_all_data(conn: &Connection) -> Result<()> {
-        conn.execute("DELETE FROM daily_checkins", [])?;
-        conn.execute("DELETE FROM on_the_spot_entries", [])?;
-        conn.execute("DELETE FROM spot_checkins", [])?;
-        conn.execute("DELETE FROM journal_progress", [])?;
-        conn.execute("DELETE FROM reflections", [])?;
-        conn.execute("DELETE FROM badges", [])?;
-        conn.execute("DELETE FROM awareness_scores", [])?;
-        conn.execute(
+        let tx = conn.unchecked_transaction()?;
+        tx.execute("DELETE FROM daily_checkins", [])?;
+        tx.execute("DELETE FROM on_the_spot_entries", [])?;
+        tx.execute("DELETE FROM spot_checkins", [])?;
+        tx.execute("DELETE FROM journal_progress", [])?;
+        tx.execute("DELETE FROM reflections", [])?;
+        tx.execute("DELETE FROM badges", [])?;
+        tx.execute("DELETE FROM awareness_scores", [])?;
+        tx.execute(
             "UPDATE streaks SET current_streak = 0, longest_streak = 0, last_active_date = NULL WHERE id = 1",
             [],
         )?;
-        conn.execute(
+        tx.execute(
             "UPDATE profile SET display_name = NULL, app_lock_enabled = 0 WHERE id = 1",
             [],
         )?;
-        conn.execute(
+        tx.execute(
             "UPDATE app_settings SET theme = 'default', reminder_time = NULL, export_format_pref = 'json' WHERE id = 1",
             [],
         )?;
+        tx.commit()?;
         Ok(())
     }
 }

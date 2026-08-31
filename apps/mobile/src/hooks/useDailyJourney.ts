@@ -8,14 +8,41 @@ import {
   PART_JOURNALS,
   parseCatalog,
   parseDayContent,
+  parseStoredPart,
   unlockedDayOf,
   type DailyDayContent,
   type JourneyCatalog,
   type JourneyPart,
   type PartStatus,
+  type StoredPart,
 } from '../journey/types';
 
 const SESSION_PROMPT = 'session';
+
+/**
+ * Minimal module-level pub/sub: the moment a part is saved (which can also
+ * flip a day to completed and unlock the next one), every screen showing
+ * journey state — the home rhythm card, the path map — refreshes. Relying on
+ * tab refocus alone left the map stale after a submission on some routes.
+ */
+type JourneyListener = () => void;
+const journeyListeners = new Set<JourneyListener>();
+
+export function emitJourneyChanged(): void {
+  journeyListeners.forEach((l) => l());
+}
+
+function useJourneyChangeRefresh(refresh: () => void | Promise<unknown>): void {
+  useEffect(() => {
+    const listener: JourneyListener = () => {
+      void refresh();
+    };
+    journeyListeners.add(listener);
+    return () => {
+      journeyListeners.delete(listener);
+    };
+  }, [refresh]);
+}
 
 // The Rust backend never seeds its `journal_days` table, so on a real device
 // `getJournalDay` throws NotFound for every row. Day copy is static and
@@ -81,6 +108,9 @@ export function useDailyCatalog() {
     refresh();
   }, [refresh]);
 
+  // Refresh immediately when any part is saved (also from other tabs).
+  useJourneyChangeRefresh(refresh);
+
   const total = catalog?.totalDays ?? 28;
   const completedDays = progress?.completedDays ?? [];
   const unlockedDay = unlockedDayOf(completedDays, progress?.updatedAt, total);
@@ -141,6 +171,46 @@ export function useDailyDay(dayNumber: number) {
   return { content, loading, error, refresh };
 }
 
+/**
+ * Loads the answers the user already submitted for this (part, day), so a
+ * revisited session pre-fills them (view + edit) instead of repeating the
+ * whole session from a blank slate.
+ *
+ * `storedKey` mirrors the (part, day) the current fetch belongs to, so the
+ * consumer can tell a just-arrived result apart from a stale in-flight one
+ * after a part/day switch.
+ */
+export function useStoredPartAnswers(day: number, part: JourneyPart) {
+  const [stored, setStored] = useState<StoredPart | null>(null);
+  const [storedKey, setStoredKey] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const refresh = useCallback(async () => {
+    const key = `${part}-${day}`;
+    setStoredKey(key);
+    setLoading(true);
+    try {
+      const engine = await getInwardEngine();
+      const rows = await engine.listReflections(PART_JOURNALS[part]);
+      const row = rows.find((r) => r.dayNumber === day && r.prompt === SESSION_PROMPT);
+      setStored(row ? parseStoredPart(row.response) : null);
+    } catch (e) {
+      // No stored answers (or unreadable ones) — start blank rather than
+      // blocking the session on a read error.
+      console.warn('Failed to load stored part answers:', e);
+      setStored(null);
+    } finally {
+      setLoading(false);
+    }
+  }, [day, part]);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  return { stored, storedKey, loading, refresh };
+}
+
 export function useSaveJourneyPart() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -169,6 +239,10 @@ export function useSaveJourneyPart() {
         if (allPartsComplete(status) && !alreadyDay) {
           await engine.completeJournalDay(JOURNEY_ID, day);
         }
+        // Tell every mounted journey view (home card, path map) to re-read
+        // its state right now — the save above may have completed the day
+        // and unlocked the next one.
+        emitJourneyChanged();
         return { status, error: null };
       } catch (e) {
         const message = e instanceof Error ? e.message : 'Failed to save your reflection.';

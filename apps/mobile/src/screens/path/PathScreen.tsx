@@ -1,46 +1,48 @@
 import React, { useCallback, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useIsFocused } from '@react-navigation/native';
-import { colors, spacing } from '../../design-system/tokens';
-import { Card } from '../../design-system/Card';
+import { colors, spacing, radius } from '../../design-system/tokens';
 import { Button } from '../../design-system/Button';
-import { EyebrowLabel } from '../../design-system/EyebrowLabel';
 import { useDailyCatalog } from '../../hooks/useDailyJourney';
-import { allPartsComplete } from '../../journey/types';
+import { allPartsComplete, type JourneyPart } from '../../journey/types';
 import { PathMap } from './PathMap';
+
+const PARTS: JourneyPart[] = ['morning', 'exercise', 'evening'];
 
 export default function PathScreen() {
   const router = useRouter();
   const focused = useIsFocused();
   const {
-    catalog,
-    loading,
-    error,
-    refresh,
-    unlockedDay,
-    completedDays,
-    statusByDay,
-    total,
+    catalog, loading, error, refresh, unlockedDay, completedDays, statusByDay, total,
   } = useDailyCatalog();
 
+  // Refresh when the tab gains focus (coming back from any session).
   useEffect(() => {
     if (focused) refresh();
   }, [focused, refresh]);
 
-  // The path is about the daily practice: tapping a node opens exactly the
-  // exercise session, never the morning/evening reflections.
+  const openPart = useCallback(
+    (part: JourneyPart, day = unlockedDay) => {
+      router.push({ pathname: '/session', params: { day: String(day), part } });
+    },
+    [router, unlockedDay],
+  );
+
+  // Tapping a roadmap node opens that day's first still-open part.
   const openDay = useCallback(
     (day: number) => {
-      router.push({ pathname: '/session', params: { day: String(day), part: 'exercise' } });
+      const st = statusByDay[day];
+      const first = PARTS.find((p) => !st?.[p]);
+      openPart(first || 'exercise', day);
     },
-    [router],
+    [openPart, statusByDay],
   );
 
   if (loading && !catalog) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator color={colors.gold} />
+        <ActivityIndicator color={colors.leaf} />
         <Text style={styles.muted}>Opening your path…</Text>
       </View>
     );
@@ -51,88 +53,136 @@ export default function PathScreen() {
       <View style={styles.center}>
         <Text style={styles.title}>The path is still packing.</Text>
         <Text style={styles.muted}>{error || 'Content will load from the on-device backend.'}</Text>
-        <Button title="Try again" onPress={refresh} color={colors.gold} style={{ marginTop: spacing.lg }} />
+        <Button title="Try again" onPress={refresh} color={colors.leaf} style={{ marginTop: spacing.lg }} />
       </View>
     );
   }
 
-  const current = catalog.days.find((d) => d.day === unlockedDay);
   const status = statusByDay[unlockedDay];
-  const doneToday = completedDays.includes(unlockedDay) || allPartsComplete(status);
-  const doneCount = completedDays.length;
+  const todayDone = completedDays.includes(unlockedDay) || allPartsComplete(status);
+  const firstOpen = PARTS.find((p) => !status?.[p]) || 'exercise';
+  const nextDay = Math.min(unlockedDay + 1, total);
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <EyebrowLabel label="YOUR PATH" />
-      <Text style={styles.title}>{catalog.title}</Text>
-      <Text style={styles.lede}>{catalog.philosophy || catalog.subtitle}</Text>
-
-      <Card style={styles.hero}>
-        <Text style={styles.heroEyebrow}>{doneToday ? 'TODAY IS COMPLETE' : `DAY ${unlockedDay} OF ${total}`}</Text>
-        <Text style={styles.heroTitle}>{current?.theme || 'Continue'}</Text>
-        <Text style={styles.heroSub}>
-          {doneToday
-            ? 'Tomorrow a new node opens. You can still revisit today.'
-            : current
-              ? `Today's practice: ${current.exerciseTitle}`
-              : 'A quiet practice, one node at a time.'}
-        </Text>
-        <View style={styles.pips}>
-          <View style={[styles.pip, status?.exercise && styles.pipOn]}>
-            <Text style={[styles.pipText, status?.exercise && styles.pipTextOn]}>Practice</Text>
-          </View>
-        </View>
-        <Button
-          title={doneToday ? 'Revisit today' : 'Continue today'}
-          onPress={() => openDay(unlockedDay)}
-          color={colors.gold}
-          style={{ marginTop: spacing.md }}
-        />
-      </Card>
-
-      <View style={styles.metaRow}>
-        <Text style={styles.meta}>{doneCount} of {total} days lived</Text>
-        <Text style={styles.meta}>No rush. No catch-up.</Text>
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>My Path</Text>
       </View>
 
-      <PathMap
-        catalog={catalog}
-        unlockedDay={unlockedDay}
-        completedDays={completedDays}
-        statusByDay={statusByDay}
-        onPressDay={openDay}
-      />
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <Text style={styles.mapHead}>The whole journey, one winding road</Text>
+        <PathMap
+          catalog={catalog}
+          unlockedDay={unlockedDay}
+          completedDays={completedDays}
+          statusByDay={statusByDay}
+          onPressDay={openDay}
+        />
+        <Text style={styles.foot}>
+          {completedDays.length} of {total} days lived · tap an open day to start it.
+        </Text>
 
-      <Text style={styles.foot}>
-        Locked nodes open the morning after you finish a day — or stay here if you want more time.
-      </Text>
-      <View style={{ height: 80 }} />
-    </ScrollView>
+        {/* Next-up card */}
+        <View style={styles.tomorrowCardWrap}>
+          <TouchableOpacity
+            onPress={() => openPart(firstOpen)}
+            activeOpacity={0.9}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <View style={styles.tomorrowCard}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.tomorrowTitle}>
+                  {todayDone ? `Day ${nextDay} begins tomorrow` : `Day ${unlockedDay} is still open`}
+                </Text>
+                <Text style={styles.tomorrowSub}>
+                  {todayDone
+                    ? 'Every day is a new chance to come back to yourself.'
+                    : 'Morning, practice, and evening — whenever you are ready.'}
+                </Text>
+              </View>
+              <Text style={styles.tomorrowLeaf}>🌿</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+        <View style={{ height: 40 }} />
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.cream },
-  content: { padding: spacing.lg, paddingBottom: 40 },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.cream, padding: spacing.xl },
-  title: { fontFamily: 'Fraunces', fontSize: 30, fontWeight: '600', color: colors.ink, marginTop: 4 },
-  lede: { fontFamily: 'Nunito', fontSize: 14, color: colors.inkSoft, lineHeight: 21, marginBottom: spacing.lg, marginTop: 6 },
-  muted: { fontFamily: 'Nunito', fontSize: 13, color: colors.inkSoft, marginTop: spacing.sm, textAlign: 'center' },
-  hero: { padding: spacing.lg, marginBottom: spacing.lg },
-  heroEyebrow: { fontFamily: 'Nunito', fontSize: 10.5, fontWeight: '800', letterSpacing: 2.4, color: colors.inkSoft },
-  heroTitle: { fontFamily: 'Fraunces', fontSize: 24, fontWeight: '600', color: colors.ink, marginTop: 4 },
-  heroSub: { fontFamily: 'Nunito', fontSize: 13, color: colors.inkSoft, lineHeight: 19, marginTop: 6 },
-  pips: { flexDirection: 'row', gap: 8, marginTop: spacing.md },
-  pip: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 999,
-    backgroundColor: '#F4EFE6',
+  center: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.cream,
+    padding: spacing.xl,
   },
-  pipOn: { backgroundColor: '#E4F0E3' },
-  pipText: { fontFamily: 'Nunito', fontSize: 11, fontWeight: '700', color: colors.inkSoft },
-  pipTextOn: { color: '#3E5A42' },
-  metaRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.md },
-  meta: { fontFamily: 'Nunito', fontSize: 11, color: colors.inkSoft },
-  foot: { fontFamily: 'Nunito', fontSize: 12, color: colors.inkSoft, lineHeight: 18, textAlign: 'center', marginTop: spacing.lg },
+  title: { fontFamily: 'Fraunces', fontSize: 28, fontWeight: '600', color: colors.ink },
+  muted: {
+    fontFamily: 'Nunito',
+    fontSize: 13,
+    color: colors.inkSoft,
+    marginTop: spacing.sm,
+    textAlign: 'center',
+  },
+  header: {
+    alignItems: 'center',
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.xs,
+  },
+  headerTitle: {
+    fontFamily: 'Fraunces',
+    fontSize: 20,
+    fontWeight: '600',
+    color: colors.ink,
+  },
+  content: { paddingHorizontal: spacing.lg, paddingBottom: 100 },
+  mapHead: {
+    fontFamily: 'Nunito',
+    fontSize: 12,
+    fontWeight: '700',
+    color: colors.inkSoft,
+    textAlign: 'center',
+    marginBottom: spacing.md,
+    letterSpacing: 0.2,
+  },
+  foot: {
+    fontFamily: 'Nunito',
+    fontSize: 11.5,
+    color: colors.ghost,
+    textAlign: 'center',
+    marginTop: spacing.md,
+    marginBottom: spacing.sm,
+    lineHeight: 17,
+  },
+  tomorrowCardWrap: {
+    marginTop: spacing.lg,
+  },
+  tomorrowCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    backgroundColor: '#F6F1E7',
+    borderRadius: radius.md,
+    padding: spacing.lg,
+  },
+  tomorrowTitle: {
+    fontFamily: 'Fraunces',
+    fontSize: 17,
+    fontWeight: '600',
+    color: colors.ink,
+  },
+  tomorrowSub: {
+    fontFamily: 'Nunito',
+    fontSize: 12.5,
+    color: colors.inkSoft,
+    marginTop: 3,
+    lineHeight: 18,
+  },
+  tomorrowLeaf: {
+    fontSize: 30,
+  },
 });
