@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { emptyDraft, parseRecord, toRpcProfile } from '../src/onboarding/types';
+import { emptyDraft, isValidEmail, parseRecord, toRpcProfile } from '../src/onboarding/types';
 import { ONBOARDING_STORE_KEY, readOnboardingRecord, upsertOnboardingDraft } from '../src/onboarding/store';
 
 beforeEach(async () => {
@@ -31,6 +31,26 @@ describe('toRpcProfile', () => {
     draft.yearOfStudy = '3rd_year';
     const payload = toRpcProfile(draft, { step: 2, completed: false });
     expect(payload.year_of_study).toBeNull();
+  });
+
+  it('sends the email trimmed and lowercased, or null when absent', () => {
+    const draft = emptyDraft();
+    draft.email = '  Student@Example.COM ';
+    expect(toRpcProfile(draft, { step: 1, completed: false }).email).toBe('student@example.com');
+    draft.email = null;
+    expect(toRpcProfile(draft, { step: 1, completed: false }).email).toBeNull();
+  });
+});
+
+describe('isValidEmail', () => {
+  it('accepts valid emails and rejects invalid ones', () => {
+    expect(isValidEmail('student@example.com')).toBe(true);
+    expect(isValidEmail(' student@example.com ')).toBe(true);
+    expect(isValidEmail('')).toBe(false);
+    expect(isValidEmail(null)).toBe(false);
+    expect(isValidEmail('nope')).toBe(false);
+    expect(isValidEmail('a@b')).toBe(false);
+    expect(isValidEmail('a b@c.com')).toBe(false);
   });
 });
 
