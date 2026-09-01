@@ -1,21 +1,46 @@
 -- ===========================================================================
--- FIX: onboarding_profiles.email stays NULL while every other field saves.
+-- SWA — fix: onboarding email arrives from the app but stays NULL in the table
 --
--- CAUSE: the live database is still running an OLD version of
--- public.save_onboarding(uuid, jsonb) that was created before email existed.
--- That old function simply never reads p_profile->>'email', so the value the
--- app sends is silently discarded while all the other keys are stored. The
--- app payload is correct (see apps/mobile/src/onboarding/types.ts →
--- toRpcProfile, covered by __tests__/onboarding.test.ts).
+-- HOW TO RUN
+--   Supabase Dashboard → SQL Editor → New query → paste ALL of this → Run.
+--   Idempotent: safe to run more than once.
+--   The last statement returns a PASS/FAIL table. Read it.
 --
--- This script is idempotent and safe to re-run. Paste it whole into the
--- Supabase SQL editor (Dashboard → SQL Editor → New query → Run).
+-- WHAT IT DOES
+--   1. shows whether the CURRENT function stores email   (diagnosis, before)
+--   2. makes sure the email column + guards exist
+--   3. replaces save_onboarding() with a version that stores email
+--   4. reloads the PostgREST schema cache
+--   5. round-trips a real email through the RPC and reports PASS/FAIL
+--
+-- Verified against your project first: the anon key can execute
+-- save_onboarding(p_device_id, p_profile), and PostgREST reports exactly ONE
+-- overload — so a plain replace is enough (no overload juggling needed).
 -- ===========================================================================
 
-begin;
 
 -- ---------------------------------------------------------------------------
--- 1) Make sure the column and its guards exist.
+-- 1) BEFORE: does the function that's live right now even mention email?
+--    'IGNORES email' here is the bug — the column can exist while the function
+--    writing to it predates the column and never reads p_profile->>'email'.
+-- ---------------------------------------------------------------------------
+select
+  'BEFORE' as when_checked,
+  p.oid::regprocedure as function_signature,
+  case
+    when pg_get_functiondef(p.oid) ilike '%email%' then 'references email'
+    else 'IGNORES email  <-- this is the bug'
+  end as verdict
+from pg_proc p
+join pg_namespace n on n.oid = p.pronamespace
+where n.nspname = 'public'
+  and p.proname = 'save_onboarding';
+
+
+-- ---------------------------------------------------------------------------
+-- 2) Column + guards (no-ops if they already exist).
+--    NOT VALID: apply the format check to new writes without rescanning or
+--    failing on any pre-existing rows.
 -- ---------------------------------------------------------------------------
 alter table public.onboarding_profiles
   add column if not exists email text;
@@ -27,7 +52,7 @@ alter table public.onboarding_profiles
   add constraint onboarding_profiles_email_format check (
     email is null
     or email ~* '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]{2,}$'
-  );
+  ) not valid;
 
 create index if not exists onboarding_profiles_email_idx
   on public.onboarding_profiles (email);
@@ -35,35 +60,11 @@ create index if not exists onboarding_profiles_email_idx
 comment on column public.onboarding_profiles.email is
   'User email collected on the About You onboarding screen (stored lowercase).';
 
--- ---------------------------------------------------------------------------
--- 2) Drop EVERY overload of save_onboarding.
---
--- This is the step a plain "create or replace" misses. If an older function
--- exists with a different signature (e.g. (uuid, json) instead of
--- (uuid, jsonb)), PostgREST may keep resolving the call to that stale
--- overload, so the email is dropped no matter how many times you re-run the
--- newer definition.
--- ---------------------------------------------------------------------------
-do $$
-declare
-  fn record;
-begin
-  for fn in
-    select p.oid::regprocedure as sig
-    from pg_proc p
-    join pg_namespace n on n.oid = p.pronamespace
-    where n.nspname = 'public'
-      and p.proname = 'save_onboarding'
-  loop
-    execute format('drop function if exists %s cascade', fn.sig);
-  end loop;
-end;
-$$;
 
 -- ---------------------------------------------------------------------------
--- 3) Recreate the one true version, which DOES persist email.
+-- 3) The actual fix: this version writes email.
 -- ---------------------------------------------------------------------------
-create function public.save_onboarding(
+create or replace function public.save_onboarding(
   p_device_id uuid,
   p_profile jsonb
 )
@@ -79,14 +80,14 @@ begin
     raise exception 'device_id required';
   end if;
 
-  -- Normalise: trim + lowercase, treat '', 'null' and whitespace as absent.
+  -- trim + lowercase; treat '', whitespace and the string 'null' as absent
   v_email := nullif(lower(trim(coalesce(p_profile->>'email', ''))), '');
   if v_email = 'null' then
     v_email := null;
   end if;
 
-  -- Never let a malformed address abort the whole upsert: the rest of the
-  -- questionnaire is still worth saving.
+  -- a malformed address must not abort the whole upsert — the rest of the
+  -- questionnaire is still worth keeping
   if v_email is not null
      and v_email !~* '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]{2,}$' then
     raise warning 'save_onboarding: ignoring malformed email %', v_email;
@@ -145,44 +146,48 @@ $$;
 revoke all on function public.save_onboarding(uuid, jsonb) from public;
 grant execute on function public.save_onboarding(uuid, jsonb) to anon;
 
-commit;
 
 -- ---------------------------------------------------------------------------
--- 4) Reload the PostgREST schema cache so the API picks up the new function
---    immediately instead of after the next redeploy.
+-- 4) Make the API use it immediately instead of after the next redeploy.
 -- ---------------------------------------------------------------------------
 notify pgrst, 'reload schema';
 
+
 -- ---------------------------------------------------------------------------
--- 5) SELF-TEST — proves the fix works. Raises an exception if email is still
---    dropped, and cleans up the temporary row either way.
+-- 5) AFTER: push a real email through the RPC, read it back, delete the probe.
 -- ---------------------------------------------------------------------------
+create temp table if not exists _swa_result (check_name text, result text);
+delete from _swa_result;
+
 do $$
 declare
-  v_test_device constant uuid := '00000000-0000-4000-8000-0000000000ff';
-  v_stored text;
+  v_dev  constant uuid := '00000000-0000-4000-8000-0000000000fe';
+  v_got  text;
 begin
   perform public.save_onboarding(
-    v_test_device,
+    v_dev,
     jsonb_build_object(
-      'email', '  SelfTest@Example.COM ',
+      'email', '  ProbE@Example.COM ',   -- messy on purpose
       'role', 'college_student',
       'onboarding_step', 1
     )
   );
 
-  select email into v_stored
+  select email into v_got
   from public.onboarding_profiles
-  where device_id = v_test_device;
+  where device_id = v_dev;
 
-  delete from public.onboarding_profiles where device_id = v_test_device;
+  delete from public.onboarding_profiles where device_id = v_dev;
 
-  if v_stored is distinct from 'selftest@example.com' then
-    raise exception
-      'save_onboarding SELF-TEST FAILED: expected selftest@example.com, got %',
-      coalesce(v_stored, 'NULL');
-  end if;
-
-  raise notice 'save_onboarding SELF-TEST PASSED — email is stored correctly.';
+  insert into _swa_result values (
+    'email round-trip through save_onboarding()',
+    case
+      when v_got = 'probe@example.com'
+        then 'PASS - email is stored (trimmed + lowercased). Fixed.'
+      else 'FAIL - got ' || coalesce(v_got, 'NULL') || '. Send me this output.'
+    end
+  );
 end;
 $$;
+
+select * from _swa_result;
