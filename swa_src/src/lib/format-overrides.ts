@@ -1,134 +1,197 @@
-import.meta.env = {"BASE_URL": "/", "DEV": true, "MODE": "development", "PROD": false, "SITE_ID": "7q7yf91z33", "SSR": false, "VITE_API_URL": "https://7q7yf91z33.preview.c35.airoapp.ai/api", "VITE_HMR_HOST": "0.0.0.0", "VITE_HOST": "127.0.0.1", "VITE_PARENT_ORIGIN": "https://airo-builder.godaddy.com"};export const EMPTY_FORMAT_OVERRIDE_SIDECAR = {
-  version: 1,
-  overrides: {}
-};
-export const EMPTY_FORMAT_OVERRIDE_BUNDLE = {
-  version: 1,
-  scopes: {}
-};
-function isRecord(value) {
-  return !!value && typeof value === "object" && !Array.isArray(value);
-}
-function isFormatOverrideSourceKind(value) {
-  return value === "bound-expression" || value === "content-key" || value === "content-key-template";
-}
-function isFormatOverrideTarget(value) {
-  if (!isRecord(value)) return false;
-  return typeof value.file === "string" && typeof value.tagName === "string" && isFormatOverrideSourceKind(value.sourceKind) && (value.contentKey === void 0 || value.contentKey === null || typeof value.contentKey === "string") && (value.contentKeyTemplate === void 0 || value.contentKeyTemplate === null || typeof value.contentKeyTemplate === "string") && (value.expressionHash === void 0 || value.expressionHash === null || typeof value.expressionHash === "string");
-}
-function isFormatOverrideMarks(value) {
-  if (!isRecord(value)) return false;
-  return (value.bold === void 0 || typeof value.bold === "boolean") && (value.italic === void 0 || typeof value.italic === "boolean") && (value.color === void 0 || value.color === null || typeof value.color === "string") && (value.fontSize === void 0 || typeof value.fontSize === "string");
-}
-function isFormatOverrideEntry(value) {
-  if (!isRecord(value)) return false;
-  return isFormatOverrideTarget(value.target) && isFormatOverrideMarks(value.marks) && typeof value.updatedAt === "string";
-}
-function warnMalformedFormatOverrideEntry(scope, devId) {
-  if (import.meta.env.DEV) {
-    console.warn("[format-overrides] Ignoring malformed override entry.", {
-      scope,
-      devId
-    });
-  }
-}
-function normalizeNullable(value) {
-  return value ?? null;
-}
-function normalizeSourceFile(file) {
-  const normalized = file.replace(/\\/g, "/");
-  const srcIndex = normalized.indexOf("/src/");
-  if (srcIndex !== -1) return normalized.slice(srcIndex + 1);
-  return normalized.replace(/^\/+/, "");
-}
-function toSafePagePath(rawPagePath) {
-  const segments = rawPagePath.split("/");
-  if (segments.some((segment) => !/^[a-zA-Z0-9_-]+$/.test(segment))) return null;
-  return segments.map((segment) => segment.toLowerCase()).join("/");
-}
-export function deriveFormatOverrideScope(file) {
-  const normalized = normalizeSourceFile(file);
-  const pageMatch = /^src\/pages\/(.+)\.[jt]sx?$/.exec(normalized);
-  if (!pageMatch?.[1]) {
-    return {
-      key: "shared",
-      filePath: "format-overrides/shared.json"
-    };
-  }
-  const pagePath = toSafePagePath(pageMatch[1]);
-  if (!pagePath) {
-    return {
-      key: "shared",
-      filePath: "format-overrides/shared.json"
-    };
-  }
-  return {
-    key: `pages/${pagePath}`,
-    filePath: `format-overrides/pages/${pagePath}.json`
-  };
-}
-export function targetsMatch(expected, actual) {
-  return expected.file === actual.file && expected.tagName === actual.tagName && expected.sourceKind === actual.sourceKind && normalizeNullable(expected.contentKey) === normalizeNullable(actual.contentKey) && normalizeNullable(expected.contentKeyTemplate) === normalizeNullable(actual.contentKeyTemplate) && normalizeNullable(expected.expressionHash) === normalizeNullable(actual.expressionHash);
-}
-export function findApplicableFormatOverride(bundle, devId, actual) {
-  const scope = deriveFormatOverrideScope(actual.file);
-  const sidecar = bundle.scopes[scope.key] ?? EMPTY_FORMAT_OVERRIDE_SIDECAR;
-  const entry = sidecar.overrides[devId];
-  if (!entry) return {
-    status: "missing"
-  };
-  if (!isFormatOverrideEntry(entry)) {
-    warnMalformedFormatOverrideEntry(scope.key, devId);
-    return {
-      status: "missing"
-    };
-  }
-  if (!targetsMatch(entry.target, actual)) {
-    return {
-      status: "guard-mismatch",
-      expected: entry.target,
-      actual
-    };
-  }
-  return {
-    status: "applicable",
-    marks: entry.marks
-  };
-}
-const FONT_SIZE_LINE_HEIGHT = {
-  "0.75rem": "1rem",
-  "0.875rem": "1.25rem",
-  "1rem": "1.5rem",
-  "1.125rem": "1.75rem",
-  "1.25rem": "1.75rem",
-  "1.5rem": "2rem",
-  "1.875rem": "2.25rem",
-  "2.25rem": "2.5rem",
-  "3rem": "1",
-  "3.75rem": "1",
-  "4.5rem": "1",
-  "6rem": "1",
-  "8rem": "1"
-};
-export function buildFormatOverrideStyle(marks) {
-  const lineHeight = marks.fontSize ? FONT_SIZE_LINE_HEIGHT[marks.fontSize] : void 0;
-  return {
-    ...marks.bold ? {
-      fontWeight: 700
-    } : {},
-    ...marks.italic ? {
-      fontStyle: "italic"
-    } : {},
-    ...marks.color ? {
-      color: marks.color
-    } : {},
-    ...marks.fontSize ? {
-      fontSize: marks.fontSize
-    } : {},
-    ...lineHeight ? {
-      lineHeight
-    } : {}
-  };
+import type { CSSProperties } from 'react'
+
+export type FormatOverrideSourceKind = 'bound-expression' | 'content-key' | 'content-key-template'
+
+export interface FormatOverrideTarget {
+  file: string
+  tagName: string
+  sourceKind: FormatOverrideSourceKind
+  contentKey?: string | null
+  contentKeyTemplate?: string | null
+  expressionHash?: string | null
 }
 
-//# sourceMappingURL=data:application/json;base64,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aW9uIiwib3ZlcnJpZGVzIiwiRU1QVFlfRk9STUFUX09WRVJSSURFX0JVTkRMRSIsInNjb3BlcyIsImlzUmVjb3JkIiwidmFsdWUiLCJBcnJheSIsImlzQXJyYXkiLCJpc0Zvcm1hdE92ZXJyaWRlU291cmNlS2luZCIsImlzRm9ybWF0T3ZlcnJpZGVUYXJnZXQiLCJmaWxlIiwidGFnTmFtZSIsInNvdXJjZUtpbmQiLCJjb250ZW50S2V5IiwidW5kZWZpbmVkIiwiY29udGVudEtleVRlbXBsYXRlIiwiZXhwcmVzc2lvbkhhc2giLCJpc0Zvcm1hdE92ZXJyaWRlTWFya3MiLCJib2xkIiwiaXRhbGljIiwiY29sb3IiLCJmb250U2l6ZSIsImlzRm9ybWF0T3ZlcnJpZGVFbnRyeSIsInRhcmdldCIsIm1hcmtzIiwidXBkYXRlZEF0Iiwid2Fybk1hbGZvcm1lZEZvcm1hdE92ZXJyaWRlRW50cnkiLCJzY29wZSIsImRldklkIiwiaW1wb3J0IiwiZW52IiwiREVWIiwiY29uc29sZSIsIndhcm4iLCJub3JtYWxpemVOdWxsYWJsZSIsIm5vcm1hbGl6ZVNvdXJjZUZpbGUiLCJub3JtYWxpemVkIiwicmVwbGFjZSIsInNyY0luZGV4IiwiaW5kZXhPZiIsInNsaWNlIiwidG9TYWZlUGFnZVBhdGgiLCJyYXdQYWdlUGF0aCIsInNlZ21lbnRzIiwic3BsaXQiLCJzb21lIiwic2VnbWVudCIsInRlc3QiLCJtYXAiLCJ0b0xvd2VyQ2FzZSIsImpvaW4iLCJkZXJpdmVGb3JtYXRPdmVycmlkZVNjb3BlIiwicGFnZU1hdGNoIiwiZXhlYyIsImtleSIsImZpbGVQYXRoIiwicGFnZVBhdGgiLCJ0YXJnZXRzTWF0Y2giLCJleHBlY3RlZCIsImFjdHVhbCIsImZpbmRBcHBsaWNhYmxlRm9ybWF0T3ZlcnJpZGUiLCJidW5kbGUiLCJzaWRlY2FyIiwiZW50cnkiLCJzdGF0dXMiLCJGT05UX1NJWkVfTElORV9IRUlHSFQiLCJidWlsZEZvcm1hdE92ZXJyaWRlU3R5bGUiLCJsaW5lSGVpZ2h0IiwiZm9udFdlaWdodCIsImZvbnRTdHlsZSJdLCJpZ25vcmVMaXN0IjpbXSwic291cmNlcyI6WyJmb3JtYXQtb3ZlcnJpZGVzLnRzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB0eXBlIHsgQ1NTUHJvcGVydGllcyB9IGZyb20gJ3JlYWN0J1xuXG5leHBvcnQgdHlwZSBGb3JtYXRPdmVycmlkZVNvdXJjZUtpbmQgPSAnYm91bmQtZXhwcmVzc2lvbicgfCAnY29udGVudC1rZXknIHwgJ2NvbnRlbnQta2V5LXRlbXBsYXRlJ1xuXG5leHBvcnQgaW50ZXJmYWNlIEZvcm1hdE92ZXJyaWRlVGFyZ2V0IHtcbiAgZmlsZTogc3RyaW5nXG4gIHRhZ05hbWU6IHN0cmluZ1xuICBzb3VyY2VLaW5kOiBGb3JtYXRPdmVycmlkZVNvdXJjZUtpbmRcbiAgY29udGVudEtleT86IHN0cmluZyB8IG51bGxcbiAgY29udGVudEtleVRlbXBsYXRlPzogc3RyaW5nIHwgbnVsbFxuICBleHByZXNzaW9uSGFzaD86IHN0cmluZyB8IG51bGxcbn1cblxuZXhwb3J0IGludGVyZmFjZSBGb3JtYXRPdmVycmlkZU1hcmtzIHtcbiAgYm9sZD86IGJvb2xlYW5cbiAgaXRhbGljPzogYm9vbGVhblxuICBjb2xvcj86IHN0cmluZyB8IG51bGxcbiAgZm9udFNpemU/OiBzdHJpbmdcbn1cblxuZXhwb3J0IGludGVyZmFjZSBGb3JtYXRPdmVycmlkZUVudHJ5IHtcbiAgdGFyZ2V0OiBGb3JtYXRPdmVycmlkZVRhcmdldFxuICBtYXJrczogRm9ybWF0T3ZlcnJpZGVNYXJrc1xuICB1cGRhdGVkQXQ6IHN0cmluZ1xufVxuXG5leHBvcnQgaW50ZXJmYWNlIEZvcm1hdE92ZXJyaWRlU2lkZWNhciB7XG4gIHZlcnNpb246IDFcbiAgb3ZlcnJpZGVzOiBSZWNvcmQ8c3RyaW5nLCBGb3JtYXRPdmVycmlkZUVudHJ5PlxufVxuXG5leHBvcnQgaW50ZXJmYWNlIEZvcm1hdE92ZXJyaWRlQnVuZGxlIHtcbiAgdmVyc2lvbjogMVxuICBzY29wZXM6IFJlY29yZDxzdHJpbmcsIEZvcm1hdE92ZXJyaWRlU2lkZWNhcj5cbn1cblxuZXhwb3J0IGludGVyZmFjZSBGb3JtYXRPdmVycmlkZVNjb3BlIHtcbiAga2V5OiBzdHJpbmdcbiAgZmlsZVBhdGg6IHN0cmluZ1xufVxuXG5leHBvcnQgdHlwZSBGb3JtYXRPdmVycmlkZUxvb2t1cFJlc3VsdCA9XG4gIHwgeyBzdGF0dXM6ICdtaXNzaW5nJyB9XG4gIHwgeyBzdGF0dXM6ICdhcHBsaWNhYmxlJzsgbWFya3M6IEZvcm1hdE92ZXJyaWRlTWFya3MgfVxuICB8IHsgc3RhdHVzOiAnZ3VhcmQtbWlzbWF0Y2gnOyBleHBlY3RlZDogRm9ybWF0T3ZlcnJpZGVUYXJnZXQ7IGFjdHVhbDogRm9ybWF0T3ZlcnJpZGVUYXJnZXQgfVxuXG5leHBvcnQgY29uc3QgRU1QVFlfRk9STUFUX09WRVJSSURFX1NJREVDQVI6IEZvcm1hdE92ZXJyaWRlU2lkZWNhciA9IHtcbiAgdmVyc2lvbjogMSxcbiAgb3ZlcnJpZGVzOiB7fSxcbn1cblxuZXhwb3J0IGNvbnN0IEVNUFRZX0ZPUk1BVF9PVkVSUklERV9CVU5ETEU6IEZvcm1hdE92ZXJyaWRlQnVuZGxlID0ge1xuICB2ZXJzaW9uOiAxLFxuICBzY29wZXM6IHt9LFxufVxuXG5mdW5jdGlvbiBpc1JlY29yZCh2YWx1ZTogdW5rbm93bik6IHZhbHVlIGlzIFJlY29yZDxzdHJpbmcsIHVua25vd24+IHtcbiAgcmV0dXJuICEhdmFsdWUgJiYgdHlwZW9mIHZhbHVlID09PSAnb2JqZWN0JyAmJiAhQXJyYXkuaXNBcnJheSh2YWx1ZSlcbn1cblxuZnVuY3Rpb24gaXNGb3JtYXRPdmVycmlkZVNvdXJjZUtpbmQodmFsdWU6IHVua25vd24pOiB2YWx1ZSBpcyBGb3JtYXRPdmVycmlkZVNvdXJjZUtpbmQge1xuICByZXR1cm4gdmFsdWUgPT09ICdib3VuZC1leHByZXNzaW9uJyB8fCB2YWx1ZSA9PT0gJ2NvbnRlbnQta2V5JyB8fCB2YWx1ZSA9PT0gJ2NvbnRlbnQta2V5LXRlbXBsYXRlJ1xufVxuXG5mdW5jdGlvbiBpc0Zvcm1hdE92ZXJyaWRlVGFyZ2V0KHZhbHVlOiB1bmtub3duKTogdmFsdWUgaXMgRm9ybWF0T3ZlcnJpZGVUYXJnZXQge1xuICBpZiAoIWlzUmVjb3JkKHZhbHVlKSkgcmV0dXJuIGZhbHNlXG4gIHJldHVybiAoXG4gICAgdHlwZW9mIHZhbHVlLmZpbGUgPT09ICdzdHJpbmcnICYmXG4gICAgdHlwZW9mIHZhbHVlLnRhZ05hbWUgPT09ICdzdHJpbmcnICYmXG4gICAgaXNGb3JtYXRPdmVycmlkZVNvdXJjZUtpbmQodmFsdWUuc291cmNlS2luZCkgJiZcbiAgICAodmFsdWUuY29udGVudEtleSA9PT0gdW5kZWZpbmVkIHx8IHZhbHVlLmNvbnRlbnRLZXkgPT09IG51bGwgfHwgdHlwZW9mIHZhbHVlLmNvbnRlbnRLZXkgPT09ICdzdHJpbmcnKSAmJlxuICAgIChcbiAgICAgIHZhbHVlLmNvbnRlbnRLZXlUZW1wbGF0ZSA9PT0gdW5kZWZpbmVkIHx8XG4gICAgICB2YWx1ZS5jb250ZW50S2V5VGVtcGxhdGUgPT09IG51bGwgfHxcbiAgICAgIHR5cGVvZiB2YWx1ZS5jb250ZW50S2V5VGVtcGxhdGUgPT09ICdzdHJpbmcnXG4gICAgKSAmJlxuICAgICh2YWx1ZS5leHByZXNzaW9uSGFzaCA9PT0gdW5kZWZpbmVkIHx8IHZhbHVlLmV4cHJlc3Npb25IYXNoID09PSBudWxsIHx8IHR5cGVvZiB2YWx1ZS5leHByZXNzaW9uSGFzaCA9PT0gJ3N0cmluZycpXG4gIClcbn1cblxuZnVuY3Rpb24gaXNGb3JtYXRPdmVycmlkZU1hcmtzKHZhbHVlOiB1bmtub3duKTogdmFsdWUgaXMgRm9ybWF0T3ZlcnJpZGVNYXJrcyB7XG4gIGlmICghaXNSZWNvcmQodmFsdWUpKSByZXR1cm4gZmFsc2VcbiAgcmV0dXJuIChcbiAgICAodmFsdWUuYm9sZCA9PT0gdW5kZWZpbmVkIHx8IHR5cGVvZiB2YWx1ZS5ib2xkID09PSAnYm9vbGVhbicpICYmXG4gICAgKHZhbHVlLml0YWxpYyA9PT0gdW5kZWZpbmVkIHx8IHR5cGVvZiB2YWx1ZS5pdGFsaWMgPT09ICdib29sZWFuJykgJiZcbiAgICAodmFsdWUuY29sb3IgPT09IHVuZGVmaW5lZCB8fCB2YWx1ZS5jb2xvciA9PT0gbnVsbCB8fCB0eXBlb2YgdmFsdWUuY29sb3IgPT09ICdzdHJpbmcnKSAmJlxuICAgICh2YWx1ZS5mb250U2l6ZSA9PT0gdW5kZWZpbmVkIHx8IHR5cGVvZiB2YWx1ZS5mb250U2l6ZSA9PT0gJ3N0cmluZycpXG4gIClcbn1cblxuZnVuY3Rpb24gaXNGb3JtYXRPdmVycmlkZUVudHJ5KHZhbHVlOiB1bmtub3duKTogdmFsdWUgaXMgRm9ybWF0T3ZlcnJpZGVFbnRyeSB7XG4gIGlmICghaXNSZWNvcmQodmFsdWUpKSByZXR1cm4gZmFsc2VcbiAgcmV0dXJuIChcbiAgICBpc0Zvcm1hdE92ZXJyaWRlVGFyZ2V0KHZhbHVlLnRhcmdldCkgJiZcbiAgICBpc0Zvcm1hdE92ZXJyaWRlTWFya3ModmFsdWUubWFya3MpICYmXG4gICAgdHlwZW9mIHZhbHVlLnVwZGF0ZWRBdCA9PT0gJ3N0cmluZydcbiAgKVxufVxuXG5mdW5jdGlvbiB3YXJuTWFsZm9ybWVkRm9ybWF0T3ZlcnJpZGVFbnRyeShzY29wZTogc3RyaW5nLCBkZXZJZDogc3RyaW5nKTogdm9pZCB7XG4gIGlmIChpbXBvcnQubWV0YS5lbnYuREVWKSB7XG4gICAgY29uc29sZS53YXJuKCdbZm9ybWF0LW92ZXJyaWRlc10gSWdub3JpbmcgbWFsZm9ybWVkIG92ZXJyaWRlIGVudHJ5LicsIHsgc2NvcGUsIGRldklkIH0pXG4gIH1cbn1cblxuZnVuY3Rpb24gbm9ybWFsaXplTnVsbGFibGUodmFsdWU6IHN0cmluZyB8IG51bGwgfCB1bmRlZmluZWQpOiBzdHJpbmcgfCBudWxsIHtcbiAgcmV0dXJuIHZhbHVlID8/IG51bGxcbn1cblxuZnVuY3Rpb24gbm9ybWFsaXplU291cmNlRmlsZShmaWxlOiBzdHJpbmcpOiBzdHJpbmcge1xuICBjb25zdCBub3JtYWxpemVkID0gZmlsZS5yZXBsYWNlKC9cXFxcL2csICcvJylcbiAgY29uc3Qgc3JjSW5kZXggPSBub3JtYWxpemVkLmluZGV4T2YoJy9zcmMvJylcbiAgaWYgKHNyY0luZGV4ICE9PSAtMSkgcmV0dXJuIG5vcm1hbGl6ZWQuc2xpY2Uoc3JjSW5kZXggKyAxKVxuICByZXR1cm4gbm9ybWFsaXplZC5yZXBsYWNlKC9eXFwvKy8sICcnKVxufVxuXG5mdW5jdGlvbiB0b1NhZmVQYWdlUGF0aChyYXdQYWdlUGF0aDogc3RyaW5nKTogc3RyaW5nIHwgbnVsbCB7XG4gIGNvbnN0IHNlZ21lbnRzID0gcmF3UGFnZVBhdGguc3BsaXQoJy8nKVxuICBpZiAoc2VnbWVudHMuc29tZSgoc2VnbWVudCkgPT4gIS9eW2EtekEtWjAtOV8tXSskLy50ZXN0KHNlZ21lbnQpKSkgcmV0dXJuIG51bGxcblxuICByZXR1cm4gc2VnbWVudHMubWFwKChzZWdtZW50KSA9PiBzZWdtZW50LnRvTG93ZXJDYXNlKCkpLmpvaW4oJy8nKVxufVxuXG5leHBvcnQgZnVuY3Rpb24gZGVyaXZlRm9ybWF0T3ZlcnJpZGVTY29wZShmaWxlOiBzdHJpbmcpOiBGb3JtYXRPdmVycmlkZVNjb3BlIHtcbiAgLy8gS2VlcCB0aGlzIHNjb3BlIGRlcml2YXRpb24gaW4gc3luYyB3aXRoIGFnZW50cy9zcmMvc2VydmljZXMvRm9ybWF0T3ZlcnJpZGVTZXJ2aWNlLnRzLlxuICAvLyBUaGUgc2VydmVyIHdyaXRlcyBieSB0YXJnZXQuZmlsZSBhbmQgdGhlIHJ1bnRpbWUgcmVhZHMgYnkgdGhlIHNhbWUgZGVyaXZlZCBzY29wZSBrZXkuXG4gIGNvbnN0IG5vcm1hbGl6ZWQgPSBub3JtYWxpemVTb3VyY2VGaWxlKGZpbGUpXG4gIGNvbnN0IHBhZ2VNYXRjaCA9IC9ec3JjXFwvcGFnZXNcXC8oLispXFwuW2p0XXN4PyQvLmV4ZWMobm9ybWFsaXplZClcbiAgaWYgKCFwYWdlTWF0Y2g/LlsxXSkge1xuICAgIHJldHVybiB7IGtleTogJ3NoYXJlZCcsIGZpbGVQYXRoOiAnZm9ybWF0LW92ZXJyaWRlcy9zaGFyZWQuanNvbicgfVxuICB9XG5cbiAgY29uc3QgcGFnZVBhdGggPSB0b1NhZmVQYWdlUGF0aChwYWdlTWF0Y2hbMV0pXG4gIGlmICghcGFnZVBhdGgpIHtcbiAgICByZXR1cm4geyBrZXk6ICdzaGFyZWQnLCBmaWxlUGF0aDogJ2Zvcm1hdC1vdmVycmlkZXMvc2hhcmVkLmpzb24nIH1cbiAgfVxuXG4gIHJldHVybiB7XG4gICAga2V5OiBgcGFnZXMvJHtwYWdlUGF0aH1gLFxuICAgIGZpbGVQYXRoOiBgZm9ybWF0LW92ZXJyaWRlcy9wYWdlcy8ke3BhZ2VQYXRofS5qc29uYCxcbiAgfVxufVxuXG5leHBvcnQgZnVuY3Rpb24gdGFyZ2V0c01hdGNoKGV4cGVjdGVkOiBGb3JtYXRPdmVycmlkZVRhcmdldCwgYWN0dWFsOiBGb3JtYXRPdmVycmlkZVRhcmdldCk6IGJvb2xlYW4ge1xuICByZXR1cm4gZXhwZWN0ZWQuZmlsZSA9PT0gYWN0dWFsLmZpbGUgJiZcbiAgICBleHBlY3RlZC50YWdOYW1lID09PSBhY3R1YWwudGFnTmFtZSAmJlxuICAgIGV4cGVjdGVkLnNvdXJjZUtpbmQgPT09IGFjdHVhbC5zb3VyY2VLaW5kICYmXG4gICAgbm9ybWFsaXplTnVsbGFibGUoZXhwZWN0ZWQuY29udGVudEtleSkgPT09IG5vcm1hbGl6ZU51bGxhYmxlKGFjdHVhbC5jb250ZW50S2V5KSAmJlxuICAgIG5vcm1hbGl6ZU51bGxhYmxlKGV4cGVjdGVkLmNvbnRlbnRLZXlUZW1wbGF0ZSkgPT09IG5vcm1hbGl6ZU51bGxhYmxlKGFjdHVhbC5jb250ZW50S2V5VGVtcGxhdGUpICYmXG4gICAgbm9ybWFsaXplTnVsbGFibGUoZXhwZWN0ZWQuZXhwcmVzc2lvbkhhc2gpID09PSBub3JtYWxpemVOdWxsYWJsZShhY3R1YWwuZXhwcmVzc2lvbkhhc2gpXG59XG5cbmV4cG9ydCBmdW5jdGlvbiBmaW5kQXBwbGljYWJsZUZvcm1hdE92ZXJyaWRlKFxuICBidW5kbGU6IEZvcm1hdE92ZXJyaWRlQnVuZGxlLFxuICBkZXZJZDogc3RyaW5nLFxuICBhY3R1YWw6IEZvcm1hdE92ZXJyaWRlVGFyZ2V0LFxuKTogRm9ybWF0T3ZlcnJpZGVMb29rdXBSZXN1bHQge1xuICBjb25zdCBzY29wZSA9IGRlcml2ZUZvcm1hdE92ZXJyaWRlU2NvcGUoYWN0dWFsLmZpbGUpXG4gIGNvbnN0IHNpZGVjYXIgPSBidW5kbGUuc2NvcGVzW3Njb3BlLmtleV0gPz8gRU1QVFlfRk9STUFUX09WRVJSSURFX1NJREVDQVJcbiAgY29uc3QgZW50cnkgPSBzaWRlY2FyLm92ZXJyaWRlc1tkZXZJZF1cbiAgaWYgKCFlbnRyeSkgcmV0dXJuIHsgc3RhdHVzOiAnbWlzc2luZycgfVxuICBpZiAoIWlzRm9ybWF0T3ZlcnJpZGVFbnRyeShlbnRyeSkpIHtcbiAgICB3YXJuTWFsZm9ybWVkRm9ybWF0T3ZlcnJpZGVFbnRyeShzY29wZS5rZXksIGRldklkKVxuICAgIHJldHVybiB7IHN0YXR1czogJ21pc3NpbmcnIH1cbiAgfVxuICBpZiAoIXRhcmdldHNNYXRjaChlbnRyeS50YXJnZXQsIGFjdHVhbCkpIHtcbiAgICByZXR1cm4geyBzdGF0dXM6ICdndWFyZC1taXNtYXRjaCcsIGV4cGVjdGVkOiBlbnRyeS50YXJnZXQsIGFjdHVhbCB9XG4gIH1cbiAgcmV0dXJuIHsgc3RhdHVzOiAnYXBwbGljYWJsZScsIG1hcmtzOiBlbnRyeS5tYXJrcyB9XG59XG5cbmNvbnN0IEZPTlRfU0laRV9MSU5FX0hFSUdIVDogUmVjb3JkPHN0cmluZywgc3RyaW5nPiA9IHtcbiAgJzAuNzVyZW0nOiAnMXJlbScsXG4gICcwLjg3NXJlbSc6ICcxLjI1cmVtJyxcbiAgJzFyZW0nOiAnMS41cmVtJyxcbiAgJzEuMTI1cmVtJzogJzEuNzVyZW0nLFxuICAnMS4yNXJlbSc6ICcxLjc1cmVtJyxcbiAgJzEuNXJlbSc6ICcycmVtJyxcbiAgJzEuODc1cmVtJzogJzIuMjVyZW0nLFxuICAnMi4yNXJlbSc6ICcyLjVyZW0nLFxuICAnM3JlbSc6ICcxJyxcbiAgJzMuNzVyZW0nOiAnMScsXG4gICc0LjVyZW0nOiAnMScsXG4gICc2cmVtJzogJzEnLFxuICAnOHJlbSc6ICcxJyxcbn1cblxuZXhwb3J0IGZ1bmN0aW9uIGJ1aWxkRm9ybWF0T3ZlcnJpZGVTdHlsZShtYXJrczogRm9ybWF0T3ZlcnJpZGVNYXJrcyk6IENTU1Byb3BlcnRpZXMge1xuICBjb25zdCBsaW5lSGVpZ2h0OiBzdHJpbmcgfCB1bmRlZmluZWQgPSBtYXJrcy5mb250U2l6ZSA/IEZPTlRfU0laRV9MSU5FX0hFSUdIVFttYXJrcy5mb250U2l6ZV0gOiB1bmRlZmluZWRcbiAgcmV0dXJuIHtcbiAgICAuLi4obWFya3MuYm9sZCA/IHsgZm9udFdlaWdodDogNzAwIH0gOiB7fSksXG4gICAgLi4uKG1hcmtzLml0YWxpYyA/IHsgZm9udFN0eWxlOiAnaXRhbGljJyB9IDoge30pLFxuICAgIC4uLihtYXJrcy5jb2xvciA/IHsgY29sb3I6IG1hcmtzLmNvbG9yIH0gOiB7fSksXG4gICAgLi4uKG1hcmtzLmZvbnRTaXplID8geyBmb250U2l6ZTogbWFya3MuZm9udFNpemUgfSA6IHt9KSxcbiAgICAuLi4obGluZUhlaWdodCA/IHsgbGluZUhlaWdodCB9IDoge30pLFxuICB9XG59XG4iXSwiZmlsZSI6Ii9hcHAvc3JjL2xpYi9mb3JtYXQtb3ZlcnJpZGVzLnRzIn0=
+export interface FormatOverrideMarks {
+  bold?: boolean
+  italic?: boolean
+  color?: string | null
+  fontSize?: string
+}
+
+export interface FormatOverrideEntry {
+  target: FormatOverrideTarget
+  marks: FormatOverrideMarks
+  updatedAt: string
+}
+
+export interface FormatOverrideSidecar {
+  version: 1
+  overrides: Record<string, FormatOverrideEntry>
+}
+
+export interface FormatOverrideBundle {
+  version: 1
+  scopes: Record<string, FormatOverrideSidecar>
+}
+
+export interface FormatOverrideScope {
+  key: string
+  filePath: string
+}
+
+export type FormatOverrideLookupResult =
+  | { status: 'missing' }
+  | { status: 'applicable'; marks: FormatOverrideMarks }
+  | { status: 'guard-mismatch'; expected: FormatOverrideTarget; actual: FormatOverrideTarget }
+
+export const EMPTY_FORMAT_OVERRIDE_SIDECAR: FormatOverrideSidecar = {
+  version: 1,
+  overrides: {},
+}
+
+export const EMPTY_FORMAT_OVERRIDE_BUNDLE: FormatOverrideBundle = {
+  version: 1,
+  scopes: {},
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === 'object' && !Array.isArray(value)
+}
+
+function isFormatOverrideSourceKind(value: unknown): value is FormatOverrideSourceKind {
+  return value === 'bound-expression' || value === 'content-key' || value === 'content-key-template'
+}
+
+function isFormatOverrideTarget(value: unknown): value is FormatOverrideTarget {
+  if (!isRecord(value)) return false
+  return (
+    typeof value.file === 'string' &&
+    typeof value.tagName === 'string' &&
+    isFormatOverrideSourceKind(value.sourceKind) &&
+    (value.contentKey === undefined || value.contentKey === null || typeof value.contentKey === 'string') &&
+    (
+      value.contentKeyTemplate === undefined ||
+      value.contentKeyTemplate === null ||
+      typeof value.contentKeyTemplate === 'string'
+    ) &&
+    (value.expressionHash === undefined || value.expressionHash === null || typeof value.expressionHash === 'string')
+  )
+}
+
+function isFormatOverrideMarks(value: unknown): value is FormatOverrideMarks {
+  if (!isRecord(value)) return false
+  return (
+    (value.bold === undefined || typeof value.bold === 'boolean') &&
+    (value.italic === undefined || typeof value.italic === 'boolean') &&
+    (value.color === undefined || value.color === null || typeof value.color === 'string') &&
+    (value.fontSize === undefined || typeof value.fontSize === 'string')
+  )
+}
+
+function isFormatOverrideEntry(value: unknown): value is FormatOverrideEntry {
+  if (!isRecord(value)) return false
+  return (
+    isFormatOverrideTarget(value.target) &&
+    isFormatOverrideMarks(value.marks) &&
+    typeof value.updatedAt === 'string'
+  )
+}
+
+function warnMalformedFormatOverrideEntry(scope: string, devId: string): void {
+  if (import.meta.env.DEV) {
+    console.warn('[format-overrides] Ignoring malformed override entry.', { scope, devId })
+  }
+}
+
+function normalizeNullable(value: string | null | undefined): string | null {
+  return value ?? null
+}
+
+function normalizeSourceFile(file: string): string {
+  const normalized = file.replace(/\\/g, '/')
+  const srcIndex = normalized.indexOf('/src/')
+  if (srcIndex !== -1) return normalized.slice(srcIndex + 1)
+  return normalized.replace(/^\/+/, '')
+}
+
+function toSafePagePath(rawPagePath: string): string | null {
+  const segments = rawPagePath.split('/')
+  if (segments.some((segment) => !/^[a-zA-Z0-9_-]+$/.test(segment))) return null
+
+  return segments.map((segment) => segment.toLowerCase()).join('/')
+}
+
+export function deriveFormatOverrideScope(file: string): FormatOverrideScope {
+  // Keep this scope derivation in sync with agents/src/services/FormatOverrideService.ts.
+  // The server writes by target.file and the runtime reads by the same derived scope key.
+  const normalized = normalizeSourceFile(file)
+  const pageMatch = /^src\/pages\/(.+)\.[jt]sx?$/.exec(normalized)
+  if (!pageMatch?.[1]) {
+    return { key: 'shared', filePath: 'format-overrides/shared.json' }
+  }
+
+  const pagePath = toSafePagePath(pageMatch[1])
+  if (!pagePath) {
+    return { key: 'shared', filePath: 'format-overrides/shared.json' }
+  }
+
+  return {
+    key: `pages/${pagePath}`,
+    filePath: `format-overrides/pages/${pagePath}.json`,
+  }
+}
+
+export function targetsMatch(expected: FormatOverrideTarget, actual: FormatOverrideTarget): boolean {
+  return expected.file === actual.file &&
+    expected.tagName === actual.tagName &&
+    expected.sourceKind === actual.sourceKind &&
+    normalizeNullable(expected.contentKey) === normalizeNullable(actual.contentKey) &&
+    normalizeNullable(expected.contentKeyTemplate) === normalizeNullable(actual.contentKeyTemplate) &&
+    normalizeNullable(expected.expressionHash) === normalizeNullable(actual.expressionHash)
+}
+
+export function findApplicableFormatOverride(
+  bundle: FormatOverrideBundle,
+  devId: string,
+  actual: FormatOverrideTarget,
+): FormatOverrideLookupResult {
+  const scope = deriveFormatOverrideScope(actual.file)
+  const sidecar = bundle.scopes[scope.key] ?? EMPTY_FORMAT_OVERRIDE_SIDECAR
+  const entry = sidecar.overrides[devId]
+  if (!entry) return { status: 'missing' }
+  if (!isFormatOverrideEntry(entry)) {
+    warnMalformedFormatOverrideEntry(scope.key, devId)
+    return { status: 'missing' }
+  }
+  if (!targetsMatch(entry.target, actual)) {
+    return { status: 'guard-mismatch', expected: entry.target, actual }
+  }
+  return { status: 'applicable', marks: entry.marks }
+}
+
+const FONT_SIZE_LINE_HEIGHT: Record<string, string> = {
+  '0.75rem': '1rem',
+  '0.875rem': '1.25rem',
+  '1rem': '1.5rem',
+  '1.125rem': '1.75rem',
+  '1.25rem': '1.75rem',
+  '1.5rem': '2rem',
+  '1.875rem': '2.25rem',
+  '2.25rem': '2.5rem',
+  '3rem': '1',
+  '3.75rem': '1',
+  '4.5rem': '1',
+  '6rem': '1',
+  '8rem': '1',
+}
+
+export function buildFormatOverrideStyle(marks: FormatOverrideMarks): CSSProperties {
+  const lineHeight: string | undefined = marks.fontSize ? FONT_SIZE_LINE_HEIGHT[marks.fontSize] : undefined
+  return {
+    ...(marks.bold ? { fontWeight: 700 } : {}),
+    ...(marks.italic ? { fontStyle: 'italic' } : {}),
+    ...(marks.color ? { color: marks.color } : {}),
+    ...(marks.fontSize ? { fontSize: marks.fontSize } : {}),
+    ...(lineHeight ? { lineHeight } : {}),
+  }
+}

@@ -1,4 +1,5 @@
 import { AppState, type AppStateStatus } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../lib/supabase';
 import { getInwardEngine } from '../native/InwardEngineProvider';
 import { serializeReminders } from '../state/appStore';
@@ -63,11 +64,50 @@ export async function pushRecordToSupabase(): Promise<boolean> {
   return false;
 }
 
+/**
+ * One-time repair key. Devices that finished onboarding while the database was
+ * still running the old save_onboarding() were marked "synced" even though the
+ * server silently dropped their email. Those records are no longer pendingSync,
+ * so the normal flush skips them forever. This flag makes us re-push exactly
+ * once per device so the stored email gets backfilled after the SQL fix.
+ */
+export const EMAIL_BACKFILL_KEY = 'inward-onboarding-email-backfill-v1';
+
+async function isEmailBackfillDone(): Promise<boolean> {
+  try {
+    return (await AsyncStorage.getItem(EMAIL_BACKFILL_KEY)) === 'true';
+  } catch {
+    return false; // unreadable storage: treat as not done and re-push once
+  }
+}
+
+async function markEmailBackfillDone(): Promise<void> {
+  try {
+    await AsyncStorage.setItem(EMAIL_BACKFILL_KEY, 'true');
+  } catch {
+    /* non-fatal: worst case we re-push once more later */
+  }
+}
+
 export async function flushPendingOnboarding(): Promise<void> {
   const record = await readOnboardingRecord();
   if (!record) return;
-  if (!record.pendingSync && record.syncedAt) return;
-  await pushRecordToSupabase();
+
+  const hasEmail = Boolean(record.draft.email);
+  const needsBackfill = hasEmail && !(await isEmailBackfillDone());
+
+  if (!record.pendingSync && record.syncedAt) {
+    // Already synced by the normal path. The row may still predate the
+    // save_onboarding() fix, so re-push exactly once to backfill the email.
+    if (!needsBackfill) return;
+    if (await pushRecordToSupabase()) await markEmailBackfillDone();
+    return;
+  }
+
+  // Normal pending push. If it succeeds it also carries the email, so the
+  // one-time backfill is satisfied and must not run again later.
+  const ok = await pushRecordToSupabase();
+  if (ok && hasEmail) await markEmailBackfillDone();
 }
 
 async function persistLocalEngineCopy(draft: OnboardingDraft): Promise<void> {

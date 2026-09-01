@@ -1,5 +1,9 @@
-import { Link as RouterLink, Navigate as RouterNavigate } from "/node_modules/.vite/deps/react-router.js?v=1735ff7d";
+import { Link as RouterLink, Navigate as RouterNavigate } from 'react-router';
+import { Path, Params } from './routes';
+
+// Export standard React Router components with type safety
 export const Link = RouterLink;
 export const Navigate = RouterNavigate;
 
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJtYXBwaW5ncyI6IkFBQUEsU0FBU0EsUUFBUUMsWUFBWUMsWUFBWUMsc0JBQXNCO0FBSXhELGFBQU1ILE9BQU9DO0FBQ2IsYUFBTUMsV0FBV0MiLCJuYW1lcyI6WyJMaW5rIiwiUm91dGVyTGluayIsIk5hdmlnYXRlIiwiUm91dGVyTmF2aWdhdGUiXSwiaWdub3JlTGlzdCI6W10sInNvdXJjZXMiOlsicm91dGVyLnRzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IExpbmsgYXMgUm91dGVyTGluaywgTmF2aWdhdGUgYXMgUm91dGVyTmF2aWdhdGUgfSBmcm9tICdyZWFjdC1yb3V0ZXInO1xuaW1wb3J0IHsgUGF0aCwgUGFyYW1zIH0gZnJvbSAnLi9yb3V0ZXMnO1xuXG4vLyBFeHBvcnQgc3RhbmRhcmQgUmVhY3QgUm91dGVyIGNvbXBvbmVudHMgd2l0aCB0eXBlIHNhZmV0eVxuZXhwb3J0IGNvbnN0IExpbmsgPSBSb3V0ZXJMaW5rO1xuZXhwb3J0IGNvbnN0IE5hdmlnYXRlID0gUm91dGVyTmF2aWdhdGU7XG5cbi8vIEV4cG9ydCB0eXBlc1xuZXhwb3J0IHR5cGUgeyBQYXRoLCBQYXJhbXMgfTtcbiJdLCJmaWxlIjoiL2FwcC9zcmMvcm91dGVyLnRzIn0=
+// Export types
+export type { Path, Params };

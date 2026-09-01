@@ -78,7 +78,15 @@ export default function OnboardingScreen() {
   const patch = (partial: Partial<OnboardingDraft>) => setDraft((d) => ({ ...d, ...partial }));
 
   const persistStep = (nextStep: number, completed = false) => {
-    void saveOnboardingLocalThenSync(draftRef.current, { step: nextStep, completed });
+    // Normalise the email before it leaves the screen so keyboard autocomplete
+    // can't smuggle a trailing space / capitalisation past the server's format
+    // check (which would make the column fall back to NULL).
+    const current = draftRef.current;
+    const email = current.email ? current.email.trim().toLowerCase() : null;
+    void saveOnboardingLocalThenSync(
+      { ...current, email: email || null },
+      { step: nextStep, completed },
+    );
   };
 
   const canContinue = useMemo(() => {
@@ -110,7 +118,12 @@ export default function OnboardingScreen() {
     if (finishing) return;
     setFinishing(true);
     try {
-      await saveOnboardingLocalThenSync(draftRef.current, { step: 7, completed: true });
+      const current = draftRef.current;
+      const email = current.email ? current.email.trim().toLowerCase() : null;
+      await saveOnboardingLocalThenSync(
+        { ...current, email: email || null },
+        { step: 7, completed: true },
+      );
       try {
         await saveCheckin({
           mood: draft.firstMood,
