@@ -16,9 +16,23 @@ export function WritingLineInput({
   onChangeText,
   multiline = true,
   numberOfLines = 2,
+  onFocus,
+  onBlur,
   ...props
 }: Props) {
   const [focused, setFocused] = useState(false);
+
+  // Compose rather than let a caller's handler replace ours: spreading
+  // {...props} after onFocus/onBlur would silently disable the focus underline
+  // for any caller that passes its own handler.
+  const handleFocus: TextInputProps['onFocus'] = (e) => {
+    setFocused(true);
+    onFocus?.(e);
+  };
+  const handleBlur: TextInputProps['onBlur'] = (e) => {
+    setFocused(false);
+    onBlur?.(e);
+  };
   return (
     <View style={styles.container}>
       {placeholder ? (
@@ -31,9 +45,9 @@ export function WritingLineInput({
           multiline={multiline}
           numberOfLines={numberOfLines}
           textAlignVertical="top"
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
           {...props}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
         />
       ) : (
         <TextInput
@@ -43,9 +57,9 @@ export function WritingLineInput({
           multiline={multiline}
           numberOfLines={numberOfLines}
           textAlignVertical="top"
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
           {...props}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
         />
       )}
     </View>

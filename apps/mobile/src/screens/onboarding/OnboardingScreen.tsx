@@ -21,7 +21,17 @@ import { PillSlider } from '../../design-system/PillSlider';
 import { WritingLineInput } from '../../design-system/WritingLineInput';
 import { setSecureFlag } from '../../native/secureFlag';
 import { useSaveCheckin } from '../../hooks/useCheckins';
-import { emptyDraft, isValidEmail, type OnboardingDraft } from '../../onboarding/types';
+import { useProfile } from '../../hooks/useProfile';
+import {
+  describeEmailProblem,
+  describeNameProblem,
+  emptyDraft,
+  hasEmailShape,
+  isValidEmail,
+  isValidName,
+  NAME_MAX_LENGTH,
+  type OnboardingDraft,
+} from '../../onboarding/types';
 import { ONBOARDING_FLAG_KEY, readOnboardingRecord } from '../../onboarding/store';
 import { saveOnboardingLocalThenSync } from '../../onboarding/sync';
 import {
@@ -52,6 +62,17 @@ const STEP_META: Array<{ title: string; body: string }> = [
   { title: 'Your SWA journey begins now', body: "We're here to support you, every step of the way." },
 ];
 
+/**
+ * Trim + lowercase the email and collapse whitespace in the name before the
+ * draft leaves the screen, so keyboard autocomplete can't slip a trailing
+ * space past the server's format check (which would store NULL).
+ */
+function normalizeDraft(draft: OnboardingDraft): OnboardingDraft {
+  const email = draft.email ? draft.email.trim().toLowerCase() : null;
+  const displayName = draft.displayName ? draft.displayName.trim().replace(/\s+/g, ' ') : null;
+  return { ...draft, email: email || null, displayName: displayName || null };
+}
+
 function toggleIn(list: string[], id: string): string[] {
   return list.includes(id) ? list.filter((x) => x !== id) : [...list, id];
 }
@@ -59,6 +80,7 @@ function toggleIn(list: string[], id: string): string[] {
 export default function OnboardingScreen() {
   const router = useRouter();
   const { save: saveCheckin } = useSaveCheckin();
+  const { update: updateProfile } = useProfile();
   const [step, setStep] = useState<Step>(0);
   const [draft, setDraft] = useState<OnboardingDraft>(emptyDraft);
   const draftRef = useRef(draft);
@@ -78,11 +100,18 @@ export default function OnboardingScreen() {
   const patch = (partial: Partial<OnboardingDraft>) => setDraft((d) => ({ ...d, ...partial }));
 
   const persistStep = (nextStep: number, completed = false) => {
-    void saveOnboardingLocalThenSync(draftRef.current, { step: nextStep, completed });
+    // Normalise the email before it leaves the screen so keyboard autocomplete
+    // can't smuggle a trailing space / capitalisation past the server's format
+    // check (which would make the column fall back to NULL).
+    void saveOnboardingLocalThenSync(normalizeDraft(draftRef.current), {
+      step: nextStep,
+      completed,
+    });
   };
 
   const canContinue = useMemo(() => {
     if (step === 1) {
+      if (!isValidName(draft.displayName)) return false;
       if (!draft.role || !draft.fieldOfStudy) return false;
       if (draft.role === 'college_student' && !draft.yearOfStudy) return false;
       if (!isValidEmail(draft.email)) return false;
@@ -110,7 +139,17 @@ export default function OnboardingScreen() {
     if (finishing) return;
     setFinishing(true);
     try {
-      await saveOnboardingLocalThenSync(draftRef.current, { step: 7, completed: true });
+      const finalDraft = normalizeDraft(draftRef.current);
+      await saveOnboardingLocalThenSync(finalDraft, { step: 7, completed: true });
+      // Mirror the name into the local engine profile so the home screen can
+      // greet the user even though the questionnaire lives in Supabase.
+      if (finalDraft.displayName) {
+        try {
+          await updateProfile({ displayName: finalDraft.displayName, appLockEnabled: false });
+        } catch (e) {
+          console.warn('Saving display name to local profile failed (non-fatal):', e);
+        }
+      }
       try {
         await saveCheckin({
           mood: draft.firstMood,
@@ -230,6 +269,18 @@ function AboutStep({
   draft: OnboardingDraft;
   patch: (p: Partial<OnboardingDraft>) => void;
 }) {
+  // Validate as the user types, but only *complain* once they've moved on from
+  // the field (or typed something that can no longer become valid). Showing
+  // "missing @" while someone is still on the first keystroke is just noise.
+  const [emailTouched, setEmailTouched] = useState(false);
+
+  const nameProblem = describeNameProblem(draft.displayName);
+  const nameTouched = Boolean(draft.displayName);
+
+  const emailProblem = describeEmailProblem(draft.email);
+  const emailAccepted = !emailProblem && Boolean(draft.email);
+  const showEmailProblem = Boolean(emailProblem) && (emailTouched || hasEmailShape(draft.email));
+
   return (
     <View>
       <EyebrowLabel label="I AM A" />
@@ -277,11 +328,35 @@ function AboutStep({
       ))}
 
       <View style={{ height: spacing.lg }} />
+      <EyebrowLabel label="YOUR NAME" />
+      <Card style={styles.padCard}>
+        <WritingLineInput
+          value={draft.displayName ?? ''}
+          onChangeText={(t) => patch({ displayName: t })}
+          placeholder="What should we call you?"
+          multiline={false}
+          numberOfLines={1}
+          autoCapitalize="words"
+          autoCorrect={false}
+          autoComplete="name"
+          textContentType="givenName"
+          returnKeyType="next"
+          maxLength={NAME_MAX_LENGTH}
+        />
+        {nameTouched && nameProblem ? (
+          <Text style={styles.emailHint}>{nameProblem}</Text>
+        ) : (
+          <Text style={styles.emailNote}>We'll use this to greet you inside the app.</Text>
+        )}
+      </Card>
+
+      <View style={{ height: spacing.lg }} />
       <EyebrowLabel label="YOUR EMAIL" />
       <Card style={styles.padCard}>
         <WritingLineInput
           value={draft.email ?? ''}
           onChangeText={(t) => patch({ email: t })}
+          onBlur={() => setEmailTouched(true)}
           placeholder="you@example.com"
           multiline={false}
           numberOfLines={1}
@@ -291,8 +366,10 @@ function AboutStep({
           autoComplete="email"
           textContentType="emailAddress"
         />
-        {draft.email && !isValidEmail(draft.email) ? (
-          <Text style={styles.emailHint}>Please enter a valid email address.</Text>
+        {showEmailProblem ? (
+          <Text style={styles.emailHint}>{emailProblem}</Text>
+        ) : emailAccepted ? (
+          <Text style={styles.emailOk}>Looks good.</Text>
         ) : (
           <Text style={styles.emailNote}>We'll only use this to keep in touch — never to spam you.</Text>
         )}
@@ -747,6 +824,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Nunito',
     fontSize: 12,
     color: colors.peach,
+    marginTop: spacing.sm,
+  },
+  emailOk: {
+    fontFamily: 'Nunito',
+    fontSize: 12,
+    color: colors.leaf,
     marginTop: spacing.sm,
   },
   emailNote: {

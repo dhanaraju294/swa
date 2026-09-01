@@ -1,34 +1,46 @@
-import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/lib/format-overrides-store.ts");import __vite__cjsImport0_react from "/node_modules/.vite/deps/react.js?v=1735ff7d"; const useSyncExternalStore = __vite__cjsImport0_react["useSyncExternalStore"];
-import initialFormatOverrideBundle from "/@id/__x00__virtual:format-overrides";
-export const FORMAT_OVERRIDES_UPDATE_EVENT = "format-overrides:update";
-export const FORMAT_OVERRIDES_WILL_UPDATE_EVENT = "airo-format-overrides:will-update";
-const listeners = /* @__PURE__ */ new Set();
-let currentBundle = initialFormatOverrideBundle;
-export function getFormatOverrideBundle() {
-  return currentBundle;
-}
-export function subscribeFormatOverrideBundle(listener) {
-  listeners.add(listener);
-  return () => {
-    listeners.delete(listener);
-  };
-}
-export function setFormatOverrideBundle(bundle) {
-  currentBundle = bundle;
-  if (typeof window !== "undefined") {
-    window.dispatchEvent(new CustomEvent(FORMAT_OVERRIDES_WILL_UPDATE_EVENT, {
-      detail: bundle
-    }));
-  }
-  listeners.forEach((listener) => listener());
-}
-export function useFormatOverrideBundle() {
-  return useSyncExternalStore(subscribeFormatOverrideBundle, getFormatOverrideBundle, getFormatOverrideBundle);
-}
-if (import.meta.hot) {
-  import.meta.hot.on(FORMAT_OVERRIDES_UPDATE_EVENT, (bundle) => {
-    setFormatOverrideBundle(bundle);
-  });
+import { useSyncExternalStore } from 'react'
+
+import { EMPTY_FORMAT_OVERRIDE_BUNDLE, type FormatOverrideBundle } from './format-overrides'
+
+// The Airo builder injected this bundle via a `virtual:format-overrides` module.
+// Outside the builder there are no visual overrides, so we start from the empty bundle.
+const initialFormatOverrideBundle: FormatOverrideBundle = EMPTY_FORMAT_OVERRIDE_BUNDLE
+
+export const FORMAT_OVERRIDES_UPDATE_EVENT = 'format-overrides:update'
+export const FORMAT_OVERRIDES_WILL_UPDATE_EVENT = 'airo-format-overrides:will-update'
+
+const listeners = new Set<() => void>()
+let currentBundle: FormatOverrideBundle = initialFormatOverrideBundle
+
+export function getFormatOverrideBundle(): FormatOverrideBundle {
+  return currentBundle
 }
 
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJtYXBwaW5ncyI6IkFBQUEsU0FBU0EsNEJBQTRCO0FBRXJDLE9BQU9DLGlDQUFpQztBQUlqQyxhQUFNQyxnQ0FBZ0M7QUFDdEMsYUFBTUMscUNBQXFDO0FBRWxELE1BQU1DLFlBQVksb0JBQUlDLElBQWdCO0FBQ3RDLElBQUlDLGdCQUFzQ0w7QUFFbkMsZ0JBQVNNLDBCQUFnRDtBQUM5RCxTQUFPRDtBQUNUO0FBRU8sZ0JBQVNFLDhCQUE4QkMsVUFBa0M7QUFDOUVMLFlBQVVNLElBQUlELFFBQVE7QUFDdEIsU0FBTyxNQUFNO0FBQ1hMLGNBQVVPLE9BQU9GLFFBQVE7QUFBQSxFQUMzQjtBQUNGO0FBRU8sZ0JBQVNHLHdCQUF3QkMsUUFBb0M7QUFDMUVQLGtCQUFnQk87QUFDaEIsTUFBSSxPQUFPQyxXQUFXLGFBQWE7QUFDakNBLFdBQU9DLGNBQWMsSUFBSUMsWUFBWWIsb0NBQW9DO0FBQUEsTUFBRWMsUUFBUUo7QUFBQUEsSUFBTyxDQUFDLENBQUM7QUFBQSxFQUM5RjtBQUNBVCxZQUFVYyxRQUFTVCxjQUFhQSxTQUFTLENBQUM7QUFDNUM7QUFFTyxnQkFBU1UsMEJBQWdEO0FBQzlELFNBQU9uQixxQkFDTFEsK0JBQ0FELHlCQUNBQSx1QkFDRjtBQUNGO0FBRUEsSUFBSWEsWUFBWUMsS0FBSztBQUNuQkQsY0FBWUMsSUFBSUMsR0FBR3BCLCtCQUErQixDQUFDVyxXQUFpQztBQUNsRkQsNEJBQXdCQyxNQUFNO0FBQUEsRUFDaEMsQ0FBQztBQUNIIiwibmFtZXMiOlsidXNlU3luY0V4dGVybmFsU3RvcmUiLCJpbml0aWFsRm9ybWF0T3ZlcnJpZGVCdW5kbGUiLCJGT1JNQVRfT1ZFUlJJREVTX1VQREFURV9FVkVOVCIsIkZPUk1BVF9PVkVSUklERVNfV0lMTF9VUERBVEVfRVZFTlQiLCJsaXN0ZW5lcnMiLCJTZXQiLCJjdXJyZW50QnVuZGxlIiwiZ2V0Rm9ybWF0T3ZlcnJpZGVCdW5kbGUiLCJzdWJzY3JpYmVGb3JtYXRPdmVycmlkZUJ1bmRsZSIsImxpc3RlbmVyIiwiYWRkIiwiZGVsZXRlIiwic2V0Rm9ybWF0T3ZlcnJpZGVCdW5kbGUiLCJidW5kbGUiLCJ3aW5kb3ciLCJkaXNwYXRjaEV2ZW50IiwiQ3VzdG9tRXZlbnQiLCJkZXRhaWwiLCJmb3JFYWNoIiwidXNlRm9ybWF0T3ZlcnJpZGVCdW5kbGUiLCJpbXBvcnQiLCJob3QiLCJvbiJdLCJpZ25vcmVMaXN0IjpbXSwic291cmNlcyI6WyJmb3JtYXQtb3ZlcnJpZGVzLXN0b3JlLnRzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IHVzZVN5bmNFeHRlcm5hbFN0b3JlIH0gZnJvbSAncmVhY3QnXG5cbmltcG9ydCBpbml0aWFsRm9ybWF0T3ZlcnJpZGVCdW5kbGUgZnJvbSAndmlydHVhbDpmb3JtYXQtb3ZlcnJpZGVzJ1xuXG5pbXBvcnQgdHlwZSB7IEZvcm1hdE92ZXJyaWRlQnVuZGxlIH0gZnJvbSAnLi9mb3JtYXQtb3ZlcnJpZGVzJ1xuXG5leHBvcnQgY29uc3QgRk9STUFUX09WRVJSSURFU19VUERBVEVfRVZFTlQgPSAnZm9ybWF0LW92ZXJyaWRlczp1cGRhdGUnXG5leHBvcnQgY29uc3QgRk9STUFUX09WRVJSSURFU19XSUxMX1VQREFURV9FVkVOVCA9ICdhaXJvLWZvcm1hdC1vdmVycmlkZXM6d2lsbC11cGRhdGUnXG5cbmNvbnN0IGxpc3RlbmVycyA9IG5ldyBTZXQ8KCkgPT4gdm9pZD4oKVxubGV0IGN1cnJlbnRCdW5kbGU6IEZvcm1hdE92ZXJyaWRlQnVuZGxlID0gaW5pdGlhbEZvcm1hdE92ZXJyaWRlQnVuZGxlXG5cbmV4cG9ydCBmdW5jdGlvbiBnZXRGb3JtYXRPdmVycmlkZUJ1bmRsZSgpOiBGb3JtYXRPdmVycmlkZUJ1bmRsZSB7XG4gIHJldHVybiBjdXJyZW50QnVuZGxlXG59XG5cbmV4cG9ydCBmdW5jdGlvbiBzdWJzY3JpYmVGb3JtYXRPdmVycmlkZUJ1bmRsZShsaXN0ZW5lcjogKCkgPT4gdm9pZCk6ICgpID0+IHZvaWQge1xuICBsaXN0ZW5lcnMuYWRkKGxpc3RlbmVyKVxuICByZXR1cm4gKCkgPT4ge1xuICAgIGxpc3RlbmVycy5kZWxldGUobGlzdGVuZXIpXG4gIH1cbn1cblxuZXhwb3J0IGZ1bmN0aW9uIHNldEZvcm1hdE92ZXJyaWRlQnVuZGxlKGJ1bmRsZTogRm9ybWF0T3ZlcnJpZGVCdW5kbGUpOiB2b2lkIHtcbiAgY3VycmVudEJ1bmRsZSA9IGJ1bmRsZVxuICBpZiAodHlwZW9mIHdpbmRvdyAhPT0gJ3VuZGVmaW5lZCcpIHtcbiAgICB3aW5kb3cuZGlzcGF0Y2hFdmVudChuZXcgQ3VzdG9tRXZlbnQoRk9STUFUX09WRVJSSURFU19XSUxMX1VQREFURV9FVkVOVCwgeyBkZXRhaWw6IGJ1bmRsZSB9KSlcbiAgfVxuICBsaXN0ZW5lcnMuZm9yRWFjaCgobGlzdGVuZXIpID0+IGxpc3RlbmVyKCkpXG59XG5cbmV4cG9ydCBmdW5jdGlvbiB1c2VGb3JtYXRPdmVycmlkZUJ1bmRsZSgpOiBGb3JtYXRPdmVycmlkZUJ1bmRsZSB7XG4gIHJldHVybiB1c2VTeW5jRXh0ZXJuYWxTdG9yZShcbiAgICBzdWJzY3JpYmVGb3JtYXRPdmVycmlkZUJ1bmRsZSxcbiAgICBnZXRGb3JtYXRPdmVycmlkZUJ1bmRsZSxcbiAgICBnZXRGb3JtYXRPdmVycmlkZUJ1bmRsZSxcbiAgKVxufVxuXG5pZiAoaW1wb3J0Lm1ldGEuaG90KSB7XG4gIGltcG9ydC5tZXRhLmhvdC5vbihGT1JNQVRfT1ZFUlJJREVTX1VQREFURV9FVkVOVCwgKGJ1bmRsZTogRm9ybWF0T3ZlcnJpZGVCdW5kbGUpID0+IHtcbiAgICBzZXRGb3JtYXRPdmVycmlkZUJ1bmRsZShidW5kbGUpXG4gIH0pXG59XG4iXSwiZmlsZSI6Ii9hcHAvc3JjL2xpYi9mb3JtYXQtb3ZlcnJpZGVzLXN0b3JlLnRzIn0=
+export function subscribeFormatOverrideBundle(listener: () => void): () => void {
+  listeners.add(listener)
+  return () => {
+    listeners.delete(listener)
+  }
+}
+
+export function setFormatOverrideBundle(bundle: FormatOverrideBundle): void {
+  currentBundle = bundle
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent(FORMAT_OVERRIDES_WILL_UPDATE_EVENT, { detail: bundle }))
+  }
+  listeners.forEach((listener) => listener())
+}
+
+export function useFormatOverrideBundle(): FormatOverrideBundle {
+  return useSyncExternalStore(
+    subscribeFormatOverrideBundle,
+    getFormatOverrideBundle,
+    getFormatOverrideBundle,
+  )
+}
+
+if (import.meta.hot) {
+  import.meta.hot.on(FORMAT_OVERRIDES_UPDATE_EVENT, (bundle: FormatOverrideBundle) => {
+    setFormatOverrideBundle(bundle)
+  })
+}

@@ -12,7 +12,70 @@ export function isValidEmail(value: string | null | undefined): boolean {
   return Boolean(value && EMAIL_REGEX.test(value.trim()));
 }
 
+/**
+ * Human-readable reason an email is not acceptable, or null when it is valid.
+ * Mirrors the server-side check in save_onboarding() so the user is told what
+ * is wrong *before* the row is written and the column silently falls back to
+ * NULL. Kept deliberately specific: "Please enter a valid email" does not tell
+ * someone who typed "name@gmail" what to do next.
+ */
+export function describeEmailProblem(raw: string | null | undefined): string | null {
+  const value = (raw ?? '').trim();
+
+  if (!value) return 'Please enter your email address.';
+  if (/\s/.test(value)) return 'Email addresses cannot contain spaces.';
+
+  const atCount = (value.match(/@/g) || []).length;
+  if (atCount === 0) return 'Email is missing the “@” sign.';
+  if (atCount > 1) return 'Email should contain only one “@” sign.';
+
+  const [local, domain] = value.split('@');
+  if (!local) return 'Please add the part before the “@”.';
+  if (!domain) return 'Please add the part after the “@”, like gmail.com.';
+  if (!domain.includes('.')) return 'Domain needs a dot, like gmail.com.';
+  if (domain.startsWith('.') || domain.endsWith('.')) return 'Domain cannot start or end with a dot.';
+  if (domain.includes('..') || local.includes('..')) return 'Email cannot contain two dots in a row.';
+
+  const tld = domain.split('.').pop() ?? '';
+  if (tld.length < 2) return 'Domain ending looks incomplete, like .com.';
+
+  // Final guard: matches the regex used by the app and the database.
+  if (!EMAIL_REGEX.test(value)) return 'Please enter a valid email address.';
+
+  return null;
+}
+
+export const NAME_MAX_LENGTH = 40;
+
+/**
+ * True once the input looks like an attempted address (contains "@" or a dot
+ * after some text), which is when it becomes useful to surface a problem even
+ * if the field has not been blurred yet.
+ */
+export function hasEmailShape(raw: string | null | undefined): boolean {
+  const value = (raw ?? '').trim();
+  return value.includes('@') || /\w\.\w/.test(value);
+}
+
+/** Reason the display name is unusable, or null when it is fine. */
+export function describeNameProblem(raw: string | null | undefined): string | null {
+  const value = (raw ?? '').trim();
+  if (!value) return 'Please enter your name.';
+  if (value.length < 2) return 'Name is a bit short.';
+  if (value.length > NAME_MAX_LENGTH) return `Please keep it under ${NAME_MAX_LENGTH} characters.`;
+  // Allow letters (any script), spaces, apostrophes, hyphens and dots.
+  if (!/^[\p{L}\p{M}][\p{L}\p{M}\s'.-]*$/u.test(value)) {
+    return 'Please use letters only — no numbers or symbols.';
+  }
+  return null;
+}
+
+export function isValidName(value: string | null | undefined): boolean {
+  return describeNameProblem(value) === null;
+}
+
 export type OnboardingDraft = {
+  displayName: string | null;
   email: string | null;
   role: Role | null;
   yearOfStudy: YearOfStudy | null;
@@ -41,6 +104,7 @@ export type OnboardingRecord = {
 
 export function emptyDraft(): OnboardingDraft {
   return {
+    displayName: null,
     email: null,
     role: null,
     yearOfStudy: null,
@@ -64,6 +128,7 @@ export function toRpcProfile(
   opts: { step: number; completed: boolean },
 ): Record<string, unknown> {
   return {
+    display_name: draft.displayName ? draft.displayName.trim() : null,
     email: draft.email ? draft.email.trim().toLowerCase() : null,
     role: draft.role,
     year_of_study: draft.role === 'college_student' ? draft.yearOfStudy : null,
