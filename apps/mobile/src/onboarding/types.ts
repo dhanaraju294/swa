@@ -6,7 +6,14 @@ export type ExperienceLength = '1_2_min' | '3_5_min' | '5_10_min';
 
 export type ReflectFrequency = 'every_day' | 'few_times_a_week' | 'when_i_need_it';
 
+export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+export function isValidEmail(value: string | null | undefined): boolean {
+  return Boolean(value && EMAIL_REGEX.test(value.trim()));
+}
+
 export type OnboardingDraft = {
+  email: string | null;
   role: Role | null;
   yearOfStudy: YearOfStudy | null;
   fieldOfStudy: string | null;
@@ -34,6 +41,7 @@ export type OnboardingRecord = {
 
 export function emptyDraft(): OnboardingDraft {
   return {
+    email: null,
     role: null,
     yearOfStudy: null,
     fieldOfStudy: null,
@@ -56,6 +64,7 @@ export function toRpcProfile(
   opts: { step: number; completed: boolean },
 ): Record<string, unknown> {
   return {
+    email: draft.email ? draft.email.trim().toLowerCase() : null,
     role: draft.role,
     year_of_study: draft.role === 'college_student' ? draft.yearOfStudy : null,
     field_of_study: draft.fieldOfStudy,

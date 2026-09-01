@@ -1,80 +1,27 @@
--- SWA onboarding dump only. No Auth. No journal / check-in tables.
--- Run this in the Supabase SQL editor.
--- The mobile app calls save_onboarding(uuid, jsonb) with the anon key only.
--- Never grant table access to anon; never put the service_role key in the app.
+-- Migration: add email collection to onboarding.
+-- Run this ONCE in the Supabase SQL editor on the existing database
+-- (the one already created from the original onboarding dump).
 
-create extension if not exists "pgcrypto";
+-- 1) Add the column + format guard + index
+alter table public.onboarding_profiles
+  add column if not exists email text;
 
-create table if not exists public.onboarding_profiles (
-  id uuid primary key default gen_random_uuid(),
-  device_id uuid not null unique,
+alter table public.onboarding_profiles
+  drop constraint if exists onboarding_profiles_email_format;
 
-  display_name text,
-  email text,
-
-  -- screen 2
-  role text check (role in ('college_student', 'working_professional')),
-  year_of_study text check (
-    year_of_study in ('1st_year', '2nd_year', '3rd_year', '4th_year', 'postgraduate')
-  ),
-  field_of_study text,
-
-  -- screens 3–4 (slugs, not labels)
-  goals text[] not null default '{}',
-  challenges text[] not null default '{}',
-
-  -- screen 5
-  experience_length text check (
-    experience_length in ('1_2_min', '3_5_min', '5_10_min')
-  ),
-  reflect_frequency text check (
-    reflect_frequency in ('every_day', 'few_times_a_week', 'when_i_need_it')
-  ),
-
-  -- screen 6
-  morning_checkin_time time,
-  evening_checkin_time time,
-
-  onboarding_step smallint not null default 1
-    check (onboarding_step between 1 and 8),
-  completed_at timestamptz,
-
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now(),
-
-  constraint onboarding_profiles_email_format check (
+alter table public.onboarding_profiles
+  add constraint onboarding_profiles_email_format check (
     email is null
     or email ~* '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]{2,}$'
-  )
-);
-
-create index if not exists onboarding_profiles_completed_idx
-  on public.onboarding_profiles (completed_at);
+  );
 
 create index if not exists onboarding_profiles_email_idx
   on public.onboarding_profiles (email);
 
-create or replace function public.set_onboarding_updated_at()
-returns trigger
-language plpgsql
-as $$
-begin
-  new.updated_at = now();
-  return new;
-end;
-$$;
+comment on column public.onboarding_profiles.email is
+  'User email collected on the About You onboarding screen (stored lowercase).';
 
-drop trigger if exists trg_onboarding_updated_at on public.onboarding_profiles;
-create trigger trg_onboarding_updated_at
-before update on public.onboarding_profiles
-for each row execute function public.set_onboarding_updated_at();
-
--- Lock the table: no direct insert/select/update/delete from the anon key
-alter table public.onboarding_profiles enable row level security;
-
-revoke all on public.onboarding_profiles from anon, authenticated;
-
--- App upserts through this function only (device_id is the key)
+-- 2) Replace the RPC so the app can write the email
 create or replace function public.save_onboarding(
   p_device_id uuid,
   p_profile jsonb
@@ -147,12 +94,6 @@ begin
 end;
 $$;
 
+-- create or replace keeps existing grants, but re-assert them for safety
 revoke all on function public.save_onboarding(uuid, jsonb) from public;
 grant execute on function public.save_onboarding(uuid, jsonb) to anon;
-
-comment on column public.onboarding_profiles.email is
-  'User email collected on the About You onboarding screen (stored lowercase).';
-comment on column public.onboarding_profiles.goals is
-  'confidence, communication, procrastination, focus, relationships, emotional_awareness, career_clarity, self_understanding';
-comment on column public.onboarding_profiles.challenges is
-  'academic_pressure, difficulty_focusing, procrastination, confidence, communication, relationships, career_uncertainty, understanding_emotions, i_dont_know_yet';

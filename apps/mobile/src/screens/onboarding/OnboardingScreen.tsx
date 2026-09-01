@@ -21,7 +21,7 @@ import { PillSlider } from '../../design-system/PillSlider';
 import { WritingLineInput } from '../../design-system/WritingLineInput';
 import { setSecureFlag } from '../../native/secureFlag';
 import { useSaveCheckin } from '../../hooks/useCheckins';
-import { emptyDraft, type OnboardingDraft } from '../../onboarding/types';
+import { emptyDraft, isValidEmail, type OnboardingDraft } from '../../onboarding/types';
 import { ONBOARDING_FLAG_KEY, readOnboardingRecord } from '../../onboarding/store';
 import { saveOnboardingLocalThenSync } from '../../onboarding/sync';
 import {
@@ -85,6 +85,7 @@ export default function OnboardingScreen() {
     if (step === 1) {
       if (!draft.role || !draft.fieldOfStudy) return false;
       if (draft.role === 'college_student' && !draft.yearOfStudy) return false;
+      if (!isValidEmail(draft.email)) return false;
       return true;
     }
     if (step === 2) return draft.goals.length > 0;
@@ -274,6 +275,28 @@ function AboutStep({
           onPress={() => patch({ fieldOfStudy: f })}
         />
       ))}
+
+      <View style={{ height: spacing.lg }} />
+      <EyebrowLabel label="YOUR EMAIL" />
+      <Card style={styles.padCard}>
+        <WritingLineInput
+          value={draft.email ?? ''}
+          onChangeText={(t) => patch({ email: t })}
+          placeholder="you@example.com"
+          multiline={false}
+          numberOfLines={1}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
+          autoComplete="email"
+          textContentType="emailAddress"
+        />
+        {draft.email && !isValidEmail(draft.email) ? (
+          <Text style={styles.emailHint}>Please enter a valid email address.</Text>
+        ) : (
+          <Text style={styles.emailNote}>We'll only use this to keep in touch — never to spam you.</Text>
+        )}
+      </Card>
     </View>
   );
 }
@@ -719,6 +742,18 @@ const styles = StyleSheet.create({
   padCard: {
     padding: spacing.lg,
     marginBottom: spacing.md,
+  },
+  emailHint: {
+    fontFamily: 'Nunito',
+    fontSize: 12,
+    color: colors.peach,
+    marginTop: spacing.sm,
+  },
+  emailNote: {
+    fontFamily: 'Nunito',
+    fontSize: 12,
+    color: colors.ghost,
+    marginTop: spacing.sm,
   },
   fieldLabel: {
     fontFamily: 'Nunito',
