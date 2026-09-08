@@ -1,0 +1,11 @@
+{
+  "rule_weight": 0.60,
+  "ml_weight": 0.40,
+  "cold_start_rule_weight": 0.80,
+  "cold_start_ml_weight": 0.20,
+  "cold_start_evidence_threshold": 3,
+  "prediction_minimum": 0.0,
+  "prediction_maximum": 1.0,
+  "invalid_prediction_action": "fallback",
+  "recommendation_version": "1.0.0"
+}

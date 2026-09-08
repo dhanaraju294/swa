@@ -1,0 +1,16 @@
+[
+  {
+    "model_name": "linear_regression",
+    "version": "swa_ml_baseline_v1",
+    "artifact_path": "artifacts\\ml_baseline\\swa_ml_baseline_v1.joblib",
+    "dataset_version": "8.0.0",
+    "metrics": {
+      "mae": 0.03528057357333616,
+      "mse": 0.0018915200461831886,
+      "rmse": 0.04349160891693004,
+      "r2": 0.7487557186345741
+    },
+    "status": "selected",
+    "created_at": "2026-08-21T19:02:27.672351+00:00"
+  }
+]

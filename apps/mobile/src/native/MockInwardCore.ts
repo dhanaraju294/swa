@@ -1,0 +1,317 @@
+// In-memory JS fallback engine for Expo Go / web previews and UI development.
+// It mirrors the shape and semantics of the Rust `CoreEngine` but keeps all
+// data in memory (intentionally not persisted) so previews never crash and
+// never leave test data behind on a real device.
+import type {
+  AppSettings,
+  AppSettingsInput,
+  AwarenessDimensionScore,
+  Badge,
+  Checkin,
+  CheckinInput,
+  JournalDay,
+  JournalProgress,
+  OnTheSpotEntry,
+  OnTheSpotInput,
+  Profile,
+  ProfileInput,
+  Reflection,
+  Streak,
+} from './generated/inward_core';
+import type { InwardEngine } from './InwardEngine';
+import { seededJournalDay } from './seedContent';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+function nowIso(): string {
+  return new Date().toISOString();
+}
+
+function newId(): string {
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function isoToday(): string {
+  return nowIso().slice(0, 10);
+}
+
+const MOCK_STORE_KEY = 'inward-mock-engine-v2';
+
+type PersistedMock = {
+  checkins: Checkin[];
+  onTheSpot: OnTheSpotEntry[];
+  reflections: Reflection[];
+  progress: Record<string, JournalProgress>;
+  streak: Streak;
+  profile: Profile;
+  settings: AppSettings;
+  badges: Badge[];
+};
+
+export class MockCoreEngine implements InwardEngine {
+  private checkins: Checkin[] = [];
+  private onTheSpot: OnTheSpotEntry[] = [];
+  private reflections: Reflection[] = [];
+  private progress: Record<string, JournalProgress> = {};
+  private streak: Streak = { currentStreak: 0, longestStreak: 0, lastActiveDate: undefined };
+  private profile: Profile = { displayName: undefined, appLockEnabled: false, createdAt: nowIso() };
+  private settings: AppSettings = { theme: 'default', reminderTime: undefined, exportFormatPref: 'json' };
+  private badges: Badge[] = [];
+
+  private persistTimer: ReturnType<typeof setTimeout> | null = null;
+
+  private schedulePersist(): void {
+    if (this.persistTimer) clearTimeout(this.persistTimer);
+    this.persistTimer = setTimeout(() => {
+      this.persist().catch(() => undefined);
+    }, 40);
+  }
+
+  private async persist(): Promise<void> {
+    const payload: PersistedMock = {
+      checkins: this.checkins,
+      onTheSpot: this.onTheSpot,
+      reflections: this.reflections,
+      progress: this.progress,
+      streak: this.streak,
+      profile: this.profile,
+      settings: this.settings,
+      badges: this.badges,
+    };
+    await AsyncStorage.setItem(MOCK_STORE_KEY, JSON.stringify(payload));
+  }
+
+  async initialize(_documentsDir: string): Promise<void> {
+    try {
+      const raw = await AsyncStorage.getItem(MOCK_STORE_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw) as PersistedMock;
+      this.checkins = saved.checkins ?? [];
+      this.onTheSpot = saved.onTheSpot ?? [];
+      this.reflections = saved.reflections ?? [];
+      this.progress = saved.progress ?? {};
+      this.streak = saved.streak ?? this.streak;
+      this.profile = saved.profile ?? this.profile;
+      this.settings = saved.settings ?? this.settings;
+      this.badges = saved.badges ?? [];
+    } catch {
+      // Ignore corrupt preview storage and start clean.
+    }
+  }
+
+  async saveCheckin(input: CheckinInput): Promise<Checkin> {
+    if (input.mood < 1 || input.mood > 5) {
+      throw new Error(`mood must be 1-5, got ${input.mood}`);
+    }
+    for (const field of ['energy', 'stress', 'confidence'] as const) {
+      const value = input[field];
+      if (value < 0 || value > 100) {
+        throw new Error(`${field} must be 0-100, got ${value}`);
+      }
+    }
+    if (input.sleep < 0 || input.sleep > 5) {
+      throw new Error(`sleep must be 0-5, got ${input.sleep}`);
+    }
+    const checkin: Checkin = { id: newId(), createdAt: nowIso(), ...input };
+    this.checkins.push(checkin);
+    // Showing up for a check-in counts toward the streak.
+    this.recordActivity();
+    this.schedulePersist();
+    return checkin;
+  }
+
+  async listCheckins(fromIso: string, toIso: string): Promise<Checkin[]> {
+    return this.checkins
+      .filter((c) => c.createdAt >= fromIso && c.createdAt <= toIso)
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  }
+
+  async latestCheckin(): Promise<Checkin | null> {
+    if (this.checkins.length === 0) return null;
+    return [...this.checkins].sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
+  }
+
+  async saveOnTheSpot(input: OnTheSpotInput): Promise<OnTheSpotEntry> {
+    if (!input.feeling.trim()) {
+      throw new Error('feeling must not be empty');
+    }
+    if (input.intensity < 1 || input.intensity > 5) {
+      throw new Error(`intensity must be 1-5, got ${input.intensity}`);
+    }
+    const entry: OnTheSpotEntry = { id: newId(), createdAt: nowIso(), ...input };
+    this.onTheSpot.push(entry);
+    // An on-the-spot reflection also counts as showing up today.
+    this.recordActivity();
+    this.schedulePersist();
+    return entry;
+  }
+
+  async listOnTheSpot(limit: number): Promise<OnTheSpotEntry[]> {
+    return [...this.onTheSpot]
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+      .slice(0, limit);
+  }
+
+  async getJournalDay(journalId: string, day: number): Promise<JournalDay> {
+    return seededJournalDay(journalId, day);
+  }
+
+  async getJournalProgress(journalId: string): Promise<JournalProgress> {
+    return (
+      this.progress[journalId] ?? {
+        journalId,
+        currentDay: 1,
+        completedDays: [],
+        updatedAt: nowIso(),
+      }
+    );
+  }
+
+  async completeJournalDay(journalId: string, day: number): Promise<JournalProgress> {
+    const mark = (jid: string) => {
+      const current = this.progress[jid] ?? {
+        journalId: jid,
+        currentDay: 1,
+        completedDays: [] as number[],
+        updatedAt: nowIso(),
+      };
+      const completed = current.completedDays.includes(day)
+        ? current.completedDays
+        : [...current.completedDays, day];
+      this.progress[jid] = {
+        journalId: jid,
+        currentDay: Math.max(current.currentDay, day + 1),
+        completedDays: completed,
+        updatedAt: nowIso(),
+      };
+    };
+
+    mark(journalId);
+    if (day <= 7 && (journalId === 'seven-day' || journalId === 'twenty-one-day')) {
+      const other = journalId === 'seven-day' ? 'twenty-one-day' : 'seven-day';
+      mark(other);
+    }
+    if (journalId === 'daily-path') {
+      const awards: Array<[string, number]> = [
+        ['path-notice', 7],
+        ['path-understand', 14],
+        ['path-choose', 21],
+        ['path-live', 30],
+      ];
+      for (const [key, threshold] of awards) {
+        if (day >= threshold && !this.badges.some((b) => b.key === key)) {
+          this.badges.push({ key, earnedAt: nowIso() });
+        }
+      }
+    }
+
+    // Completing a journal day counts as showing up today (once per day).
+    this.recordActivity();
+    this.schedulePersist();
+    return this.getJournalProgress(journalId);
+  }
+
+  // Mirror Rust: any activity (check-in, on-the-spot, journal day) bumps the
+  // streak using the same same-day / consecutive-day / gap-reset rules.
+  private recordActivity(): void {
+    const today = isoToday();
+    if (this.streak.lastActiveDate === today) {
+      // same-day activity doesn't bump the streak again
+      return;
+    }
+    const bumped = this.streak.currentStreak + 1;
+    this.streak = {
+      currentStreak: bumped,
+      longestStreak: Math.max(this.streak.longestStreak, bumped),
+      lastActiveDate: today,
+    };
+  }
+
+  async saveReflection(
+    journalId: string,
+    day: number,
+    prompt: string,
+    response: string,
+  ): Promise<Reflection> {
+    const reflection: Reflection = {
+      id: newId(),
+      journalId,
+      dayNumber: day,
+      prompt,
+      response,
+      createdAt: nowIso(),
+    };
+    this.reflections.push(reflection);
+    this.schedulePersist();
+    return reflection;
+  }
+
+  async listReflections(journalId?: string): Promise<Reflection[]> {
+    const list = journalId
+      ? this.reflections.filter((r) => r.journalId === journalId)
+      : this.reflections;
+    return [...list].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  }
+
+  async getStreak(): Promise<Streak> {
+    return { ...this.streak };
+  }
+
+  async listBadges(): Promise<Badge[]> {
+    return [...this.badges];
+  }
+
+  async getAwarenessSnapshot(): Promise<AwarenessDimensionScore[]> {
+    return [];
+  }
+
+  async getProfile(): Promise<Profile> {
+    return { ...this.profile };
+  }
+
+  async updateProfile(input: ProfileInput): Promise<Profile> {
+    this.profile = { ...this.profile, ...input };
+    this.schedulePersist();
+    return { ...this.profile };
+  }
+
+  async getSettings(): Promise<AppSettings> {
+    return { ...this.settings };
+  }
+
+  async updateSettings(input: AppSettingsInput): Promise<AppSettings> {
+    this.settings = { ...input };
+    this.schedulePersist();
+    return { ...this.settings };
+  }
+
+  async exportAllDataJson(): Promise<string> {
+    return JSON.stringify(
+      {
+        version: '1.0',
+        profile: this.profile,
+        settings: this.settings,
+        streak: this.streak,
+        checkins: this.checkins,
+        on_the_spot_entries: this.onTheSpot,
+        badges: this.badges,
+        reflections: this.reflections,
+        awareness_scores: [],
+        daily_path: this.progress['daily-path'] ?? null,
+      },
+      null,
+      2,
+    );
+  }
+
+  async deleteAllData(): Promise<void> {
+    this.checkins = [];
+    this.onTheSpot = [];
+    this.reflections = [];
+    this.progress = {};
+    this.badges = [];
+    this.streak = { currentStreak: 0, longestStreak: 0, lastActiveDate: undefined };
+    this.profile = { displayName: undefined, appLockEnabled: false, createdAt: nowIso() };
+    this.settings = { theme: 'default', reminderTime: undefined, exportFormatPref: 'json' };
+    await AsyncStorage.removeItem(MOCK_STORE_KEY).catch(() => undefined);
+  }
+}

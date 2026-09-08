@@ -1,0 +1,68 @@
+{
+  "model_name": "linear_regression",
+  "model_version": "swa_ml_baseline_v1",
+  "dataset_version": "8.0.0",
+  "training_timestamp": "2026-08-31T09:57:11.481038+00:00",
+  "random_seed": 42,
+  "target_column": "recommendation_quality",
+  "feature_count": 39,
+  "training_rows": 7000,
+  "validation_rows": 1500,
+  "test_rows": 1500,
+  "validation_metrics": {
+    "mae": 0.03594067843841362,
+    "mse": 0.0019484773973868163,
+    "rmse": 0.04414156088525661,
+    "r2": 0.7289633466359434
+  },
+  "test_metrics": {
+    "mae": 0.03528057357333616,
+    "mse": 0.0018915200461831886,
+    "rmse": 0.04349160891693004,
+    "r2": 0.7487557186345741
+  },
+  "comparison": [
+    {
+      "model": "dummy_regressor",
+      "validation_metrics": {
+        "mae": 0.06478532468457143,
+        "mse": 0.0071939041985411055,
+        "rmse": 0.08481688628180774,
+        "r2": -0.0006848019942082839
+      },
+      "cv_mae_mean": 0.06584947332224811,
+      "cv_mae_std": 0.0005810354673773077,
+      "training_time_seconds": 0.23458971799982464,
+      "notes": "synthetic development data; validation only"
+    },
+    {
+      "model": "linear_regression",
+      "validation_metrics": {
+        "mae": 0.03594067843841362,
+        "mse": 0.0019484773973868163,
+        "rmse": 0.04414156088525661,
+        "r2": 0.7289633466359434
+      },
+      "cv_mae_mean": 0.04244221662003541,
+      "cv_mae_std": 0.00037954230218995233,
+      "training_time_seconds": 0.4832978239999193,
+      "notes": "synthetic development data; validation only"
+    },
+    {
+      "model": "random_forest_regressor",
+      "validation_metrics": {
+        "mae": 0.039116157166666665,
+        "mse": 0.0023117450711535622,
+        "rmse": 0.04808061013707669,
+        "r2": 0.6784321704954699
+      },
+      "cv_mae_mean": 0.03769298497610995,
+      "cv_mae_std": 0.000431900539333804,
+      "training_time_seconds": 8.957463308999877,
+      "notes": "synthetic development data; validation only"
+    }
+  ],
+  "preprocessing_version": "column_transformer_v1",
+  "synthetic_training_data": true,
+  "artifact_path": "artifacts/ml_repro_b/swa_ml_baseline_v1.joblib"
+}

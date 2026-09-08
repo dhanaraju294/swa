@@ -1,0 +1,12 @@
+{
+  "max_keywords": 20,
+  "minimum_signal_confidence": 0.15,
+  "explicit_goal_boost": 0.20,
+  "phrase_match_weight": 2.0,
+  "keyword_match_weight": 1.0,
+  "confidence_base": 0.25,
+  "synonym_mapping_confidence": 0.55,
+  "negation_window_tokens": 3,
+  "intensity_words": {"slightly": 0.15, "a little": 0.15, "somewhat": 0.25, "quite": 0.55, "very": 0.7, "extremely": 0.95, "cannot stop": 0.85, "can't stop": 0.85},
+  "intensity_default": 0.25
+}

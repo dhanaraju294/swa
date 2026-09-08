@@ -1,0 +1,16 @@
+{
+  "weights": {
+    "completion": 0.35,
+    "usefulness": 0.15,
+    "improvement": 0.25,
+    "difficulty": 0.05,
+    "reflection": 0.10,
+    "consistency": 0.10
+  },
+  "recency_half_life_days": 30.0,
+  "trend_threshold": 0.08,
+  "trend_minimum_observations": 2,
+  "consistency_window_days": 30,
+  "confidence_saturation_evidence": 8.0,
+  "minimum_score": 0.0
+}

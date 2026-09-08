@@ -1,0 +1,10 @@
+{
+  "random_seed": 42,
+  "target_column": "recommendation_quality",
+  "dataset_version": "8.0.0",
+  "model_version": "swa_ml_baseline_v1",
+  "output_directory": "artifacts/ml_baseline",
+  "primary_metric": "mae",
+  "cv_folds": 3,
+  "random_forest_parameters": {"n_estimators": 80, "max_depth": 12, "min_samples_leaf": 2, "n_jobs": -1}
+}

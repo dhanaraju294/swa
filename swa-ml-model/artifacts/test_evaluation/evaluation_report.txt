@@ -1,0 +1,378 @@
+SWA ML EVALUATION REPORT
+Model: swa_ml_baseline_v1
+Dataset: 8.0.0
+Synthetic Data: true
+
+BASELINE
+{
+  "dummy_regressor": {
+    "mae": 0.06587430246780954,
+    "mse": 0.0075343135134801065,
+    "rmse": 0.0868004234637142,
+    "r2": -0.0007576647658744662
+  },
+  "selected_model": {
+    "mae": 0.03528057357333616,
+    "mse": 0.0018915200461831886,
+    "rmse": 0.04349160891693004,
+    "r2": 0.7487557186345741
+  }
+}
+
+TEST PERFORMANCE
+{
+  "mae": 0.03528057357333616,
+  "mse": 0.0018915200461831886,
+  "rmse": 0.04349160891693004,
+  "r2": 0.7487557186345741
+}
+
+CROSS VALIDATION
+{
+  "mae_mean": 0.04244221662003541,
+  "mae_std": 0.00037954230218995233,
+  "mae_min": 0.04190569298352751,
+  "mae_max": 0.04272409200977992,
+  "folds": 3
+}
+
+OVERFITTING
+{
+  "training_mae": 0.03014587456265168,
+  "validation_mae": 0.03594067843841362,
+  "test_mae": 0.03528057357333616,
+  "max_gap": 0.005794803875761943,
+  "flagged": false
+}
+
+GENERALIZATION
+{
+  "cold_start": {
+    "status": "evaluated",
+    "rows": 150,
+    "mae": 0.03493963125355112,
+    "mse": 0.0017702744760032928,
+    "rmse": 0.04207462983798304,
+    "r2": 0.7695808808906686
+  },
+  "difficulty_sensitive": {
+    "status": "evaluated",
+    "rows": 150,
+    "mae": 0.03896746461384832,
+    "mse": 0.002193267013855338,
+    "rmse": 0.046832328725521837,
+    "r2": 0.7290525858082451
+  },
+  "high_engagement": {
+    "status": "evaluated",
+    "rows": 150,
+    "mae": 0.03223733652875121,
+    "mse": 0.0017279625510560248,
+    "rmse": 0.04156876893842329,
+    "r2": 0.7232169865806719
+  },
+  "inconsistent_activity": {
+    "status": "evaluated",
+    "rows": 150,
+    "mae": 0.03684726040997902,
+    "mse": 0.0020798890584283578,
+    "rmse": 0.04560580071030831,
+    "r2": 0.7494972533943562
+  },
+  "low_engagement": {
+    "status": "evaluated",
+    "rows": 150,
+    "mae": 0.039691113328328705,
+    "mse": 0.002221063342997102,
+    "rmse": 0.0471281587057791,
+    "r2": 0.6514233825460068
+  },
+  "multi_goal": {
+    "status": "evaluated",
+    "rows": 150,
+    "mae": 0.032293548628325626,
+    "mse": 0.001532794273114967,
+    "rmse": 0.03915091663186147,
+    "r2": 0.6979397253652289
+  },
+  "rapid_improvement": {
+    "status": "evaluated",
+    "rows": 150,
+    "mae": 0.0350260921667206,
+    "mse": 0.0019277514109637417,
+    "rmse": 0.04390616597886613,
+    "r2": 0.571821369976289
+  },
+  "reflection_preference": {
+    "status": "evaluated",
+    "rows": 150,
+    "mae": 0.03746728879374512,
+    "mse": 0.002078278958682477,
+    "rmse": 0.04558814493574483,
+    "r2": 0.6775219385108223
+  },
+  "short_preference": {
+    "status": "evaluated",
+    "rows": 150,
+    "mae": 0.031807055608575885,
+    "mse": 0.001649561419508373,
+    "rmse": 0.040614793111726825,
+    "r2": 0.7294433957441699
+  },
+  "slow_improvement": {
+    "status": "evaluated",
+    "rows": 150,
+    "mae": 0.03352894440153607,
+    "mse": 0.0017343579572222107,
+    "rmse": 0.041645623506224645,
+    "r2": 0.755959475757224
+  }
+}
+
+COLD START
+{
+  "cold_start_rows": 1440,
+  "rich_rows": 60,
+  "cold_start_metrics": {
+    "status": "evaluated",
+    "rows": 1440,
+    "mae": 0.03553457655293366,
+    "mse": 0.0019140356060077341,
+    "rmse": 0.04374969263900872,
+    "r2": 0.6552747942647055
+  },
+  "rich_metrics": {
+    "status": "evaluated",
+    "rows": 60,
+    "mae": 0.02918450206299621,
+    "mse": 0.0013511466103940904,
+    "rmse": 0.036757946221111025,
+    "r2": 0.7361435684114676
+  }
+}
+
+FEATURE ABLATION
+{
+  "without_nlp": {
+    "mae": 0.04469103043724709,
+    "mse": 0.0031693585573769147,
+    "rmse": 0.056297056382877735,
+    "r2": 0.5790247030454109
+  },
+  "without_behavior": {
+    "mae": 0.035274595830994085,
+    "mse": 0.0018962932391218702,
+    "rmse": 0.043546449213705936,
+    "r2": 0.7481217113809278
+  },
+  "without_mastery": {
+    "mae": 0.03550171735723126,
+    "mse": 0.0019179394118095606,
+    "rmse": 0.04379428515011474,
+    "r2": 0.7452465226605096
+  },
+  "without_exercise_metadata": {
+    "mae": 0.03583065751213021,
+    "mse": 0.0019388605205964602,
+    "rmse": 0.044032493917520274,
+    "r2": 0.7424676417529882
+  }
+}
+
+ERROR ANALYSIS
+[
+  {
+    "user_id": "synthetic_user_001998",
+    "exercise_id": "cg_decision_01",
+    "actual": 0.532914,
+    "predicted": 0.404019850498265,
+    "absolute_error": 0.128894149501735,
+    "difficulty": 4.0,
+    "profile": "inconsistent_activity"
+  },
+  {
+    "user_id": "synthetic_user_001915",
+    "exercise_id": "ei_relationship_02",
+    "actual": 0.305311,
+    "predicted": 0.4202222504674743,
+    "absolute_error": 0.1149112504674743,
+    "difficulty": 4.0,
+    "profile": "difficulty_sensitive"
+  },
+  {
+    "user_id": "synthetic_user_001755",
+    "exercise_id": "co_assert_02",
+    "actual": 0.271045,
+    "predicted": 0.384792170477287,
+    "absolute_error": 0.113747170477287,
+    "difficulty": 4.0,
+    "profile": "difficulty_sensitive"
+  },
+  {
+    "user_id": "synthetic_user_001756",
+    "exercise_id": "rs_review_01",
+    "actual": 0.673692,
+    "predicted": 0.7858666703606989,
+    "absolute_error": 0.11217467036069895,
+    "difficulty": 2.0,
+    "profile": "rapid_improvement"
+  },
+  {
+    "user_id": "synthetic_user_001892",
+    "exercise_id": "cm_feedback_02",
+    "actual": 0.452729,
+    "predicted": 0.34351577732270194,
+    "absolute_error": 0.10921322267729805,
+    "difficulty": 3.0,
+    "profile": "low_engagement"
+  },
+  {
+    "user_id": "synthetic_user_001902",
+    "exercise_id": "co_courage_01",
+    "actual": 0.620612,
+    "predicted": 0.5135558096323315,
+    "absolute_error": 0.10705619036766856,
+    "difficulty": 2.0,
+    "profile": "low_engagement"
+  },
+  {
+    "user_id": "synthetic_user_001753",
+    "exercise_id": "ei_relationship_01",
+    "actual": 0.480423,
+    "predicted": 0.5870507461150773,
+    "absolute_error": 0.10662774611507736,
+    "difficulty": 2.0,
+    "profile": "short_preference"
+  },
+  {
+    "user_id": "synthetic_user_001900",
+    "exercise_id": "cm_integrate_01",
+    "actual": 0.677993,
+    "predicted": 0.7845287691502997,
+    "absolute_error": 0.10653576915029972,
+    "difficulty": 2.0,
+    "profile": "multi_goal"
+  },
+  {
+    "user_id": "synthetic_user_001718",
+    "exercise_id": "ei_empathy_02",
+    "actual": 0.616176,
+    "predicted": 0.5097927231689647,
+    "absolute_error": 0.10638327683103521,
+    "difficulty": 2.0,
+    "profile": "inconsistent_activity"
+  },
+  {
+    "user_id": "synthetic_user_001882",
+    "exercise_id": "ei_regulate_02",
+    "actual": 0.53631,
+    "predicted": 0.43143937083674644,
+    "absolute_error": 0.10487062916325351,
+    "difficulty": 3.0,
+    "profile": "low_engagement"
+  }
+]
+
+AREA PERFORMANCE
+{
+  "Career Clarity / Growth": {
+    "status": "evaluated",
+    "rows": 213,
+    "mae": 0.03579511631469845,
+    "mse": 0.0019405654684203403,
+    "rmse": 0.04405184977297026,
+    "r2": 0.6950871837934349
+  },
+  "Communication": {
+    "status": "evaluated",
+    "rows": 215,
+    "mae": 0.0354742271689518,
+    "mse": 0.0018478374530303268,
+    "rmse": 0.04298647988647508,
+    "r2": 0.7765941533819034
+  },
+  "Confidence": {
+    "status": "evaluated",
+    "rows": 208,
+    "mae": 0.03603667643803594,
+    "mse": 0.001967802308288611,
+    "rmse": 0.044359917812013705,
+    "r2": 0.7514211410929577
+  },
+  "Emotional Intelligence": {
+    "status": "evaluated",
+    "rows": 195,
+    "mae": 0.03209883031713619,
+    "mse": 0.0017029656862887572,
+    "rmse": 0.041267004813637216,
+    "r2": 0.7161330978187952
+  },
+  "Focus / Procrastination": {
+    "status": "evaluated",
+    "rows": 220,
+    "mae": 0.03691120833762352,
+    "mse": 0.002056465443971283,
+    "rmse": 0.045348268367946344,
+    "r2": 0.6824988579985677
+  },
+  "Relationships / Social Awareness": {
+    "status": "evaluated",
+    "rows": 236,
+    "mae": 0.03638576899020187,
+    "mse": 0.0020024731297384303,
+    "rmse": 0.044749001438450335,
+    "r2": 0.8060493045251383
+  },
+  "Self-Awareness": {
+    "status": "evaluated",
+    "rows": 213,
+    "mae": 0.03383630899873706,
+    "mse": 0.0016913959007391524,
+    "rmse": 0.04112658386906397,
+    "r2": 0.7240879257899672
+  }
+}
+
+ROBUSTNESS
+{
+  "checked_variants": 3,
+  "results": [
+    {
+      "changed_feature": "mastery_score",
+      "baseline": 0.5450028116923794,
+      "variant_prediction": 0.5511615759358739,
+      "delta": 0.006158764243494486
+    },
+    {
+      "changed_feature": "activity_rate",
+      "baseline": 0.5450028116923794,
+      "variant_prediction": 0.5424312442596244,
+      "delta": -0.0025715674327549953
+    },
+    {
+      "changed_feature": "exercise_difficulty",
+      "baseline": 0.5450028116923794,
+      "variant_prediction": 0.5767964963645626,
+      "delta": 0.03179368467218324
+    }
+  ],
+  "status": "controlled predictions evaluated"
+}
+
+FINAL STATUS
+{
+  "status": "EXPERIMENTALLY_READY",
+  "checks": {
+    "beats_dummy": true,
+    "r2_threshold": true,
+    "mae_threshold": true,
+    "group_gap": true,
+    "predictions_in_range": true,
+    "not_constant": true
+  },
+  "group_mae_gap": 0.00788405771975282,
+  "note": "Synthetic-data evaluation only; never production readiness."
+}
+
+Evaluation is based on synthetic development data.
+Real-world validation requires actual SWA interaction data.

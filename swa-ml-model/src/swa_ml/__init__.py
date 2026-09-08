@@ -1,0 +1,1 @@
+"""Compatibility namespace for the Phase 11 demonstration command."""

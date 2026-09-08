@@ -1,0 +1,6906 @@
+[
+  {
+    "feature": "categorical__x0_synthetic_user_001335",
+    "importance": -0.06873631094719206
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000256",
+    "importance": -0.061149892184301356
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000603",
+    "importance": 0.05711400333284025
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000046",
+    "importance": 0.055391394498538686
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000420",
+    "importance": -0.05503118879517151
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000766",
+    "importance": -0.05456729937803415
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001191",
+    "importance": -0.05324859062761234
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000417",
+    "importance": -0.05233582818697033
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001204",
+    "importance": 0.05232247052101653
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000636",
+    "importance": 0.05225067170077024
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000695",
+    "importance": 0.05172229142935643
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001082",
+    "importance": 0.051678064465253574
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000914",
+    "importance": -0.05137422967310571
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000122",
+    "importance": -0.05049712332582926
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000664",
+    "importance": 0.04969371107280315
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000920",
+    "importance": -0.04966219223553398
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001267",
+    "importance": -0.04933314899004375
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000197",
+    "importance": -0.049258149880550856
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000477",
+    "importance": 0.04912507151519025
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000372",
+    "importance": -0.04908560937838043
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000102",
+    "importance": -0.04896375932072373
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001132",
+    "importance": -0.048571395960243326
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001176",
+    "importance": 0.04840997484471116
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001165",
+    "importance": -0.04785383283028843
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000117",
+    "importance": -0.0477220500040402
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000212",
+    "importance": 0.04758262391437561
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000822",
+    "importance": -0.04754146823790423
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000785",
+    "importance": -0.04744845424179059
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000748",
+    "importance": 0.04728464253480885
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000167",
+    "importance": 0.04697286332111801
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001182",
+    "importance": 0.04650356109485083
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001358",
+    "importance": -0.04638039950402922
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000984",
+    "importance": -0.04619836848586265
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000308",
+    "importance": 0.04541744847542254
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000979",
+    "importance": -0.04538577224407309
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000316",
+    "importance": 0.04530472385468909
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000837",
+    "importance": 0.04522988226383755
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000804",
+    "importance": -0.044611975853256894
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001222",
+    "importance": 0.04458876570758961
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000657",
+    "importance": -0.04424622305149908
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001386",
+    "importance": -0.04420064564329312
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000830",
+    "importance": 0.043964614214726874
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001012",
+    "importance": -0.04380325877031455
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000696",
+    "importance": -0.0436263532937521
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001102",
+    "importance": -0.04347417184248905
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001317",
+    "importance": -0.04294333876616152
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001092",
+    "importance": 0.042601386200467314
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000266",
+    "importance": -0.04254162119430153
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000142",
+    "importance": -0.042452197721201235
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000528",
+    "importance": 0.04183134633548264
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000967",
+    "importance": -0.04179024196031563
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001034",
+    "importance": -0.04161780950805812
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000666",
+    "importance": 0.04151900477874963
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000353",
+    "importance": -0.04139190485864914
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000634",
+    "importance": 0.04107913435781884
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000447",
+    "importance": -0.040852307204283546
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000433",
+    "importance": -0.040816503771340676
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000279",
+    "importance": -0.040816447783481744
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000189",
+    "importance": -0.04078174591930067
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000661",
+    "importance": -0.04077272476463751
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001128",
+    "importance": 0.04075873955960026
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000111",
+    "importance": 0.040447026683390355
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000414",
+    "importance": 0.04036229872702819
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000912",
+    "importance": -0.04017658308747435
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000649",
+    "importance": 0.039939429843856525
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000296",
+    "importance": -0.03979301073340749
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001094",
+    "importance": 0.03955736304111674
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001108",
+    "importance": 0.03954990488776676
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001309",
+    "importance": -0.039524122525641234
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000454",
+    "importance": -0.03944804216366291
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001344",
+    "importance": 0.03921537611636726
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001045",
+    "importance": -0.039004465840281714
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001209",
+    "importance": 0.03896729524309912
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000345",
+    "importance": -0.03895267607854092
+  },
+  {
+    "feature": "numeric__x20",
+    "importance": -0.038764753719408775
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000675",
+    "importance": 0.03873222265286279
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000900",
+    "importance": -0.038632142239093614
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000824",
+    "importance": -0.03846105535062312
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000402",
+    "importance": 0.03845640352454422
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001280",
+    "importance": -0.03841840636939777
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000781",
+    "importance": -0.03838068420851108
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000396",
+    "importance": 0.03830290833959722
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000062",
+    "importance": -0.03793432415221436
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000614",
+    "importance": -0.03789538823897309
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001320",
+    "importance": -0.03779463528823287
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000985",
+    "importance": 0.037689278384183504
+  },
+  {
+    "feature": "categorical__x38_meaning",
+    "importance": -0.03757230206312948
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000499",
+    "importance": -0.03743652746806246
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001281",
+    "importance": 0.037430442861239595
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000825",
+    "importance": 0.03741612223550614
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001368",
+    "importance": -0.03726344775187223
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000721",
+    "importance": -0.03695147571877181
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000004",
+    "importance": -0.036799797867604685
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000924",
+    "importance": 0.036794865361061205
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000874",
+    "importance": 0.03669418481828341
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001359",
+    "importance": 0.03664968461327514
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000211",
+    "importance": 0.036520549445927405
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001336",
+    "importance": 0.036184224702600375
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001258",
+    "importance": -0.03614654190658836
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000426",
+    "importance": 0.036127764543327084
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000220",
+    "importance": 0.0360768208011383
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001025",
+    "importance": -0.036072198143522964
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001353",
+    "importance": 0.03596549167394119
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000812",
+    "importance": -0.03595246113883035
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001246",
+    "importance": 0.0359052994329109
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000836",
+    "importance": -0.0358461631126412
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000435",
+    "importance": -0.03577610933949985
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000413",
+    "importance": 0.035774017501142806
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001202",
+    "importance": -0.03565590794467832
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001370",
+    "importance": 0.035631493635217684
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000105",
+    "importance": 0.03562193196173016
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000999",
+    "importance": 0.03561184920571054
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001395",
+    "importance": 0.03559624862985637
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001010",
+    "importance": -0.03558859057530361
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000181",
+    "importance": 0.03542206695814242
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001028",
+    "importance": 0.03536438536649577
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001328",
+    "importance": -0.0353160986916854
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000162",
+    "importance": 0.03489829363086839
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000415",
+    "importance": 0.03486850127710763
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000354",
+    "importance": 0.03476854933310125
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001164",
+    "importance": -0.034685082349278994
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000074",
+    "importance": -0.034659612776365506
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000604",
+    "importance": -0.034613988238875175
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000471",
+    "importance": -0.03446471038160343
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000457",
+    "importance": 0.034342690177016466
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000028",
+    "importance": -0.034170950597600086
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001304",
+    "importance": -0.034139700190465104
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000089",
+    "importance": -0.03401572646293421
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001270",
+    "importance": 0.03397341509141446
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001090",
+    "importance": 0.033904427579850335
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000283",
+    "importance": 0.03389478878811577
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000195",
+    "importance": -0.03387272365167341
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000342",
+    "importance": -0.033854000548085836
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001334",
+    "importance": 0.03385240452365131
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000018",
+    "importance": -0.03377062009365855
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001020",
+    "importance": -0.03370950511197461
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000175",
+    "importance": 0.03362562984308297
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000650",
+    "importance": 0.03350905471806073
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000121",
+    "importance": -0.03331865065806132
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000760",
+    "importance": 0.03321958213033929
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000239",
+    "importance": -0.033178472583483706
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000292",
+    "importance": 0.0331209576897187
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001069",
+    "importance": -0.03303916863515616
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000863",
+    "importance": -0.03302693754265885
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000538",
+    "importance": -0.03295703223271208
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000601",
+    "importance": 0.03286097545235439
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000300",
+    "importance": 0.032777355317293595
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000556",
+    "importance": -0.03267711428807663
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000510",
+    "importance": 0.0324954837215518
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000858",
+    "importance": -0.03249111920075242
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001042",
+    "importance": -0.03247740026070351
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000333",
+    "importance": 0.0324463357463632
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000227",
+    "importance": 0.03243631911189801
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000996",
+    "importance": -0.03233918895333993
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000177",
+    "importance": -0.032331241880729764
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000851",
+    "importance": 0.032253462980948416
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001389",
+    "importance": -0.032197978759783974
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001343",
+    "importance": 0.0321950252158792
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000171",
+    "importance": -0.03210844611479862
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000375",
+    "importance": 0.03195241877845154
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000799",
+    "importance": 0.03194845742281628
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001217",
+    "importance": 0.03192310297591394
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000016",
+    "importance": 0.031914757097086376
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000575",
+    "importance": -0.0317902177973269
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001120",
+    "importance": 0.03177992734057623
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001174",
+    "importance": 0.03176551430632909
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001121",
+    "importance": 0.031593742018173755
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001194",
+    "importance": 0.03159031552654863
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000658",
+    "importance": -0.031556827170815864
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001220",
+    "importance": 0.03148175364786854
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000012",
+    "importance": 0.03147022592736501
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000048",
+    "importance": -0.03133716797412764
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000690",
+    "importance": -0.03127221549041981
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000765",
+    "importance": -0.03116880745939735
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001277",
+    "importance": -0.031137611409620687
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000416",
+    "importance": -0.031116392193331326
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001106",
+    "importance": 0.031078935701312184
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000814",
+    "importance": 0.031078136436226547
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000441",
+    "importance": 0.031004482419063662
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000031",
+    "importance": -0.030953242552648325
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001383",
+    "importance": -0.030920968386746316
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000864",
+    "importance": 0.03089467388311991
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000638",
+    "importance": -0.030860302639272745
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000516",
+    "importance": 0.030827867603566865
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000113",
+    "importance": 0.030823024194738813
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000640",
+    "importance": -0.030707074119489433
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000086",
+    "importance": 0.03068617476409137
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000027",
+    "importance": 0.03062791675106059
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000226",
+    "importance": 0.030625693227311426
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000092",
+    "importance": 0.030361462643321655
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001207",
+    "importance": -0.03034286458401571
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000560",
+    "importance": -0.030320099403468265
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000288",
+    "importance": 0.030192348420530195
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001142",
+    "importance": 0.030143896873689735
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001276",
+    "importance": 0.030137759125563605
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000792",
+    "importance": -0.030104945860701695
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000546",
+    "importance": -0.03004870225019818
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000707",
+    "importance": 0.029979852663850913
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000178",
+    "importance": -0.02990763357150495
+  },
+  {
+    "feature": "categorical__x38_research",
+    "importance": -0.02990549041769458
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001114",
+    "importance": 0.029855539172560935
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000701",
+    "importance": 0.029852465907156747
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000163",
+    "importance": -0.029842591862685473
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000521",
+    "importance": -0.029816227888058405
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000379",
+    "importance": 0.02980554253622889
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001293",
+    "importance": 0.029673858288798097
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001177",
+    "importance": -0.029650622194898908
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001348",
+    "importance": -0.02963147177930628
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001131",
+    "importance": 0.029485626395588643
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000573",
+    "importance": -0.029430621973180426
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000910",
+    "importance": 0.02931902127554612
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000899",
+    "importance": 0.02931528523362329
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000844",
+    "importance": -0.02926998110977795
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000801",
+    "importance": 0.0292040755715617
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000780",
+    "importance": -0.02915436570766508
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000460",
+    "importance": 0.02899421832287818
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000674",
+    "importance": -0.02894941835436138
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000483",
+    "importance": -0.02892998878977388
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000543",
+    "importance": 0.028916476900510617
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001073",
+    "importance": -0.028901037947498775
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000759",
+    "importance": -0.02872900446000427
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000859",
+    "importance": 0.028700507840598178
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000930",
+    "importance": 0.02865524634961145
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000512",
+    "importance": 0.02865328131567649
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000956",
+    "importance": -0.02864263525023039
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000185",
+    "importance": -0.028560404933085193
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000756",
+    "importance": 0.02850793390756432
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000393",
+    "importance": -0.028504571335665228
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000552",
+    "importance": 0.028476869430040585
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000230",
+    "importance": 0.028457553238760525
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000966",
+    "importance": -0.028440792571003674
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000418",
+    "importance": -0.028429320702525875
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000077",
+    "importance": -0.028391766939444122
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000132",
+    "importance": -0.028273618488324787
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000412",
+    "importance": -0.028255911830574312
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000108",
+    "importance": -0.02824004270915102
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000088",
+    "importance": 0.028094368580655546
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000944",
+    "importance": 0.028067496866664623
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000376",
+    "importance": 0.027999484218505878
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000409",
+    "importance": 0.027820122344477363
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000795",
+    "importance": 0.027783163157629243
+  },
+  {
+    "feature": "categorical__x38_time",
+    "importance": -0.02760992788993121
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000015",
+    "importance": 0.027574703830975364
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001038",
+    "importance": 0.02756144617455935
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001308",
+    "importance": -0.02750343439002998
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000344",
+    "importance": -0.027497758108859426
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000983",
+    "importance": -0.027496687974990455
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000430",
+    "importance": -0.027240525811248507
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001153",
+    "importance": -0.027208721449939396
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000194",
+    "importance": 0.027196397469263535
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000203",
+    "importance": 0.027124094671844772
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001179",
+    "importance": -0.027091050002123748
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000334",
+    "importance": 0.027055096299002816
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000605",
+    "importance": -0.026991809648543183
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000744",
+    "importance": 0.026906093397079795
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000829",
+    "importance": 0.02682459421009988
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000832",
+    "importance": -0.026717030496497315
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001310",
+    "importance": 0.026706792095859206
+  },
+  {
+    "feature": "categorical__x38_performance",
+    "importance": -0.026698370769040813
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000784",
+    "importance": 0.026577710821207995
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000791",
+    "importance": 0.026542244274050043
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000886",
+    "importance": -0.02647003856604617
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000377",
+    "importance": 0.026421358992295196
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000192",
+    "importance": 0.02641803503914539
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001041",
+    "importance": 0.026397934158498105
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000244",
+    "importance": -0.02635489696841103
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000988",
+    "importance": 0.02632168044821277
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000061",
+    "importance": -0.026292461293709015
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001256",
+    "importance": -0.026222146307257922
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000878",
+    "importance": 0.026210038327570944
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000668",
+    "importance": 0.02620003596742024
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000110",
+    "importance": -0.026173064538914555
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000738",
+    "importance": 0.026086090124956593
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001399",
+    "importance": 0.02607155288475969
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000969",
+    "importance": -0.026054288319534276
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000157",
+    "importance": 0.026051758698619382
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000501",
+    "importance": -0.02601743467144039
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001251",
+    "importance": 0.02600245469574
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000190",
+    "importance": 0.02599548501074272
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000882",
+    "importance": 0.025951948576096614
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000329",
+    "importance": -0.025946999609100605
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000213",
+    "importance": 0.0259283129388985
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001241",
+    "importance": 0.025855506569957405
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000143",
+    "importance": -0.025831608114147454
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000452",
+    "importance": -0.025799931816334422
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000005",
+    "importance": -0.025785542995020214
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001283",
+    "importance": 0.025782303299434876
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000129",
+    "importance": -0.025746724334711264
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001248",
+    "importance": -0.025743934130109548
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000788",
+    "importance": 0.025734200700298852
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000436",
+    "importance": 0.025685056988717144
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000055",
+    "importance": -0.0256489509135668
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000868",
+    "importance": -0.02563962454681608
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000006",
+    "importance": 0.025623757017278866
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000667",
+    "importance": 0.02561815679836995
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000763",
+    "importance": -0.02559301360356687
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000251",
+    "importance": -0.025465732263888777
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001224",
+    "importance": -0.02541003682764458
+  },
+  {
+    "feature": "categorical__x38_choices",
+    "importance": -0.025392602034310836
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000186",
+    "importance": -0.02535341719195151
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001200",
+    "importance": -0.025253977150448432
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000198",
+    "importance": 0.025226151253201035
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001214",
+    "importance": -0.025157683953908747
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000902",
+    "importance": 0.025088092740465313
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000133",
+    "importance": -0.02507973628060826
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000541",
+    "importance": -0.0250545396751566
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000282",
+    "importance": 0.025052526086790556
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001315",
+    "importance": -0.024974291787182232
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001008",
+    "importance": 0.024958448968717916
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001263",
+    "importance": -0.024955156399066678
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001302",
+    "importance": 0.0249190077843885
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000473",
+    "importance": 0.024918404779189603
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000533",
+    "importance": -0.02490701049698751
+  },
+  {
+    "feature": "categorical__x38_distraction",
+    "importance": 0.02484387114117143
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000776",
+    "importance": -0.024786291606078724
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000592",
+    "importance": -0.024739923954300008
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000187",
+    "importance": -0.024723315714361805
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001016",
+    "importance": -0.024674665650249023
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000840",
+    "importance": -0.024615926031629896
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000176",
+    "importance": 0.024528120540267068
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000576",
+    "importance": 0.024527303034546682
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000938",
+    "importance": 0.024520160795950423
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000362",
+    "importance": -0.024504511348884594
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000659",
+    "importance": 0.024448727222838338
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000484",
+    "importance": 0.02440634847056699
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001299",
+    "importance": 0.024369944986782025
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000367",
+    "importance": -0.024339117217130536
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000343",
+    "importance": 0.02433412054716973
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001192",
+    "importance": 0.02430887605693736
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000318",
+    "importance": 0.0242996013836063
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000758",
+    "importance": 0.024254958934609328
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000953",
+    "importance": 0.024240010013857744
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001307",
+    "importance": -0.024232905641930546
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001139",
+    "importance": 0.02415784923090905
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001294",
+    "importance": 0.024074142122380512
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001339",
+    "importance": -0.024072619113564973
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000734",
+    "importance": 0.024063985108426854
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000049",
+    "importance": -0.02402683012743031
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000242",
+    "importance": 0.023986119715547958
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001223",
+    "importance": -0.02397668026443483
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001065",
+    "importance": -0.023967934935908496
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000427",
+    "importance": -0.023918049490838714
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001337",
+    "importance": -0.023886217967634717
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000459",
+    "importance": -0.02388557829239529
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000716",
+    "importance": 0.023830248301430407
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001158",
+    "importance": 0.02380159770819214
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000087",
+    "importance": -0.023789283679190414
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000986",
+    "importance": 0.023780908505757068
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000578",
+    "importance": -0.02375348096744367
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000761",
+    "importance": -0.02372157738692088
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001301",
+    "importance": -0.0236367020641298
+  },
+  {
+    "feature": "categorical__x38_conditions",
+    "importance": -0.023616546843606184
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000600",
+    "importance": -0.023597601508906295
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001366",
+    "importance": 0.02359633755170872
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000109",
+    "importance": 0.023571826120357704
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000127",
+    "importance": 0.023564060044041796
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001167",
+    "importance": 0.023535224744818194
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001172",
+    "importance": 0.02349589690246693
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000166",
+    "importance": 0.023443805176755934
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000219",
+    "importance": 0.0233803567491406
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000445",
+    "importance": -0.02335113530225121
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000066",
+    "importance": -0.02333978009805355
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000090",
+    "importance": 0.02332827609721148
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001250",
+    "importance": -0.023278877917076092
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000347",
+    "importance": -0.023260098941416965
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000997",
+    "importance": 0.02325688545844851
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000428",
+    "importance": -0.02319618199968642
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000084",
+    "importance": -0.023156945046923227
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000494",
+    "importance": -0.0230544579939335
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000254",
+    "importance": -0.023051648724107754
+  },
+  {
+    "feature": "categorical__x38_rituals",
+    "importance": -0.023007556745048174
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001376",
+    "importance": 0.022970215282719333
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000544",
+    "importance": -0.02287591358734338
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001253",
+    "importance": -0.02284510305919023
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001138",
+    "importance": -0.022680920344496324
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000865",
+    "importance": 0.022637527409843587
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000892",
+    "importance": 0.022537364717621994
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000370",
+    "importance": -0.022472130316462457
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000848",
+    "importance": 0.02245326708852711
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001169",
+    "importance": -0.02244792401189749
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000846",
+    "importance": -0.022438049444396597
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000148",
+    "importance": -0.02236594814369181
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000155",
+    "importance": 0.022326473287301623
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000398",
+    "importance": -0.02230388237869462
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000647",
+    "importance": -0.022284993316838208
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000184",
+    "importance": -0.02223510694572534
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000619",
+    "importance": 0.022163597885352583
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000085",
+    "importance": 0.022154443933551187
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000767",
+    "importance": 0.022144507487474405
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000585",
+    "importance": -0.02207717785120764
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000380",
+    "importance": -0.022068677653875157
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000717",
+    "importance": 0.022023045519580158
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000879",
+    "importance": 0.021994997678485673
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000208",
+    "importance": -0.02197764044135956
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000369",
+    "importance": 0.021934123695165248
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001327",
+    "importance": 0.021928943175023884
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000571",
+    "importance": 0.021897576322032226
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000581",
+    "importance": 0.021877234830678362
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001033",
+    "importance": -0.021863935601278032
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000643",
+    "importance": 0.02181816589768128
+  },
+  {
+    "feature": "numeric__x32",
+    "importance": 0.02180458892969084
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000574",
+    "importance": 0.02179332558006724
+  },
+  {
+    "feature": "categorical__x38_journaling",
+    "importance": 0.021751698547690653
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000209",
+    "importance": -0.021750266119073984
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000628",
+    "importance": -0.021722055022725346
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000606",
+    "importance": -0.021700248963509753
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000718",
+    "importance": 0.021699594425462383
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001372",
+    "importance": -0.021604758552693948
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000069",
+    "importance": -0.02151898380402491
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000580",
+    "importance": 0.021514126095872083
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000536",
+    "importance": -0.021460729559485907
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000702",
+    "importance": 0.02143654500724567
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001166",
+    "importance": -0.021393945348837057
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000639",
+    "importance": 0.02139078084911736
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000929",
+    "importance": -0.02138488997236073
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000854",
+    "importance": 0.021354562690965903
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000450",
+    "importance": -0.021326645514052025
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001365",
+    "importance": 0.021310949016696043
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000479",
+    "importance": 0.021234533469296987
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000736",
+    "importance": -0.021231254287023077
+  },
+  {
+    "feature": "categorical__x38_shame",
+    "importance": -0.02120683451536773
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000753",
+    "importance": -0.021185239335603782
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000188",
+    "importance": 0.021170320114920222
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001136",
+    "importance": -0.021139651469107682
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000955",
+    "importance": 0.02111270090508203
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000469",
+    "importance": 0.021108043762633512
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000699",
+    "importance": 0.02110277321514237
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000366",
+    "importance": 0.021090414016444785
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000262",
+    "importance": -0.02102025982342747
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000255",
+    "importance": -0.020967883665823254
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001288",
+    "importance": -0.020963541616286815
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000880",
+    "importance": -0.02095761535468598
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000047",
+    "importance": 0.020879635763052906
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000845",
+    "importance": 0.020843376599925054
+  },
+  {
+    "feature": "categorical__x38_pause",
+    "importance": 0.020830093061563863
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000079",
+    "importance": 0.020788779016378097
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000974",
+    "importance": -0.020718902386266842
+  },
+  {
+    "feature": "categorical__x12_scenario",
+    "importance": -0.02071021753667986
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000058",
+    "importance": -0.020709555848562555
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001050",
+    "importance": -0.02068241272715051
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001238",
+    "importance": 0.02063266866056327
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001148",
+    "importance": 0.020579979204353227
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001233",
+    "importance": -0.02052743583261113
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000103",
+    "importance": 0.020443889614946004
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000159",
+    "importance": 0.020425522009278368
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000739",
+    "importance": -0.020347604993500433
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000508",
+    "importance": -0.020338944975985224
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001394",
+    "importance": -0.020318691426941374
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000561",
+    "importance": -0.020193656599804086
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000722",
+    "importance": 0.020189848703373082
+  },
+  {
+    "feature": "categorical__x38_reliability",
+    "importance": 0.020182405091831845
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000876",
+    "importance": -0.020126257022398165
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000502",
+    "importance": -0.02011957922760266
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000727",
+    "importance": 0.020110289728047067
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001113",
+    "importance": 0.02009238270612838
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000751",
+    "importance": -0.020031655852954477
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000641",
+    "importance": 0.020027324466838938
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001125",
+    "importance": 0.020012607393996903
+  },
+  {
+    "feature": "categorical__x38_storytelling",
+    "importance": 0.020004539438283193
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001375",
+    "importance": -0.020000081024685732
+  },
+  {
+    "feature": "numeric__x23",
+    "importance": 0.01999241886944663
+  },
+  {
+    "feature": "numeric__x24",
+    "importance": 0.01999241886944663
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001352",
+    "importance": -0.019948400926097894
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000154",
+    "importance": -0.01992372270433401
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001083",
+    "importance": -0.019910849307533365
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001002",
+    "importance": 0.019892786010964943
+  },
+  {
+    "feature": "categorical__x38_values",
+    "importance": -0.019886578781121034
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001039",
+    "importance": -0.019765885858169813
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000810",
+    "importance": 0.019746303232656293
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001201",
+    "importance": 0.01971449500753813
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001056",
+    "importance": 0.019655486931033358
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000336",
+    "importance": 0.01958298641652378
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000309",
+    "importance": -0.019558702898396903
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001032",
+    "importance": 0.019539229500957298
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000287",
+    "importance": 0.0195289012379517
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001161",
+    "importance": -0.01951660541279889
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000584",
+    "importance": -0.019505116869339412
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001086",
+    "importance": -0.01945820332054094
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000328",
+    "importance": -0.019427319527294585
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001159",
+    "importance": -0.01940655593620689
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000382",
+    "importance": 0.019393238946548968
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000355",
+    "importance": -0.019380740690899886
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000488",
+    "importance": -0.019379257924794245
+  },
+  {
+    "feature": "categorical__x38_attunement",
+    "importance": 0.01934679287270569
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001208",
+    "importance": 0.01932474078980081
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000909",
+    "importance": 0.019263144499024092
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000525",
+    "importance": 0.01923225561172355
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000898",
+    "importance": 0.019230865718712045
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000273",
+    "importance": 0.01921145250548502
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000893",
+    "importance": 0.019209138953980843
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000908",
+    "importance": -0.019204265579574213
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000118",
+    "importance": 0.019113689962706504
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000348",
+    "importance": 0.01908664736999508
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000957",
+    "importance": 0.019060309296074697
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000063",
+    "importance": -0.019046999295885644
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000532",
+    "importance": -0.01903682694565389
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001338",
+    "importance": -0.01902019092681262
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001154",
+    "importance": 0.019008641796640746
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000091",
+    "importance": 0.01898367157848743
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000796",
+    "importance": 0.018968787837623867
+  },
+  {
+    "feature": "categorical__x38_effort",
+    "importance": 0.01890996078140904
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000931",
+    "importance": 0.018887504318050606
+  },
+  {
+    "feature": "numeric__x10",
+    "importance": -0.018846194091491967
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001058",
+    "importance": 0.018844108695624077
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000755",
+    "importance": -0.01883655754271492
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000547",
+    "importance": 0.01881868705800836
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001232",
+    "importance": 0.018796183288577076
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000320",
+    "importance": -0.018703320876150033
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000294",
+    "importance": 0.018656309477015364
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001322",
+    "importance": -0.018647858208284972
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000331",
+    "importance": -0.018607744958858485
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000978",
+    "importance": -0.018535766636276593
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000679",
+    "importance": 0.01852403694037156
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000271",
+    "importance": -0.018497647244179228
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000107",
+    "importance": -0.01849299483963974
+  },
+  {
+    "feature": "categorical__x38_trust",
+    "importance": 0.018482796414100163
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000896",
+    "importance": 0.01844755184119434
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000076",
+    "importance": -0.018445964941163004
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000596",
+    "importance": 0.018399997261186955
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001026",
+    "importance": 0.018359434601941352
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000037",
+    "importance": -0.018332841817180614
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000022",
+    "importance": 0.018331732544007603
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000182",
+    "importance": -0.018327945330732526
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000519",
+    "importance": 0.018321971249909585
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001054",
+    "importance": 0.018287480385883223
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000472",
+    "importance": -0.018285684432832114
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000492",
+    "importance": 0.01827769282668174
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001261",
+    "importance": 0.018269028063940942
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001150",
+    "importance": 0.018257063986616747
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000881",
+    "importance": -0.018242385222560564
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000550",
+    "importance": 0.018198675738419205
+  },
+  {
+    "feature": "categorical__x38_coordination",
+    "importance": -0.018166916345945666
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001037",
+    "importance": 0.01815719904114195
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000497",
+    "importance": 0.018140498068249116
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000285",
+    "importance": -0.018101490517572125
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000390",
+    "importance": 0.0180701579206636
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001137",
+    "importance": 0.01805951291182152
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000474",
+    "importance": -0.018015656453226052
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001195",
+    "importance": 0.018001098991860746
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000940",
+    "importance": 0.017973461335392016
+  },
+  {
+    "feature": "categorical__x38_estimation",
+    "importance": -0.017956275875431263
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000207",
+    "importance": 0.017930925596967927
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001046",
+    "importance": -0.01792878005887773
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000534",
+    "importance": -0.017927717475835485
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000919",
+    "importance": -0.0178945128730658
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001051",
+    "importance": 0.017893707620698047
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000782",
+    "importance": 0.01788419248521153
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000889",
+    "importance": -0.017744532285861304
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001171",
+    "importance": 0.01771230203295285
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001185",
+    "importance": 0.0176899686070124
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000407",
+    "importance": 0.017519029822746113
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000609",
+    "importance": 0.017513897369324564
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001124",
+    "importance": -0.017513892542114093
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000687",
+    "importance": 0.01748233892834994
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000082",
+    "importance": -0.017442588169112663
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000238",
+    "importance": 0.01743385909436617
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001019",
+    "importance": 0.017429059236032596
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000523",
+    "importance": -0.01741271756480248
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000797",
+    "importance": -0.01737630761177138
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000399",
+    "importance": 0.017347465965592807
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001015",
+    "importance": -0.01729220439980123
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000626",
+    "importance": -0.01728977394686467
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001077",
+    "importance": -0.017284107393345485
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000529",
+    "importance": 0.017246328013009286
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000169",
+    "importance": 0.017220313513986302
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000040",
+    "importance": -0.01720986874893415
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000237",
+    "importance": 0.01715054629229041
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000221",
+    "importance": 0.017140496619981523
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000073",
+    "importance": 0.0171388362066115
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000317",
+    "importance": -0.01713031282091851
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000507",
+    "importance": -0.017126900440259125
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000670",
+    "importance": 0.017073812309150588
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001127",
+    "importance": 0.01706687706854362
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000724",
+    "importance": 0.016994064491986847
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001377",
+    "importance": 0.01698508519465455
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000725",
+    "importance": 0.016958220514652282
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000811",
+    "importance": -0.0168447034190745
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001356",
+    "importance": -0.016816367666668528
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000770",
+    "importance": 0.01677806044828968
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000694",
+    "importance": 0.016755369696758563
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000557",
+    "importance": 0.016711719064903662
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000665",
+    "importance": -0.01668038344108639
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001313",
+    "importance": 0.01664264261802563
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000867",
+    "importance": -0.016633944575560496
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001397",
+    "importance": 0.016580157835913715
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000948",
+    "importance": 0.016573290593330084
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000019",
+    "importance": -0.016554240468882195
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000112",
+    "importance": -0.01654845946012681
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000598",
+    "importance": -0.016468044793762675
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001001",
+    "importance": -0.016453672665514188
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000125",
+    "importance": 0.01638661022190994
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000267",
+    "importance": -0.016211606131283158
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001221",
+    "importance": 0.01616869333872247
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000769",
+    "importance": -0.01616356460415391
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001265",
+    "importance": 0.016135794794008205
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001080",
+    "importance": 0.016132003931035387
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000732",
+    "importance": -0.016116423068218946
+  },
+  {
+    "feature": "categorical__x38_emotional intelligence",
+    "importance": 0.016108090818914986
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000250",
+    "importance": 0.016091043183163265
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000064",
+    "importance": -0.01607812246609831
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000835",
+    "importance": -0.016077901390180532
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000637",
+    "importance": -0.016075294041113998
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000272",
+    "importance": 0.016066881192094613
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000269",
+    "importance": 0.016051514734863916
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000705",
+    "importance": 0.016047151505429205
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000009",
+    "importance": -0.01603452437605932
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001017",
+    "importance": -0.016019885554496634
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001029",
+    "importance": -0.016016771550277385
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001384",
+    "importance": -0.015996459986604632
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000977",
+    "importance": -0.015937899917906815
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000777",
+    "importance": -0.015936612482561847
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000651",
+    "importance": -0.01593363187752371
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000364",
+    "importance": 0.015902826973571278
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001123",
+    "importance": -0.015887319425342782
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000775",
+    "importance": 0.015865702727328065
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000916",
+    "importance": 0.0158272242597401
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000733",
+    "importance": 0.01578721839520266
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000422",
+    "importance": 0.015784747786648373
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000228",
+    "importance": -0.01577322441182723
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001321",
+    "importance": 0.01577188307633243
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000313",
+    "importance": 0.015765283886414107
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000678",
+    "importance": 0.01576368748412031
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000932",
+    "importance": 0.0157459167351719
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000210",
+    "importance": -0.015703302641090454
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001266",
+    "importance": 0.015681457295890447
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001396",
+    "importance": -0.015634878382924114
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000324",
+    "importance": -0.015618384603703486
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000883",
+    "importance": 0.015611328304370049
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001351",
+    "importance": 0.015557740500147467
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001014",
+    "importance": -0.015549950393581263
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000586",
+    "importance": -0.015549812278181144
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000100",
+    "importance": 0.015544434151095245
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000215",
+    "importance": 0.015535647183561211
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000737",
+    "importance": 0.015506072511546214
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000616",
+    "importance": -0.015491388562612205
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000034",
+    "importance": -0.015467399304795456
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000570",
+    "importance": 0.015463267323384267
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000635",
+    "importance": -0.015436567966571047
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000723",
+    "importance": -0.015378395346043102
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001369",
+    "importance": 0.015373534126998498
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000735",
+    "importance": -0.01536654238863713
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000913",
+    "importance": -0.015288146106742662
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000517",
+    "importance": 0.015248902120130331
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000853",
+    "importance": -0.015233966235391189
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000852",
+    "importance": 0.01518312176276198
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000325",
+    "importance": 0.015181603294217819
+  },
+  {
+    "feature": "categorical__x38_help seeking",
+    "importance": -0.01518024501344803
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000312",
+    "importance": 0.015167472477186052
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000774",
+    "importance": -0.015143934779590506
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000708",
+    "importance": 0.015140602670556284
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001031",
+    "importance": -0.015094985433945378
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000235",
+    "importance": -0.015075448735149197
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001292",
+    "importance": 0.015069875286682088
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000024",
+    "importance": 0.015021225681630201
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000276",
+    "importance": 0.014979124187812514
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000387",
+    "importance": -0.014955971874942216
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000284",
+    "importance": -0.014934059795730195
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000080",
+    "importance": -0.014933342857690483
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001212",
+    "importance": -0.014926808046232655
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000002",
+    "importance": -0.014840835034676972
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000960",
+    "importance": 0.014830450802852578
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000677",
+    "importance": 0.014814928599415899
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001215",
+    "importance": 0.0148098965311736
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000314",
+    "importance": -0.014687826092215528
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001381",
+    "importance": -0.014676602894854182
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000922",
+    "importance": 0.01459000736715637
+  },
+  {
+    "feature": "categorical__x38_reset",
+    "importance": 0.014577108247037004
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001000",
+    "importance": -0.014561894406666213
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001236",
+    "importance": 0.01455094714072897
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000389",
+    "importance": -0.014498278899481944
+  },
+  {
+    "feature": "numeric__x25",
+    "importance": 0.014462616173248847
+  },
+  {
+    "feature": "numeric__x27",
+    "importance": 0.014462616173248847
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001347",
+    "importance": 0.014436140352105577
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000703",
+    "importance": -0.014408725456564532
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000335",
+    "importance": 0.01436204715200854
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001061",
+    "importance": 0.014325846969559962
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000310",
+    "importance": 0.014324143333307327
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000286",
+    "importance": -0.014314608857133471
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000071",
+    "importance": -0.014309435727675611
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000478",
+    "importance": -0.01429757550084705
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001249",
+    "importance": 0.014288570372871515
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000555",
+    "importance": 0.014279187634204273
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000258",
+    "importance": -0.014275610234016984
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001168",
+    "importance": 0.014264073162452748
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000503",
+    "importance": 0.014251549891861549
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000346",
+    "importance": -0.014222690075847847
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000098",
+    "importance": 0.014187154233614723
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000146",
+    "importance": -0.014179253074184089
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000404",
+    "importance": 0.014175826013978656
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001173",
+    "importance": -0.014161548454279029
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000311",
+    "importance": 0.014158599585363755
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000044",
+    "importance": 0.014131848748670156
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000613",
+    "importance": 0.014118076277708095
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001076",
+    "importance": 0.014101873225929245
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000144",
+    "importance": 0.014089524080814552
+  },
+  {
+    "feature": "categorical__x38_persistence",
+    "importance": 0.014087242068821943
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000045",
+    "importance": -0.014083522104234851
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001252",
+    "importance": -0.014079910347638896
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001216",
+    "importance": 0.014067097868231022
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000224",
+    "importance": 0.014027253003287067
+  },
+  {
+    "feature": "categorical__x38_adaptation",
+    "importance": -0.014012161813869481
+  },
+  {
+    "feature": "categorical__x38_focus",
+    "importance": 0.014000387842183572
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001063",
+    "importance": 0.013998433370713164
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000754",
+    "importance": -0.013992216338475045
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000359",
+    "importance": 0.01398750493884861
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000925",
+    "importance": 0.013944786620225438
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000260",
+    "importance": 0.013927552337431408
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001306",
+    "importance": -0.0139109965956737
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000140",
+    "importance": 0.013908557910514454
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001311",
+    "importance": 0.013906975792362577
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000437",
+    "importance": 0.013901147936564665
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000467",
+    "importance": 0.01389282461796304
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000259",
+    "importance": 0.013882840258205196
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000860",
+    "importance": -0.013820211253992513
+  },
+  {
+    "feature": "categorical__x30_co_review_01",
+    "importance": -0.01380705087793742
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001361",
+    "importance": 0.013795765602969249
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001274",
+    "importance": -0.013794661547788335
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000196",
+    "importance": -0.013778962823076706
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001084",
+    "importance": 0.013761149850239794
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001147",
+    "importance": 0.013743723178208694
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000686",
+    "importance": 0.013718824080780923
+  },
+  {
+    "feature": "categorical__x38_ownership",
+    "importance": 0.013710496094888691
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000218",
+    "importance": 0.013692076755633609
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000591",
+    "importance": -0.013647288800034203
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001055",
+    "importance": 0.013623176731109564
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000673",
+    "importance": -0.013619672121031089
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000842",
+    "importance": 0.013609015737702214
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001081",
+    "importance": 0.01358809790500305
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000410",
+    "importance": -0.013567032621762056
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000655",
+    "importance": 0.013558895601060815
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000301",
+    "importance": -0.013528012690596732
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000568",
+    "importance": 0.013525485968429877
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001254",
+    "importance": 0.01349320004736958
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000752",
+    "importance": -0.013488824890936774
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000305",
+    "importance": 0.013457073719543597
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000972",
+    "importance": 0.013445817247631012
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000856",
+    "importance": 0.013415907276391999
+  },
+  {
+    "feature": "categorical__x38_trade-offs",
+    "importance": -0.013384895476195152
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000179",
+    "importance": -0.013347862224915569
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001062",
+    "importance": -0.013339519698313583
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000890",
+    "importance": -0.013327826826527708
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000431",
+    "importance": -0.01325684810505655
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001093",
+    "importance": 0.013240002440675027
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000572",
+    "importance": -0.01322721392476108
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001101",
+    "importance": -0.013195628150345477
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000888",
+    "importance": -0.013149624202744176
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001103",
+    "importance": -0.013111410988907186
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001240",
+    "importance": -0.01305202358175236
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001367",
+    "importance": 0.012974319664726081
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000451",
+    "importance": 0.012970716591704318
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000011",
+    "importance": -0.012961078746194695
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000937",
+    "importance": -0.012923010352898152
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000875",
+    "importance": -0.012907927670859269
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000926",
+    "importance": -0.012902017066820719
+  },
+  {
+    "feature": "categorical__x30_sa_strengths_02",
+    "importance": 0.0129004626648512
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001007",
+    "importance": -0.012900117574809264
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001074",
+    "importance": 0.012890889683705227
+  },
+  {
+    "feature": "categorical__x38_questions",
+    "importance": -0.012880261197185085
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000768",
+    "importance": 0.012852989289833406
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000862",
+    "importance": -0.012794720791810082
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000962",
+    "importance": 0.012778433894615714
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000971",
+    "importance": 0.012765861894279182
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000095",
+    "importance": -0.012750458702763605
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000357",
+    "importance": 0.012742037692401297
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000033",
+    "importance": 0.012730876328458832
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000003",
+    "importance": 0.012729693674669602
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001043",
+    "importance": -0.012716967158944013
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000513",
+    "importance": -0.012716685653578171
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000490",
+    "importance": -0.012690620919890542
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000648",
+    "importance": 0.01267168884622491
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001072",
+    "importance": -0.012607203369214276
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000489",
+    "importance": -0.012580576597408449
+  },
+  {
+    "feature": "categorical__x38_support",
+    "importance": -0.012561828145279352
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000631",
+    "importance": -0.012560874124439288
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001022",
+    "importance": 0.012512587002237629
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001387",
+    "importance": -0.012509764783436688
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001260",
+    "importance": 0.012496668385685793
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000403",
+    "importance": -0.012391514185620388
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000496",
+    "importance": 0.012339614707232641
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000885",
+    "importance": 0.012319163133760422
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000081",
+    "importance": 0.012314042849946354
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001064",
+    "importance": 0.012305821988051323
+  },
+  {
+    "feature": "categorical__x38_needs",
+    "importance": -0.012300898556659933
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000456",
+    "importance": -0.012260772989794238
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001107",
+    "importance": 0.012224192322902023
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000053",
+    "importance": 0.01220764138237798
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000749",
+    "importance": 0.012204888469219419
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000078",
+    "importance": -0.012182100555887783
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001382",
+    "importance": -0.012181949161044077
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001257",
+    "importance": 0.012176067744235474
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000455",
+    "importance": -0.012136411210053315
+  },
+  {
+    "feature": "categorical__x38_emotions",
+    "importance": 0.012120247364026894
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001134",
+    "importance": 0.012091801393802552
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000303",
+    "importance": -0.012073302259412727
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001297",
+    "importance": 0.012029451479613028
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000481",
+    "importance": -0.011999273984759492
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000672",
+    "importance": 0.011991257757051274
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000827",
+    "importance": -0.011941621321565328
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000720",
+    "importance": 0.011928260536822631
+  },
+  {
+    "feature": "categorical__x38_boredom",
+    "importance": 0.011884546332054833
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001157",
+    "importance": -0.01183915553352717
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001268",
+    "importance": 0.0118335751593038
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001030",
+    "importance": 0.011812172076238756
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001323",
+    "importance": 0.011798042697259052
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000042",
+    "importance": -0.011791897885446228
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000141",
+    "importance": 0.01178785982010419
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000891",
+    "importance": 0.011776868939695163
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001009",
+    "importance": -0.011742591471575692
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000805",
+    "importance": -0.011741738380483029
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000135",
+    "importance": 0.011730052791572479
+  },
+  {
+    "feature": "numeric__x16",
+    "importance": 0.011728011282029018
+  },
+  {
+    "feature": "numeric__x35",
+    "importance": 0.011728011282029018
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000927",
+    "importance": 0.01172571165885754
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000160",
+    "importance": -0.011718793338311332
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000692",
+    "importance": -0.011710231744893638
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000150",
+    "importance": 0.011669499027397308
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001005",
+    "importance": 0.011654570269476293
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000116",
+    "importance": -0.011647859951582186
+  },
+  {
+    "feature": "categorical__x30_fp_plan_02",
+    "importance": 0.01164442387709605
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000750",
+    "importance": 0.011621499166921245
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001203",
+    "importance": 0.011599414714659606
+  },
+  {
+    "feature": "categorical__x38_restarting",
+    "importance": 0.011572414861833373
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001057",
+    "importance": -0.01156187364597251
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001385",
+    "importance": -0.011560397090947902
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001183",
+    "importance": 0.011538492394824728
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000589",
+    "importance": -0.011525136076397605
+  },
+  {
+    "feature": "categorical__x30_ei_integrate_02",
+    "importance": 0.011519812378077325
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000236",
+    "importance": 0.01149210500774839
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001186",
+    "importance": -0.011490351540282108
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001218",
+    "importance": 0.011464127398248045
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000315",
+    "importance": -0.011439844400403531
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000180",
+    "importance": 0.011420496646992566
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000973",
+    "importance": -0.011396043344813813
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000897",
+    "importance": 0.011391278027931854
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000757",
+    "importance": 0.011383240759004386
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000965",
+    "importance": -0.011380245304114314
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000928",
+    "importance": -0.011374413527943723
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000663",
+    "importance": 0.011367577082644504
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000199",
+    "importance": -0.011362798391292403
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000319",
+    "importance": -0.011344820519347355
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001188",
+    "importance": 0.011335754968546455
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000847",
+    "importance": -0.01130127268522566
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001119",
+    "importance": 0.011294706690100504
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000495",
+    "importance": -0.011294276571718585
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000602",
+    "importance": 0.0112862670157046
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001152",
+    "importance": 0.011245863842824928
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000551",
+    "importance": 0.01124093437442119
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000491",
+    "importance": -0.011216670985869578
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000487",
+    "importance": 0.011203620155385115
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000156",
+    "importance": -0.011101988943047368
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000229",
+    "importance": -0.011101321879197755
+  },
+  {
+    "feature": "categorical__x38_reflection",
+    "importance": 0.01109767548367356
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000060",
+    "importance": 0.011052810765023353
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000644",
+    "importance": -0.011049538550288375
+  },
+  {
+    "feature": "categorical__x38_development",
+    "importance": 0.011028173717521477
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000942",
+    "importance": 0.011015588284938819
+  },
+  {
+    "feature": "categorical__x38_conciseness",
+    "importance": 0.010877189952327438
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000689",
+    "importance": -0.01087027089742034
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001044",
+    "importance": -0.01085977799631928
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000597",
+    "importance": 0.01085427907380964
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000170",
+    "importance": -0.010849918391197007
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000013",
+    "importance": -0.010794415862647212
+  },
+  {
+    "feature": "categorical__x38_negotiation",
+    "importance": -0.010783112676910992
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001316",
+    "importance": -0.010766831435825621
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001099",
+    "importance": 0.010765156984912035
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000475",
+    "importance": 0.010717727873022234
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000383",
+    "importance": -0.01071681351362904
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000783",
+    "importance": -0.010691550008549744
+  },
+  {
+    "feature": "categorical__x38_respect",
+    "importance": 0.010665906669494258
+  },
+  {
+    "feature": "categorical__x38_reciprocity",
+    "importance": -0.010652546385628922
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000726",
+    "importance": -0.010626547027783281
+  },
+  {
+    "feature": "categorical__x38_saying no",
+    "importance": 0.010623244405035242
+  },
+  {
+    "feature": "categorical__x38_patterns",
+    "importance": 0.010579320016363306
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000819",
+    "importance": -0.010547910170191842
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001295",
+    "importance": -0.010494207248313835
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001187",
+    "importance": 0.010488374391999783
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000361",
+    "importance": -0.010475595298759277
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001149",
+    "importance": 0.01046505833701248
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001314",
+    "importance": 0.010449766694546454
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000654",
+    "importance": -0.01040148786249839
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000693",
+    "importance": 0.010392204603910033
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000539",
+    "importance": -0.010391403995518694
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001140",
+    "importance": -0.010311904935346294
+  },
+  {
+    "feature": "categorical__x30_sa_strengths_01",
+    "importance": -0.010307629224312139
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000731",
+    "importance": 0.01029497376949216
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000124",
+    "importance": -0.010285998117499964
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000632",
+    "importance": -0.010241533139741266
+  },
+  {
+    "feature": "categorical__x38_collaboration",
+    "importance": -0.010232919329345473
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000327",
+    "importance": -0.010207435539571461
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001371",
+    "importance": -0.010202862486900569
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000165",
+    "importance": 0.0101964917216585
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001048",
+    "importance": -0.010186115509176016
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000191",
+    "importance": 0.010164381716773205
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001100",
+    "importance": -0.010157567787599681
+  },
+  {
+    "feature": "categorical__x38_strengths",
+    "importance": -0.010131749418200208
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000400",
+    "importance": 0.010112065592978755
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000014",
+    "importance": -0.01007758330980247
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000486",
+    "importance": 0.01005984017614345
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000201",
+    "importance": 0.010010362275316716
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000202",
+    "importance": 0.009989904033100159
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001271",
+    "importance": -0.00998453360019609
+  },
+  {
+    "feature": "categorical__x38_perspective",
+    "importance": -0.009981512984413214
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000762",
+    "importance": 0.009947034966085705
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001112",
+    "importance": 0.009945710827819913
+  },
+  {
+    "feature": "categorical__x38_disagreement",
+    "importance": -0.009924572539060712
+  },
+  {
+    "feature": "categorical__x30_co_courage_01",
+    "importance": -0.009902218939256312
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000989",
+    "importance": -0.00989783902041603
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001180",
+    "importance": 0.009876319468508907
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001225",
+    "importance": -0.009874712608884778
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000921",
+    "importance": -0.009834902110021958
+  },
+  {
+    "feature": "categorical__x38_progress",
+    "importance": -0.009834544696445117
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000096",
+    "importance": -0.009834013451568346
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000816",
+    "importance": 0.009826995490430188
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000385",
+    "importance": 0.009823384345328423
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001060",
+    "importance": -0.009802732063438768
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001066",
+    "importance": -0.009780510311128447
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001027",
+    "importance": -0.00978021286303649
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000688",
+    "importance": 0.009771580544182057
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000183",
+    "importance": 0.009771361173150495
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001350",
+    "importance": -0.009746584500605723
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000332",
+    "importance": -0.00972001305520401
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000594",
+    "importance": 0.009719495633386763
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000998",
+    "importance": -0.00969348471837877
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000895",
+    "importance": -0.009678817506380118
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000338",
+    "importance": -0.009672054514347363
+  },
+  {
+    "feature": "categorical__x38_communication",
+    "importance": 0.009659333169254313
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001289",
+    "importance": 0.009650278832549245
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001021",
+    "importance": -0.009609910973086616
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000773",
+    "importance": 0.009601917601286196
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000681",
+    "importance": -0.009575271593341915
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000429",
+    "importance": 0.00957133778362817
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000680",
+    "importance": 0.009546297561013025
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000419",
+    "importance": 0.009534044266394835
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000386",
+    "importance": -0.009504536660472053
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000349",
+    "importance": -0.00948435465871667
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001357",
+    "importance": 0.009483626989082726
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000299",
+    "importance": 0.009480065429834136
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000558",
+    "importance": 0.009468370211956484
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000990",
+    "importance": 0.009461069785827995
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001244",
+    "importance": 0.009459278896021895
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001004",
+    "importance": -0.009455050439030268
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001360",
+    "importance": -0.009447208855320136
+  },
+  {
+    "feature": "numeric__x7",
+    "importance": -0.009416994266259957
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000746",
+    "importance": 0.009401810143095822
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001047",
+    "importance": -0.009386757594975922
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000976",
+    "importance": -0.0093686856898359
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000656",
+    "importance": -0.009359685762554833
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001300",
+    "importance": -0.009327046248060454
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000120",
+    "importance": 0.00932593366412529
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000711",
+    "importance": -0.009285996953258005
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001089",
+    "importance": -0.00926786609259792
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000894",
+    "importance": 0.009214384352197805
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001230",
+    "importance": -0.009200713724876606
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000225",
+    "importance": 0.009186748672589947
+  },
+  {
+    "feature": "numeric__x17",
+    "importance": -0.009185572716441461
+  },
+  {
+    "feature": "numeric__x18",
+    "importance": -0.009185572716441461
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001035",
+    "importance": 0.009152114985893734
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001118",
+    "importance": 0.009126726549632319
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000595",
+    "importance": 0.009122098146870528
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000432",
+    "importance": 0.009093437598367973
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000476",
+    "importance": 0.00907973356351747
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001184",
+    "importance": 0.009072755833343812
+  },
+  {
+    "feature": "categorical__x38_audience",
+    "importance": 0.00907222988683046
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000684",
+    "importance": 0.009072013130466638
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000870",
+    "importance": -0.009044527234030143
+  },
+  {
+    "feature": "categorical__x38_identity",
+    "importance": 0.009004242368330645
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000275",
+    "importance": 0.00898293600926078
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000388",
+    "importance": 0.008965507076667698
+  },
+  {
+    "feature": "categorical__x38_procrastination",
+    "importance": -0.00894455984392336
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000917",
+    "importance": -0.00891542277512248
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001291",
+    "importance": -0.008891427500621572
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000745",
+    "importance": 0.008885310185172787
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000036",
+    "importance": 0.008876707771036899
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000569",
+    "importance": 0.008872347026959748
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001282",
+    "importance": 0.008869024600198634
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000304",
+    "importance": 0.008864294762274495
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001178",
+    "importance": 0.00885347200776535
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001040",
+    "importance": -0.008789949025982891
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000072",
+    "importance": 0.008776952681084272
+  },
+  {
+    "feature": "categorical__x38_review",
+    "importance": 0.008773968097406607
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000217",
+    "importance": 0.00876906738909559
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001374",
+    "importance": -0.008761063298463233
+  },
+  {
+    "feature": "categorical__x38_task design",
+    "importance": -0.008760470874797232
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000982",
+    "importance": -0.008752888003234888
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001071",
+    "importance": 0.008751849418544072
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001325",
+    "importance": 0.00874879350857283
+  },
+  {
+    "feature": "categorical__x30_fp_plan_01",
+    "importance": -0.008723965961213066
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000548",
+    "importance": -0.008698142948180393
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001272",
+    "importance": 0.008696579513649048
+  },
+  {
+    "feature": "categorical__x38_decisions",
+    "importance": -0.008695078631597228
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001398",
+    "importance": 0.008674103064403034
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001190",
+    "importance": 0.008649632536903398
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000807",
+    "importance": 0.008647578131679044
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000823",
+    "importance": 0.008625186601603921
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001049",
+    "importance": -0.008598686896028086
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001170",
+    "importance": 0.008584916559499872
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000918",
+    "importance": -0.008545853594574241
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000465",
+    "importance": -0.008531329297521525
+  },
+  {
+    "feature": "categorical__x38_writing",
+    "importance": 0.008526171414568596
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000935",
+    "importance": 0.008505439102547174
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000838",
+    "importance": 0.008504337662138433
+  },
+  {
+    "feature": "categorical__x30_sa_values_01",
+    "importance": 0.008468051658692074
+  },
+  {
+    "feature": "categorical__x31_scenario",
+    "importance": 0.008455635559876612
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000029",
+    "importance": 0.008438912496537868
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001023",
+    "importance": 0.008429912454161602
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000280",
+    "importance": 0.008407577108342846
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000406",
+    "importance": 0.008384218025117646
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000101",
+    "importance": -0.008377857149873661
+  },
+  {
+    "feature": "categorical__x38_implementation",
+    "importance": -0.00830893360331946
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000281",
+    "importance": -0.00829101267161644
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000779",
+    "importance": -0.00828030166246318
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001098",
+    "importance": -0.008279627740424934
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000050",
+    "importance": -0.008240266468847212
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000567",
+    "importance": 0.00823447620067319
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001349",
+    "importance": -0.008222046486505147
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000466",
+    "importance": -0.008207341335003839
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000786",
+    "importance": -0.008189599656398927
+  },
+  {
+    "feature": "categorical__x38_paraphrasing",
+    "importance": 0.008140603249007169
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000119",
+    "importance": 0.008122530187011479
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000800",
+    "importance": -0.00807233560443463
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000270",
+    "importance": -0.008050243443330487
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000671",
+    "importance": -0.008046320094154603
+  },
+  {
+    "feature": "categorical__x38_compassion",
+    "importance": -0.008041953474851066
+  },
+  {
+    "feature": "categorical__x30_co_courage_02",
+    "importance": 0.008031684455919404
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001245",
+    "importance": 0.00799657660773056
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000934",
+    "importance": 0.007993253730643158
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001155",
+    "importance": -0.007924163681831317
+  },
+  {
+    "feature": "categorical__x30_ei_empathy_02",
+    "importance": -0.007920104728389193
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000054",
+    "importance": -0.007919846254328173
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000531",
+    "importance": -0.007914058528256844
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000834",
+    "importance": -0.007912954522063554
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001196",
+    "importance": 0.007906395635942821
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000205",
+    "importance": 0.007896465653788789
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000134",
+    "importance": -0.007887175044592179
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000234",
+    "importance": -0.00782160976035798
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000323",
+    "importance": 0.007818446368051341
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001067",
+    "importance": -0.007817897048808168
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000458",
+    "importance": 0.007814000768199441
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000553",
+    "importance": -0.007801066807569845
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000954",
+    "importance": 0.007786818637531133
+  },
+  {
+    "feature": "categorical__x38_repair",
+    "importance": 0.007760176903225701
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001130",
+    "importance": -0.007759021437246916
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000683",
+    "importance": -0.0077409627568110284
+  },
+  {
+    "feature": "categorical__x38_courage",
+    "importance": 0.007739402346451228
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000075",
+    "importance": -0.007722221165703581
+  },
+  {
+    "feature": "categorical__x38_learning",
+    "importance": -0.007702614764139178
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001068",
+    "importance": 0.0076981450969393714
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001242",
+    "importance": 0.0076834379296511985
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001122",
+    "importance": -0.007670059857366929
+  },
+  {
+    "feature": "categorical__x3_Values Awareness",
+    "importance": 0.007667927054091085
+  },
+  {
+    "feature": "categorical__x37_Values Awareness",
+    "importance": 0.007667927054091085
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000947",
+    "importance": 0.007643829973842923
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000579",
+    "importance": -0.007624145390800232
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000522",
+    "importance": -0.0076206605899950515
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000968",
+    "importance": 0.007618944886337638
+  },
+  {
+    "feature": "categorical__x12_habit_task",
+    "importance": 0.007600575405212594
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000245",
+    "importance": -0.007581329002035865
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000624",
+    "importance": -0.007537151672865332
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000252",
+    "importance": -0.007514384549574418
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000949",
+    "importance": 0.007508516036252909
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000778",
+    "importance": 0.00749370064525632
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001070",
+    "importance": 0.007491336780931804
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001219",
+    "importance": 0.007475610081396195
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001305",
+    "importance": -0.007454981793729918
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000582",
+    "importance": 0.007436481354895016
+  },
+  {
+    "feature": "categorical__x30_cg_explore_02",
+    "importance": 0.00743642120219707
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000363",
+    "importance": 0.00742299327301157
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001210",
+    "importance": -0.007421690311099473
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000130",
+    "importance": -0.007420556571006317
+  },
+  {
+    "feature": "categorical__x38_connection",
+    "importance": 0.007404050827248553
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001275",
+    "importance": 0.007365173635866847
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000542",
+    "importance": -0.0073507166189046465
+  },
+  {
+    "feature": "categorical__x30_sa_pattern_01",
+    "importance": -0.0073256428546206905
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001342",
+    "importance": 0.007322146580374475
+  },
+  {
+    "feature": "categorical__x12_gratitude",
+    "importance": 0.007305487894566072
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000290",
+    "importance": -0.00730391626502509
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000713",
+    "importance": 0.007292433662713023
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000821",
+    "importance": 0.007279229055733882
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000373",
+    "importance": -0.007252799084377779
+  },
+  {
+    "feature": "categorical__x38_awareness",
+    "importance": -0.0072483754963025265
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000463",
+    "importance": 0.007246624533086822
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001278",
+    "importance": -0.00722928545001406
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000715",
+    "importance": -0.007223922215117575
+  },
+  {
+    "feature": "categorical__x12_decision_task",
+    "importance": -0.007207479521642888
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000906",
+    "importance": -0.007176936289329098
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000104",
+    "importance": 0.0071169049478070215
+  },
+  {
+    "feature": "categorical__x38_appreciation",
+    "importance": 0.007100605654736876
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000326",
+    "importance": -0.007089456218678803
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000443",
+    "importance": 0.007057632695833277
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000351",
+    "importance": 0.007034327792706576
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000815",
+    "importance": -0.007013745107538536
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000384",
+    "importance": -0.006986282650433706
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000065",
+    "importance": -0.00694344642203435
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000444",
+    "importance": -0.006940521095423022
+  },
+  {
+    "feature": "categorical__x30_rs_gratitude_01",
+    "importance": -0.006919642787543146
+  },
+  {
+    "feature": "categorical__x31_gratitude",
+    "importance": -0.006919642787543146
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001053",
+    "importance": -0.006914884204910159
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001362",
+    "importance": 0.006908168067938285
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000307",
+    "importance": -0.0069074424373837045
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000743",
+    "importance": -0.006903025759309496
+  },
+  {
+    "feature": "categorical__x30_rs_connection_02",
+    "importance": 0.006860424927960601
+  },
+  {
+    "feature": "categorical__x30_fp_persist_01",
+    "importance": -0.006855574523680795
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001143",
+    "importance": -0.006850651138795155
+  },
+  {
+    "feature": "categorical__x38_networking",
+    "importance": 0.006830654193955072
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000442",
+    "importance": 0.006829154203123309
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001156",
+    "importance": 0.006828048948311782
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000904",
+    "importance": -0.006811645501413635
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000265",
+    "importance": 0.006808371650333416
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001303",
+    "importance": -0.006782948085221805
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000498",
+    "importance": 0.006770038954539835
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000771",
+    "importance": -0.0067698406310228365
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000504",
+    "importance": 0.006760017993598386
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001237",
+    "importance": -0.006759220171287552
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000587",
+    "importance": -0.006756531925327439
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000901",
+    "importance": 0.006755729801351241
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001247",
+    "importance": 0.006747706106433078
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000035",
+    "importance": 0.006711137246262558
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001096",
+    "importance": -0.006693203706717389
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000025",
+    "importance": 0.006677346940013405
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000697",
+    "importance": 0.006610569531407656
+  },
+  {
+    "feature": "categorical__x12_perspective_taking",
+    "importance": 0.006602543648347676
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000625",
+    "importance": 0.0065939174816778455
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000381",
+    "importance": -0.006592425185893307
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000828",
+    "importance": -0.00656714191232619
+  },
+  {
+    "feature": "categorical__x38_experiments",
+    "importance": 0.006563241909378058
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001175",
+    "importance": 0.00655823523277179
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000653",
+    "importance": 0.006533403240548608
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001151",
+    "importance": 0.006528184216462382
+  },
+  {
+    "feature": "categorical__x38_starting",
+    "importance": -0.0065214365121624
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000884",
+    "importance": -0.006510872803683015
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000660",
+    "importance": -0.006484374888076168
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001346",
+    "importance": -0.0064787090584235655
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000010",
+    "importance": -0.0064687227233337806
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000247",
+    "importance": 0.00644980493429499
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000261",
+    "importance": -0.006448428068011557
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001078",
+    "importance": 0.006441569172704484
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000358",
+    "importance": -0.006420341965566398
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000021",
+    "importance": 0.006388437475074455
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000278",
+    "importance": 0.006386393432618446
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000554",
+    "importance": 0.006381600936511684
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000588",
+    "importance": -0.006375442385426598
+  },
+  {
+    "feature": "categorical__x12_micro_action",
+    "importance": -0.006369784313495997
+  },
+  {
+    "feature": "numeric__x5",
+    "importance": 0.006366410707482103
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000360",
+    "importance": 0.00635046081625938
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000263",
+    "importance": -0.00634790640972228
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001355",
+    "importance": 0.0063176839028956655
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000615",
+    "importance": 0.006310542874346775
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000729",
+    "importance": 0.0062987178120008395
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000057",
+    "importance": -0.006289852485107689
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000530",
+    "importance": -0.006284859313634216
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000340",
+    "importance": -0.006250492205497322
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000161",
+    "importance": 0.006195009359174216
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000669",
+    "importance": -0.006166977401575355
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000970",
+    "importance": 0.0061554004740602825
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000149",
+    "importance": -0.0061364553891859125
+  },
+  {
+    "feature": "categorical__x38_mistakes",
+    "importance": -0.006133193843201117
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000806",
+    "importance": -0.006100702565790738
+  },
+  {
+    "feature": "categorical__x38_systems",
+    "importance": 0.006100438573254994
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000424",
+    "importance": 0.006087566137319378
+  },
+  {
+    "feature": "categorical__x1_rapid_improvement",
+    "importance": -0.006071729661455064
+  },
+  {
+    "feature": "categorical__x30_co_review_02",
+    "importance": 0.006071112180888571
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000833",
+    "importance": -0.006053067030302328
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000995",
+    "importance": 0.006027006736823837
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001324",
+    "importance": 0.00600849745269036
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000374",
+    "importance": -0.006002542519904019
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000612",
+    "importance": 0.005978256168666094
+  },
+  {
+    "feature": "categorical__x30_rs_connection_01",
+    "importance": -0.005962742272392353
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001332",
+    "importance": -0.005905932893455549
+  },
+  {
+    "feature": "categorical__x30_co_efficacy_01",
+    "importance": 0.0058526330924446686
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000200",
+    "importance": -0.005837784044712821
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001345",
+    "importance": -0.00583303402556097
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000172",
+    "importance": -0.005806702775240153
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000289",
+    "importance": 0.005790491495452785
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000341",
+    "importance": 0.005745814463689039
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000633",
+    "importance": -0.005730113364845953
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000563",
+    "importance": 0.005730038652777203
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000764",
+    "importance": -0.005726883143284605
+  },
+  {
+    "feature": "categorical__x38_behavior",
+    "importance": 0.005724572437096979
+  },
+  {
+    "feature": "categorical__x38_calibration",
+    "importance": -0.005692056074940884
+  },
+  {
+    "feature": "categorical__x38_triggers",
+    "importance": 0.0056504823832280995
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000662",
+    "importance": 0.005646757839480242
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000295",
+    "importance": 0.005641074507701423
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000434",
+    "importance": 0.0056271996295566415
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000020",
+    "importance": -0.005589246303595048
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001059",
+    "importance": -0.005587736252760751
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000493",
+    "importance": -0.005581764714002731
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000352",
+    "importance": -0.005563812056825346
+  },
+  {
+    "feature": "categorical__x30_cm_clear_02",
+    "importance": 0.0055627306681655005
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001163",
+    "importance": -0.005558012441308456
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000793",
+    "importance": -0.005546924049719291
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000321",
+    "importance": -0.005532438381227614
+  },
+  {
+    "feature": "categorical__x31_ranking",
+    "importance": 0.0055234405187643545
+  },
+  {
+    "feature": "categorical__x38_signals",
+    "importance": 0.005501486615056252
+  },
+  {
+    "feature": "categorical__x38_requests",
+    "importance": -0.00547890738100278
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000322",
+    "importance": -0.005456993381934437
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000958",
+    "importance": 0.005453238652767184
+  },
+  {
+    "feature": "categorical__x30_cm_listen_01",
+    "importance": -0.005435251810464221
+  },
+  {
+    "feature": "categorical__x38_presence",
+    "importance": 0.005419903247549979
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000051",
+    "importance": -0.005417709326595156
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001111",
+    "importance": -0.005402236856561022
+  },
+  {
+    "feature": "categorical__x38_assertiveness",
+    "importance": 0.005393088208934095
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000421",
+    "importance": 0.005361273050311198
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001380",
+    "importance": -0.005359617125108312
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000813",
+    "importance": 0.005319596033340573
+  },
+  {
+    "feature": "categorical__x12_journaling",
+    "importance": 0.005300046347087962
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000216",
+    "importance": -0.005296532427524509
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000704",
+    "importance": 0.005292181132821351
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001181",
+    "importance": -0.005291728399289426
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001104",
+    "importance": -0.0052865004250241005
+  },
+  {
+    "feature": "categorical__x38_priorities",
+    "importance": 0.005272060024938417
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001269",
+    "importance": -0.0052628331580415666
+  },
+  {
+    "feature": "categorical__x38_interests",
+    "importance": -0.005261427124451004
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000425",
+    "importance": 0.005248441396843008
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000470",
+    "importance": 0.005240025879009677
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000994",
+    "importance": -0.005218905427118465
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000056",
+    "importance": -0.005218545440206986
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000939",
+    "importance": 0.005211038553784915
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000099",
+    "importance": -0.005179785816773442
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000617",
+    "importance": 0.005172482689046176
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000204",
+    "importance": 0.005159938145339194
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000106",
+    "importance": 0.005157160694913133
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000145",
+    "importance": -0.005141197893685343
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000023",
+    "importance": 0.0051294810702808774
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000293",
+    "importance": 0.005121673780721989
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000394",
+    "importance": 0.005117489018121747
+  },
+  {
+    "feature": "categorical__x30_ei_relationship_02",
+    "importance": -0.005110327615527959
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000506",
+    "importance": -0.005099235471053975
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000622",
+    "importance": 0.005098510035753419
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000818",
+    "importance": 0.005059024282885123
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000123",
+    "importance": 0.005055739033259061
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000710",
+    "importance": -0.005050099634794115
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000627",
+    "importance": -0.00504729789295932
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001198",
+    "importance": -0.005044110535921177
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000712",
+    "importance": -0.00504020693138018
+  },
+  {
+    "feature": "categorical__x12_implementation_intention",
+    "importance": 0.005022427730854705
+  },
+  {
+    "feature": "categorical__x30_fp_start_01",
+    "importance": 0.005018241837705224
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000887",
+    "importance": 0.005016978889681174
+  },
+  {
+    "feature": "categorical__x38_self-compassion",
+    "importance": 0.00500019610790535
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000151",
+    "importance": -0.004992703557901385
+  },
+  {
+    "feature": "categorical__x38_action",
+    "importance": 0.00498829954638904
+  },
+  {
+    "feature": "categorical__x30_cg_explore_01",
+    "importance": -0.004977928251655948
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001088",
+    "importance": -0.004956750073360878
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000268",
+    "importance": -0.004945626831896213
+  },
+  {
+    "feature": "categorical__x3_Relationship Management",
+    "importance": -0.004908588109850354
+  },
+  {
+    "feature": "categorical__x37_Relationship Management",
+    "importance": -0.004908588109850354
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001378",
+    "importance": 0.004896660220451151
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000583",
+    "importance": 0.004889609974748865
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001145",
+    "importance": 0.0048427287160673045
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001279",
+    "importance": 0.004837832208230645
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000485",
+    "importance": -0.004833952329190477
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000232",
+    "importance": -0.004824993286451854
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001227",
+    "importance": -0.004810770654678699
+  },
+  {
+    "feature": "categorical__x30_ei_regulate_02",
+    "importance": -0.004805772666247432
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000405",
+    "importance": -0.004795489703255111
+  },
+  {
+    "feature": "categorical__x38_relationships",
+    "importance": 0.004789144966646952
+  },
+  {
+    "feature": "categorical__x30_rs_reciprocity_02",
+    "importance": 0.004782989273178635
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000083",
+    "importance": 0.004776631583997364
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000257",
+    "importance": -0.004769919270780456
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000462",
+    "importance": 0.004742395736237593
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001160",
+    "importance": -0.004732083928103863
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000599",
+    "importance": 0.004731466613757733
+  },
+  {
+    "feature": "categorical__x30_co_efficacy_02",
+    "importance": 0.0047308139193143455
+  },
+  {
+    "feature": "categorical__x38_contribution",
+    "importance": 0.004724772141759864
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000067",
+    "importance": -0.004705074048066054
+  },
+  {
+    "feature": "categorical__x31_real_world_challenge",
+    "importance": -0.004685032538648327
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000802",
+    "importance": -0.004663550891668393
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001193",
+    "importance": 0.0046590040703223595
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000872",
+    "importance": 0.004648558884658838
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001206",
+    "importance": 0.004645615420199291
+  },
+  {
+    "feature": "categorical__x38_attention",
+    "importance": 0.004626625421879774
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000039",
+    "importance": -0.004614189117535497
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000903",
+    "importance": -0.004604358034047234
+  },
+  {
+    "feature": "categorical__x38_empathy",
+    "importance": -0.00459478992814971
+  },
+  {
+    "feature": "categorical__x3_Connection",
+    "importance": -0.0045938592726065776
+  },
+  {
+    "feature": "categorical__x37_Connection",
+    "importance": -0.0045938592726065776
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000682",
+    "importance": -0.004549831171032547
+  },
+  {
+    "feature": "categorical__x31_micro_action",
+    "importance": 0.00452758747985483
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000511",
+    "importance": -0.004527039363646049
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000565",
+    "importance": 0.004519076544317143
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000676",
+    "importance": 0.004509357362467849
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000590",
+    "importance": 0.004507454469633759
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001243",
+    "importance": -0.004463346582323183
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000808",
+    "importance": -0.004460289933281876
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000907",
+    "importance": -0.004456414672602829
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001097",
+    "importance": -0.004444550410415089
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000448",
+    "importance": -0.0044441462473104685
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000728",
+    "importance": -0.004435084257363838
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001162",
+    "importance": 0.004433493538657618
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001003",
+    "importance": 0.004407585570650443
+  },
+  {
+    "feature": "categorical__x30_cm_listen_02",
+    "importance": 0.004395443440313977
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000518",
+    "importance": -0.004390512345477656
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000540",
+    "importance": 0.004388575254597968
+  },
+  {
+    "feature": "categorical__x3_Pattern Recognition",
+    "importance": -0.004385843751167655
+  },
+  {
+    "feature": "categorical__x37_Pattern Recognition",
+    "importance": -0.004385843751167655
+  },
+  {
+    "feature": "categorical__x12_self_assessment",
+    "importance": 0.004373884892577787
+  },
+  {
+    "feature": "categorical__x30_cg_interest_02",
+    "importance": 0.004351253961941177
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000527",
+    "importance": -0.004346919982442233
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000505",
+    "importance": 0.004344274111581581
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001110",
+    "importance": 0.0042987437450765775
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000482",
+    "importance": 0.004288921553831319
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000524",
+    "importance": -0.004285288252047611
+  },
+  {
+    "feature": "categorical__x3_Persistence",
+    "importance": -0.004246806732973026
+  },
+  {
+    "feature": "categorical__x37_Persistence",
+    "importance": -0.004246806732973026
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000535",
+    "importance": 0.0042325060113760785
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000139",
+    "importance": 0.004202619975633492
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000559",
+    "importance": -0.004190080777639546
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000246",
+    "importance": -0.004189971348958161
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000514",
+    "importance": 0.004156361617635768
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001144",
+    "importance": -0.004128192802008976
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001095",
+    "importance": -0.00412186331073269
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001290",
+    "importance": 0.004119590837971719
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000923",
+    "importance": -0.0040391059819609556
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000001",
+    "importance": -0.00403244409519207
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001105",
+    "importance": -0.004015237098079254
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001312",
+    "importance": -0.004004683109355571
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000298",
+    "importance": -0.003991152652781754
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000291",
+    "importance": -0.003975603078647517
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001115",
+    "importance": -0.00396101987229778
+  },
+  {
+    "feature": "categorical__x3_Emotional Awareness",
+    "importance": -0.003941566930261681
+  },
+  {
+    "feature": "categorical__x37_Emotional Awareness",
+    "importance": -0.003941566930261681
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000709",
+    "importance": 0.003934505370563102
+  },
+  {
+    "feature": "categorical__x38_planning",
+    "importance": -0.003917480913220729
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000026",
+    "importance": 0.003916611860625242
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001036",
+    "importance": -0.0038993681631247076
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000138",
+    "importance": 0.003890430027912869
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000817",
+    "importance": 0.00388713293912593
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000772",
+    "importance": -0.0038712987442548422
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000030",
+    "importance": 0.003866826742619617
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001205",
+    "importance": 0.0038400936152999973
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001329",
+    "importance": 0.003834644236038926
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001318",
+    "importance": -0.0038232120981927333
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001229",
+    "importance": 0.003820396944078121
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000645",
+    "importance": -0.0038002910726624814
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001126",
+    "importance": 0.0037673294536808926
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000306",
+    "importance": -0.0037603086084506414
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000158",
+    "importance": 0.0037324363482021078
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000946",
+    "importance": -0.0037175007299376783
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000243",
+    "importance": 0.003714980129936166
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000871",
+    "importance": 0.0037141291424814256
+  },
+  {
+    "feature": "categorical__x31_self_assessment",
+    "importance": 0.0037074281190265417
+  },
+  {
+    "feature": "categorical__x38_thoughts",
+    "importance": 0.003706376339229893
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000915",
+    "importance": -0.0036914709954945176
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001231",
+    "importance": 0.0036910620947262587
+  },
+  {
+    "feature": "categorical__x38_transfer",
+    "importance": -0.003682676733062057
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001330",
+    "importance": -0.003678361140411856
+  },
+  {
+    "feature": "categorical__x3_Reciprocity",
+    "importance": 0.0036473281223305307
+  },
+  {
+    "feature": "categorical__x37_Reciprocity",
+    "importance": 0.0036473281223305307
+  },
+  {
+    "feature": "categorical__x30_rs_conflict_01",
+    "importance": 0.0036369723166313882
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000241",
+    "importance": 0.0036166448857023617
+  },
+  {
+    "feature": "categorical__x30_co_assert_02",
+    "importance": -0.0036113358315457375
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001133",
+    "importance": 0.0035945066243365147
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000093",
+    "importance": 0.003594029281561709
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000152",
+    "importance": 0.0035934609025885535
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000941",
+    "importance": -0.0035715770928211312
+  },
+  {
+    "feature": "categorical__x30_rs_boundary_01",
+    "importance": -0.0035681717120268144
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000618",
+    "importance": -0.0035671541071450583
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000747",
+    "importance": 0.003556141865282587
+  },
+  {
+    "feature": "categorical__x12_real_world_challenge",
+    "importance": 0.0035286198616553905
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001333",
+    "importance": 0.003519195920318645
+  },
+  {
+    "feature": "categorical__x38_inclusion",
+    "importance": 0.0035152367153581427
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000136",
+    "importance": -0.003500095006178185
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001135",
+    "importance": 0.003477876588328951
+  },
+  {
+    "feature": "categorical__x30_cg_goal_02",
+    "importance": 0.003473780041975274
+  },
+  {
+    "feature": "categorical__x30_sa_emotion_01",
+    "importance": -0.00346223583294573
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000850",
+    "importance": 0.003458097685039735
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000223",
+    "importance": 0.0034575123841322952
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000951",
+    "importance": 0.0034321989941613813
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001013",
+    "importance": 0.0034149324645453543
+  },
+  {
+    "feature": "categorical__x38_listening",
+    "importance": 0.0034072347495548716
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000297",
+    "importance": 0.003404921179303973
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000993",
+    "importance": 0.0033981193795173475
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000630",
+    "importance": -0.003392049185382165
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000302",
+    "importance": 0.003383042421547354
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001262",
+    "importance": 0.0033747613024860228
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001273",
+    "importance": 0.0033690568604138826
+  },
+  {
+    "feature": "categorical__x1_difficulty_sensitive",
+    "importance": -0.00336188270958387
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000790",
+    "importance": 0.0033566141350409675
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000249",
+    "importance": -0.0033500662629011215
+  },
+  {
+    "feature": "categorical__x30_fp_start_02",
+    "importance": -0.0033402732857811357
+  },
+  {
+    "feature": "categorical__x30_cm_clear_01",
+    "importance": -0.003315474651015016
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000038",
+    "importance": -0.003313792197720945
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001255",
+    "importance": -0.003287234380922733
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001363",
+    "importance": -0.003275517714423782
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001364",
+    "importance": 0.0032709248020744994
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000368",
+    "importance": -0.0032534450060713164
+  },
+  {
+    "feature": "categorical__x38_goals",
+    "importance": 0.00323544139200733
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000395",
+    "importance": 0.0032299585466202922
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000480",
+    "importance": -0.003226496152190254
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000126",
+    "importance": -0.0032256838054746206
+  },
+  {
+    "feature": "categorical__x38_labeling",
+    "importance": 0.0032230613873449557
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001129",
+    "importance": -0.0032147274261871968
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000963",
+    "importance": 0.003208865081753138
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001117",
+    "importance": 0.0032088147624645385
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000041",
+    "importance": 0.00319655101145819
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001213",
+    "importance": 0.003194095164993236
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001199",
+    "importance": 0.0031897297969365954
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000564",
+    "importance": 0.003173971050739085
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000719",
+    "importance": -0.0031313311706528007
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000652",
+    "importance": 0.0031143364998138814
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000620",
+    "importance": 0.0031130645180887173
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000877",
+    "importance": 0.0030663767883667434
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000691",
+    "importance": 0.0030631135706206524
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000222",
+    "importance": 0.003054763115307843
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000593",
+    "importance": 0.0030496988916998763
+  },
+  {
+    "feature": "categorical__x38_start cue",
+    "importance": 0.0030409420837788246
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001331",
+    "importance": -0.0030238174702357703
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000992",
+    "importance": -0.0030083459511008274
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001109",
+    "importance": 0.002989792890842099
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001326",
+    "importance": 0.002989567544224328
+  },
+  {
+    "feature": "categorical__x38_context",
+    "importance": 0.0029676025182132997
+  },
+  {
+    "feature": "categorical__x12_goal_setting",
+    "importance": -0.0029629201227499946
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000730",
+    "importance": -0.0029615968491225183
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000059",
+    "importance": -0.0029594180187408822
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000392",
+    "importance": 0.002941603585157874
+  },
+  {
+    "feature": "categorical__x38_career",
+    "importance": -0.002941476422240262
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000068",
+    "importance": -0.0029333824758727587
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000794",
+    "importance": 0.0029315971079978066
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001087",
+    "importance": 0.0029291692053697404
+  },
+  {
+    "feature": "categorical__x3_Planning",
+    "importance": 0.002920457915879704
+  },
+  {
+    "feature": "categorical__x37_Planning",
+    "importance": 0.002920457915879704
+  },
+  {
+    "feature": "categorical__x30_cg_goal_01",
+    "importance": -0.0029071979582015075
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001373",
+    "importance": -0.002906273472018184
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000607",
+    "importance": -0.002904832285345888
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001116",
+    "importance": -0.0029019300798270677
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000943",
+    "importance": -0.002898647399123196
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000577",
+    "importance": 0.0028956198972520867
+  },
+  {
+    "feature": "categorical__x1_reflection_preference",
+    "importance": 0.0028686265681281556
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000350",
+    "importance": -0.002850276448955867
+  },
+  {
+    "feature": "categorical__x3_Self-Efficacy",
+    "importance": 0.0028475083147223145
+  },
+  {
+    "feature": "categorical__x37_Self-Efficacy",
+    "importance": 0.0028475083147223145
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000147",
+    "importance": -0.002841294851272174
+  },
+  {
+    "feature": "categorical__x38_conflict",
+    "importance": -0.0028212114524635724
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000153",
+    "importance": -0.002816824810864864
+  },
+  {
+    "feature": "categorical__x30_rs_boundary_02",
+    "importance": 0.0027925998964228645
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000337",
+    "importance": -0.0027895407558850244
+  },
+  {
+    "feature": "categorical__x38_social awareness",
+    "importance": -0.002785398532938037
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001228",
+    "importance": -0.0027820764551608657
+  },
+  {
+    "feature": "categorical__x38_habits",
+    "importance": 0.002744737476647039
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000714",
+    "importance": 0.002736901245656368
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000789",
+    "importance": 0.0027325276897532795
+  },
+  {
+    "feature": "categorical__x12_communication_task",
+    "importance": -0.002732269210987226
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000365",
+    "importance": -0.0027220128086318947
+  },
+  {
+    "feature": "categorical__x30_fp_review_02",
+    "importance": 0.0027114723148096926
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000094",
+    "importance": -0.0026883826127612515
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000629",
+    "importance": -0.002684985008627737
+  },
+  {
+    "feature": "categorical__x3_Empathy",
+    "importance": 0.0026815387213786454
+  },
+  {
+    "feature": "categorical__x37_Empathy",
+    "importance": 0.0026815387213786454
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001091",
+    "importance": 0.0026648402886278264
+  },
+  {
+    "feature": "numeric__x9",
+    "importance": -0.0026608477969217274
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001287",
+    "importance": -0.0026446606698859966
+  },
+  {
+    "feature": "categorical__x30_fp_persist_02",
+    "importance": 0.002608767790705961
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001226",
+    "importance": 0.002605695697389501
+  },
+  {
+    "feature": "categorical__x3_Strengths Awareness",
+    "importance": 0.002592833440536681
+  },
+  {
+    "feature": "categorical__x37_Strengths Awareness",
+    "importance": 0.002592833440536681
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000168",
+    "importance": -0.0025899053182550343
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000820",
+    "importance": 0.002589835040710985
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000980",
+    "importance": 0.0025839834353329144
+  },
+  {
+    "feature": "categorical__x38_specificity",
+    "importance": 0.002582115968564098
+  },
+  {
+    "feature": "categorical__x3_Social Awareness",
+    "importance": 0.0025766409774960856
+  },
+  {
+    "feature": "categorical__x37_Social Awareness",
+    "importance": 0.0025766409774960856
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000408",
+    "importance": -0.002574606442985525
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001286",
+    "importance": -0.0025706805251348905
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001235",
+    "importance": -0.002540870527699628
+  },
+  {
+    "feature": "categorical__x30_sa_emotion_02",
+    "importance": -0.0025278684855165865
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001085",
+    "importance": -0.0025043943229270576
+  },
+  {
+    "feature": "categorical__x30_cm_feedback_01",
+    "importance": 0.002490434634809936
+  },
+  {
+    "feature": "numeric__x8",
+    "importance": 0.0024632219600281063
+  },
+  {
+    "feature": "numeric__x19",
+    "importance": 0.0024632219600281063
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001197",
+    "importance": -0.0024607495988508902
+  },
+  {
+    "feature": "categorical__x3_Exploration",
+    "importance": 0.0024584929505216168
+  },
+  {
+    "feature": "categorical__x37_Exploration",
+    "importance": 0.0024584929505216168
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000961",
+    "importance": -0.002454740429082478
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000453",
+    "importance": -0.00243686617421983
+  },
+  {
+    "feature": "categorical__x31_journaling",
+    "importance": -0.002434692398716215
+  },
+  {
+    "feature": "numeric__x14",
+    "importance": -0.0024160366007833804
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001018",
+    "importance": -0.0023884632913890986
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001259",
+    "importance": 0.002383950723403738
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001006",
+    "importance": -0.002376061371138649
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000803",
+    "importance": -0.002366369605665612
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000411",
+    "importance": 0.0023653574795324925
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000933",
+    "importance": 0.00235328010500215
+  },
+  {
+    "feature": "categorical__x30_co_assert_01",
+    "importance": 0.0023488659649496496
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000981",
+    "importance": -0.002344260171766867
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001141",
+    "importance": 0.00232647722534836
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000621",
+    "importance": 0.002324470418761253
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000987",
+    "importance": -0.0022592801970267393
+  },
+  {
+    "feature": "categorical__x1_low_engagement",
+    "importance": 0.002236735341218918
+  },
+  {
+    "feature": "boolean__x15",
+    "importance": -0.002236735341213233
+  },
+  {
+    "feature": "categorical__x12_ranking",
+    "importance": -0.0022022254676207103
+  },
+  {
+    "feature": "categorical__x31_situation_analysis",
+    "importance": -0.0021983024705913073
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000043",
+    "importance": -0.0021929632625742983
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001264",
+    "importance": -0.0021880296465508226
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000526",
+    "importance": 0.002184122070848728
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000623",
+    "importance": 0.002157454408629483
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000371",
+    "importance": 0.0021273899773999257
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000008",
+    "importance": 0.0021214992262454696
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000464",
+    "importance": 0.002101807535609271
+  },
+  {
+    "feature": "categorical__x38_energy",
+    "importance": -0.0020953483724246444
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000537",
+    "importance": -0.0020623130746901214
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000440",
+    "importance": -0.0020603275941823785
+  },
+  {
+    "feature": "categorical__x2_Focus / Procrastination",
+    "importance": -0.002056432263519761
+  },
+  {
+    "feature": "categorical__x36_Focus / Procrastination",
+    "importance": -0.002056432263519761
+  },
+  {
+    "feature": "categorical__x30_cg_decision_01",
+    "importance": -0.0020563153633837592
+  },
+  {
+    "feature": "categorical__x31_decision_task",
+    "importance": -0.0020563153633837592
+  },
+  {
+    "feature": "categorical__x30_sa_review_01",
+    "importance": 0.002048537388226677
+  },
+  {
+    "feature": "categorical__x30_co_compassion_02",
+    "importance": 0.002034289413021645
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000562",
+    "importance": -0.002021019420884575
+  },
+  {
+    "feature": "numeric__x33",
+    "importance": 0.0020178189965435276
+  },
+  {
+    "feature": "categorical__x38_friction",
+    "importance": 0.001999968852952417
+  },
+  {
+    "feature": "categorical__x30_cg_decision_02",
+    "importance": -0.001998949494465205
+  },
+  {
+    "feature": "categorical__x30_cm_integrate_02",
+    "importance": -0.0019941577418955405
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000608",
+    "importance": 0.001993484351778567
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000174",
+    "importance": 0.00198311869723312
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000857",
+    "importance": 0.001960928297493752
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000173",
+    "importance": -0.00195765209861475
+  },
+  {
+    "feature": "categorical__x3_Self-Regulation",
+    "importance": -0.0019509188255580246
+  },
+  {
+    "feature": "categorical__x37_Self-Regulation",
+    "importance": -0.0019509188255580246
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000439",
+    "importance": 0.001934323917197671
+  },
+  {
+    "feature": "categorical__x2_Self-Awareness",
+    "importance": 0.0019333498131562392
+  },
+  {
+    "feature": "categorical__x36_Self-Awareness",
+    "importance": 0.0019333498131562392
+  },
+  {
+    "feature": "categorical__x30_rs_conflict_02",
+    "importance": -0.0019317251124724105
+  },
+  {
+    "feature": "categorical__x31_communication_task",
+    "importance": -0.0019298478338133675
+  },
+  {
+    "feature": "categorical__x30_ei_social_02",
+    "importance": 0.00192683994778785
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000841",
+    "importance": -0.0019106313140531666
+  },
+  {
+    "feature": "categorical__x38_evidence",
+    "importance": -0.0019092383528928588
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000549",
+    "importance": -0.0018994401064557154
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001388",
+    "importance": 0.0018772525184795935
+  },
+  {
+    "feature": "categorical__x3_Courageous Action",
+    "importance": -0.001870534483334816
+  },
+  {
+    "feature": "categorical__x37_Courageous Action",
+    "importance": -0.001870534483334816
+  },
+  {
+    "feature": "categorical__x30_sa_pattern_02",
+    "importance": 0.001850969248463287
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000700",
+    "importance": -0.0018186603283140794
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000131",
+    "importance": -0.001783941206247239
+  },
+  {
+    "feature": "categorical__x30_fp_attention_01",
+    "importance": -0.0017834358644508515
+  },
+  {
+    "feature": "categorical__x31_habit_task",
+    "importance": -0.0017785854601765172
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001400",
+    "importance": -0.0017510588207184867
+  },
+  {
+    "feature": "categorical__x30_fp_review_01",
+    "importance": -0.0017477274014419402
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000214",
+    "importance": 0.0017349395297585131
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000740",
+    "importance": 0.0017239407320926755
+  },
+  {
+    "feature": "categorical__x30_cm_feedback_02",
+    "importance": -0.0017216004149792528
+  },
+  {
+    "feature": "categorical__x30_co_compassion_01",
+    "importance": -0.0017103509334111281
+  },
+  {
+    "feature": "categorical__x3_Conflict Navigation",
+    "importance": 0.001705247204155587
+  },
+  {
+    "feature": "categorical__x37_Conflict Navigation",
+    "importance": 0.001705247204155587
+  },
+  {
+    "feature": "categorical__x30_cm_integrate_01",
+    "importance": 0.001700089031186985
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000610",
+    "importance": -0.0016891354764443395
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000070",
+    "importance": -0.0016813187001203287
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001239",
+    "importance": -0.0016795222561136536
+  },
+  {
+    "feature": "categorical__x30_ei_regulate_01",
+    "importance": 0.0016719287633312754
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000248",
+    "importance": -0.0016560488389402545
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001234",
+    "importance": 0.0016545688705467657
+  },
+  {
+    "feature": "categorical__x3_Strengths and Skills",
+    "importance": -0.0016331706262427631
+  },
+  {
+    "feature": "categorical__x37_Strengths and Skills",
+    "importance": -0.0016331706262427631
+  },
+  {
+    "feature": "categorical__x31_reflection",
+    "importance": -0.0016320336510024219
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001392",
+    "importance": 0.001626928157684432
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000698",
+    "importance": 0.0016186478280499402
+  },
+  {
+    "feature": "categorical__x2_Emotional Intelligence",
+    "importance": -0.0016013272365426937
+  },
+  {
+    "feature": "categorical__x36_Emotional Intelligence",
+    "importance": -0.0016013272365426937
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000446",
+    "importance": 0.0015994112323870612
+  },
+  {
+    "feature": "categorical__x30_fp_attention_02",
+    "importance": -0.0015883610472210241
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000642",
+    "importance": 0.0015723723467742743
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001340",
+    "importance": -0.0015341248331279833
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001284",
+    "importance": -0.0015188861607338638
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000742",
+    "importance": -0.001513861463154757
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000991",
+    "importance": 0.0014718871682950574
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000339",
+    "importance": -0.0014561840302345092
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000826",
+    "importance": 0.0014546254463900256
+  },
+  {
+    "feature": "categorical__x1_inconsistent_activity",
+    "importance": 0.00144223729859842
+  },
+  {
+    "feature": "categorical__x3_Goal Setting",
+    "importance": -0.0014323674106970145
+  },
+  {
+    "feature": "categorical__x37_Goal Setting",
+    "importance": -0.0014323674106970145
+  },
+  {
+    "feature": "categorical__x30_rs_review_01",
+    "importance": 0.0014281008593391609
+  },
+  {
+    "feature": "categorical__x3_Interests and Values",
+    "importance": 0.0014066688133342615
+  },
+  {
+    "feature": "categorical__x37_Interests and Values",
+    "importance": 0.0014066688133342615
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000959",
+    "importance": 0.0013951076109187748
+  },
+  {
+    "feature": "categorical__x12_situation_analysis",
+    "importance": 0.0013848301668373348
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000952",
+    "importance": 0.0013820999676803132
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000545",
+    "importance": -0.0013787716173339608
+  },
+  {
+    "feature": "categorical__x38_clarity",
+    "importance": 0.0013744692127767215
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000128",
+    "importance": -0.0013641389201939065
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000264",
+    "importance": 0.001354447119997239
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000206",
+    "importance": 0.0013507501843655542
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000193",
+    "importance": 0.0013391803239614125
+  },
+  {
+    "feature": "categorical__x1_high_engagement",
+    "importance": 0.0013362861364824698
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000798",
+    "importance": -0.0013057417706947103
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000114",
+    "importance": 0.001294570969912592
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000438",
+    "importance": -0.0012753604169149664
+  },
+  {
+    "feature": "categorical__x3_Assertiveness",
+    "importance": -0.0012624698665902737
+  },
+  {
+    "feature": "categorical__x37_Assertiveness",
+    "importance": -0.0012624698665902737
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000809",
+    "importance": -0.0012217970727148243
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000231",
+    "importance": -0.0012015964388359043
+  },
+  {
+    "feature": "categorical__x38_regulation",
+    "importance": 0.0011954934577957117
+  },
+  {
+    "feature": "categorical__x30_ei_integrate_01",
+    "importance": 0.0011829250773544406
+  },
+  {
+    "feature": "categorical__x1_cold_start",
+    "importance": 0.001156691330379984
+  },
+  {
+    "feature": "numeric__x11",
+    "importance": 0.0011481636547620616
+  },
+  {
+    "feature": "categorical__x30_rs_reciprocity_01",
+    "importance": -0.001135661150846235
+  },
+  {
+    "feature": "categorical__x30_cm_difficult_02",
+    "importance": -0.0011324517057209776
+  },
+  {
+    "feature": "categorical__x13_sensitive",
+    "importance": -0.0011251473681352297
+  },
+  {
+    "feature": "categorical__x13_adaptive",
+    "importance": 0.0011251473680156789
+  },
+  {
+    "feature": "categorical__x38_groups",
+    "importance": -0.0011207997231292496
+  },
+  {
+    "feature": "categorical__x31_perspective_taking",
+    "importance": 0.0011161204847131248
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000611",
+    "importance": 0.0011084905550446719
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000839",
+    "importance": -0.001103484763007663
+  },
+  {
+    "feature": "categorical__x30_sa_reflect_01",
+    "importance": 0.001088829854987882
+  },
+  {
+    "feature": "categorical__x38_gratitude",
+    "importance": 0.0010881687539962385
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000905",
+    "importance": 0.0010547148872028594
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000401",
+    "importance": 0.0010546283757092933
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000233",
+    "importance": 0.0010122440798468744
+  },
+  {
+    "feature": "categorical__x30_cg_skills_01",
+    "importance": -0.001003092231647999
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000936",
+    "importance": 0.0009992534806985548
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000787",
+    "importance": 0.0009796845065585872
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000052",
+    "importance": -0.0009688795431031554
+  },
+  {
+    "feature": "categorical__x38_exploration",
+    "importance": 0.000967637579976678
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001298",
+    "importance": 0.0009581173674740441
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000873",
+    "importance": -0.0009314725307438174
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000356",
+    "importance": 0.0009282700006026457
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000706",
+    "importance": 0.0009282120295555367
+  },
+  {
+    "feature": "numeric__x22",
+    "importance": -0.0009239383301528728
+  },
+  {
+    "feature": "categorical__x30_ei_empathy_01",
+    "importance": -0.0009181689283082694
+  },
+  {
+    "feature": "categorical__x38_boundaries",
+    "importance": 0.0009107396815048774
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001211",
+    "importance": -0.0009097424440915806
+  },
+  {
+    "feature": "categorical__x38_capacity",
+    "importance": 0.0009060653912652409
+  },
+  {
+    "feature": "categorical__x2_Communication",
+    "importance": 0.0009031992771889422
+  },
+  {
+    "feature": "categorical__x36_Communication",
+    "importance": 0.0009031992771889422
+  },
+  {
+    "feature": "categorical__x30_cg_interest_01",
+    "importance": -0.0008882697852090658
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000007",
+    "importance": -0.0008794431278053974
+  },
+  {
+    "feature": "categorical__x38_skills",
+    "importance": 0.0008785274840412451
+  },
+  {
+    "feature": "categorical__x38_growth",
+    "importance": 0.0008713159703946484
+  },
+  {
+    "feature": "categorical__x38_confidence",
+    "importance": -0.0008248743421471486
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000849",
+    "importance": -0.0008199299595484578
+  },
+  {
+    "feature": "categorical__x30_sa_values_02",
+    "importance": -0.0008001246045992848
+  },
+  {
+    "feature": "categorical__x2_Career Clarity / Growth",
+    "importance": 0.0007996237268955958
+  },
+  {
+    "feature": "categorical__x36_Career Clarity / Growth",
+    "importance": 0.0007996237268955958
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000515",
+    "importance": 0.0007911384245711556
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000397",
+    "importance": 0.0007826566460809056
+  },
+  {
+    "feature": "categorical__x3_Difficult Conversations",
+    "importance": -0.0007790138789166544
+  },
+  {
+    "feature": "categorical__x37_Difficult Conversations",
+    "importance": -0.0007790138789166544
+  },
+  {
+    "feature": "categorical__x3_Boundaries",
+    "importance": -0.0007755718156045723
+  },
+  {
+    "feature": "categorical__x37_Boundaries",
+    "importance": -0.0007755718156045723
+  },
+  {
+    "feature": "categorical__x3_Feedback",
+    "importance": 0.0007688342198381051
+  },
+  {
+    "feature": "categorical__x37_Feedback",
+    "importance": 0.0007688342198381051
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000975",
+    "importance": -0.0007679244365760171
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000277",
+    "importance": 0.00076353727703192
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000831",
+    "importance": 0.0007512531040977028
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001379",
+    "importance": 0.0007257084773957185
+  },
+  {
+    "feature": "categorical__x12_reflection",
+    "importance": 0.0007220311297311724
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000378",
+    "importance": 0.0007020231344687799
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001285",
+    "importance": 0.000701904159379428
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000911",
+    "importance": 0.0006652899856631006
+  },
+  {
+    "feature": "categorical__x3_Attention Management",
+    "importance": -0.000660324596866297
+  },
+  {
+    "feature": "categorical__x37_Attention Management",
+    "importance": -0.000660324596866297
+  },
+  {
+    "feature": "categorical__x3_Active Listening",
+    "importance": 0.0006602806610618255
+  },
+  {
+    "feature": "categorical__x37_Active Listening",
+    "importance": 0.0006602806610618255
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001011",
+    "importance": -0.0006555232242643638
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000741",
+    "importance": -0.0006541495664628281
+  },
+  {
+    "feature": "categorical__x30_ei_social_01",
+    "importance": 0.0006498010297121806
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001391",
+    "importance": -0.0006444924754922044
+  },
+  {
+    "feature": "categorical__x30_cg_skills_02",
+    "importance": -0.0006300783945996667
+  },
+  {
+    "feature": "numeric__x6",
+    "importance": -0.000621523620364496
+  },
+  {
+    "feature": "numeric__x28",
+    "importance": -0.000621523620364496
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000468",
+    "importance": 0.000618696771738226
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001354",
+    "importance": -0.0006100156735714072
+  },
+  {
+    "feature": "categorical__x31_goal_setting",
+    "importance": 0.0005665820837793689
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001390",
+    "importance": -0.000564061796725512
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000032",
+    "importance": -0.0005309371396103188
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000566",
+    "importance": -0.0005271584191256071
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000137",
+    "importance": 0.0005136870812407506
+  },
+  {
+    "feature": "numeric__x26",
+    "importance": -0.0005056150466164902
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001296",
+    "importance": -0.0005004063725090026
+  },
+  {
+    "feature": "categorical__x38_doubt",
+    "importance": 0.0004759789603339565
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000855",
+    "importance": 0.00044618362989453183
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000500",
+    "importance": 0.0004312497715598748
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000164",
+    "importance": -0.0004122874361996628
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000950",
+    "importance": 0.00041078263826140743
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000964",
+    "importance": 0.0004075161778156521
+  },
+  {
+    "feature": "numeric__x21",
+    "importance": -0.0003969758162092836
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000097",
+    "importance": 0.00039146648218865964
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000685",
+    "importance": 0.000387488187159736
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000391",
+    "importance": -0.0003754021621211727
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000869",
+    "importance": 0.000360489316537209
+  },
+  {
+    "feature": "categorical__x30_cm_difficult_01",
+    "importance": 0.0003534378268018679
+  },
+  {
+    "feature": "categorical__x1_short_preference",
+    "importance": 0.0003444490963357605
+  },
+  {
+    "feature": "categorical__x12_short",
+    "importance": 0.0003444490963357605
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000646",
+    "importance": 0.0003259345423750658
+  },
+  {
+    "feature": "categorical__x3_Self-Compassion",
+    "importance": 0.00032393847961168887
+  },
+  {
+    "feature": "categorical__x37_Self-Compassion",
+    "importance": 0.00032393847961168887
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000449",
+    "importance": -0.0003192517031104033
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000461",
+    "importance": -0.0003187151472252603
+  },
+  {
+    "feature": "categorical__x1_multi_goal",
+    "importance": 0.00031434956011145907
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000115",
+    "importance": -0.0002902425764854883
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001189",
+    "importance": -0.00027265071956413564
+  },
+  {
+    "feature": "categorical__x1_slow_improvement",
+    "importance": -0.00026576296034242457
+  },
+  {
+    "feature": "categorical__x31_implementation_intention",
+    "importance": -0.00026234174211019776
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000520",
+    "importance": -0.00025445925777332516
+  },
+  {
+    "feature": "categorical__x3_Clarity",
+    "importance": 0.0002530982752520693
+  },
+  {
+    "feature": "categorical__x37_Clarity",
+    "importance": 0.0002530982752520693
+  },
+  {
+    "feature": "categorical__x38_impact",
+    "importance": 0.00024941278554716255
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001146",
+    "importance": 0.00023921671781357133
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000945",
+    "importance": 0.00023503475664536161
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000330",
+    "importance": -0.00022774438003857954
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000509",
+    "importance": -0.00020764210647274668
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000423",
+    "importance": 0.0002070380909210829
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000253",
+    "importance": 0.0002034424109519506
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001341",
+    "importance": 0.0002024132145343891
+  },
+  {
+    "feature": "categorical__x30_ei_relationship_01",
+    "importance": 0.00020173950567032364
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000274",
+    "importance": 0.00017459421898630625
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000866",
+    "importance": -0.00016457727636004762
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001052",
+    "importance": -0.0001447827146055788
+  },
+  {
+    "feature": "numeric__x29",
+    "importance": -0.00011269885847491058
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000240",
+    "importance": 9.875502385444342e-05
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001319",
+    "importance": -9.18629012127528e-05
+  },
+  {
+    "feature": "numeric__x4",
+    "importance": 8.888203846226964e-05
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001024",
+    "importance": 8.700768593228496e-05
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001393",
+    "importance": -8.078402257883324e-05
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000843",
+    "importance": 7.173898534541001e-05
+  },
+  {
+    "feature": "categorical__x3_Task Initiation",
+    "importance": -6.975884951985425e-05
+  },
+  {
+    "feature": "categorical__x37_Task Initiation",
+    "importance": -6.975884951985425e-05
+  },
+  {
+    "feature": "categorical__x38_curiosity",
+    "importance": -6.872250176538035e-05
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000861",
+    "importance": -6.323003010410357e-05
+  },
+  {
+    "feature": "categorical__x38_dialogue",
+    "importance": 4.675561720479789e-05
+  },
+  {
+    "feature": "categorical__x2_Confidence",
+    "importance": 3.844244440629229e-05
+  },
+  {
+    "feature": "categorical__x36_Confidence",
+    "importance": 3.844244440629229e-05
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_000017",
+    "importance": 2.3021136263245796e-05
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001079",
+    "importance": -1.9884270399382716e-05
+  },
+  {
+    "feature": "categorical__x0_synthetic_user_001075",
+    "importance": -1.9822753320478897e-05
+  },
+  {
+    "feature": "categorical__x2_Relationships / Social Awareness",
+    "importance": -1.685576177413211e-05
+  },
+  {
+    "feature": "categorical__x36_Relationships / Social Awareness",
+    "importance": -1.685576177413211e-05
+  },
+  {
+    "feature": "categorical__x38_feedback",
+    "importance": -5.557884062257589e-06
+  },
+  {
+    "feature": "boolean__x34",
+    "importance": 3.9142637587935255e-15
+  }
+]

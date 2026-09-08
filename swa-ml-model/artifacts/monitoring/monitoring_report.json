@@ -1,0 +1,82 @@
+{
+  "system_health": {
+    "api": "ok",
+    "model_loaded": true,
+    "database": "not_configured"
+  },
+  "model_status": {
+    "active_model_version": "swa_ml_baseline_v1",
+    "model_status": "ACTIVE",
+    "training_dataset_version": "8.0.0",
+    "training_data_source": "synthetic",
+    "target": "recommendation_quality",
+    "model_readiness": "BASELINE_READY",
+    "activation_timestamp": "2026-08-21T19:02:27.672351+00:00",
+    "parent_model_version": null,
+    "artifact_integrity": true
+  },
+  "metrics": {
+    "system": {
+      "requests": 0,
+      "successful": 0,
+      "errors": 0,
+      "success_rate": null,
+      "error_rate": null,
+      "fallback_rate": null,
+      "fallback_requests": 0,
+      "ml_enabled_requests": 0,
+      "rule_only_requests": 0,
+      "latency": {
+        "status": "INSUFFICIENT_DATA",
+        "count": 0,
+        "average": null,
+        "p50": null,
+        "p95": null,
+        "p99": null
+      }
+    },
+    "errors": {},
+    "recommendations": {
+      "status": "INSUFFICIENT_DATA"
+    }
+  },
+  "drift": {
+    "feature_drift": {
+      "status": "INSUFFICIENT_DATA"
+    },
+    "target_drift": {
+      "status": "INSUFFICIENT_DATA",
+      "message": "Insufficient data for target drift analysis."
+    },
+    "model_drift": {
+      "status": "INSUFFICIENT_DATA"
+    }
+  },
+  "data_quality": {
+    "status": "INSUFFICIENT_DATA"
+  },
+  "alerts": [],
+  "readiness": {
+    "status": "PARTIALLY_READY",
+    "checks": {
+      "artifact_valid": true,
+      "schema_compatible": true,
+      "evaluation_passed": true,
+      "real_data_validation": false,
+      "monitoring": true,
+      "error_tracking": true,
+      "drift_monitoring": true,
+      "rollback": true,
+      "audit": true,
+      "data_quality": false,
+      "performance": true
+    },
+    "model": "swa_ml_baseline_v1",
+    "source": "synthetic",
+    "production_validation": false,
+    "reasons": [
+      "real_data_validation",
+      "data_quality"
+    ]
+  }
+}

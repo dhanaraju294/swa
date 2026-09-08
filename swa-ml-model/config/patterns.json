@@ -1,0 +1,23 @@
+{
+  "minimum_attempts": 3,
+  "minimum_events": 3,
+  "minimum_confidence": 0.45,
+  "recent_days": 30,
+  "trend_window_days": 14,
+  "short_minutes": 15,
+  "long_minutes": 30,
+  "high_completion_rate": 0.7,
+  "low_completion_rate": 0.3,
+  "high_skip_rate": 0.5,
+  "high_abandonment_rate": 0.4,
+  "preference_share": 0.6,
+  "area_focus_share": 0.5,
+  "usefulness_high": 0.75,
+  "usefulness_low": 0.4,
+  "difficult_level": 4,
+  "difficulty_abandonment_rate": 0.5,
+  "time_preference_share": 0.6,
+  "trend_ratio": 1.5,
+  "inactive_days": 45,
+  "pattern_types": ["high_completion", "low_completion", "high_skip_rate", "high_abandonment_rate", "consistent_activity", "inconsistent_activity", "declining_activity", "increasing_activity", "prefers_short_exercises", "prefers_long_exercises", "prefers_reflection", "prefers_micro_action", "prefers_scenario", "prefers_journaling", "prefers_real_world_challenge", "frequently_completes_easy_exercises", "frequently_struggles_with_difficult_exercises", "frequently_abandons_difficult_exercises", "handles_increasing_difficulty", "repeated_focus_area", "repeated_focus_skill", "low_activity_area", "high_activity_area", "consistently_high_usefulness", "consistently_low_usefulness", "difficulty_mismatch", "preferred_time_period", "irregular_activity_time", "repeated_context"]
+}

@@ -1,0 +1,8 @@
+[
+  {"event_id":"evt_demo_01","user_id":"demo_user_01","exercise_id":"sa_values_01","event_type":"exercise_started","timestamp":"2026-08-20T09:00:00Z","session_id":"session_demo_01","metadata":{"source":"development_fixture"}},
+  {"event_id":"evt_demo_02","user_id":"demo_user_01","exercise_id":"sa_values_01","event_type":"exercise_completed","timestamp":"2026-08-20T09:14:00Z","session_id":"session_demo_01","metadata":{"duration_seconds":840}},
+  {"event_id":"evt_demo_03","user_id":"demo_user_01","exercise_id":"sa_values_01","event_type":"exercise_rated","timestamp":"2026-08-20T09:15:00Z","session_id":"session_demo_01","metadata":{"difficulty_rating":2,"usefulness_rating":5}},
+  {"event_id":"evt_demo_04","user_id":"demo_user_01","exercise_id":"sa_values_01","event_type":"exercise_reflected","timestamp":"2026-08-20T09:18:00Z","session_id":"session_demo_01","metadata":{"reflection_text":"Naming the value made the decision feel more concrete."}},
+  {"event_id":"evt_demo_05","user_id":"demo_user_02","exercise_id":"cm_clear_01","event_type":"exercise_skipped","timestamp":"2026-08-19T12:00:00Z","session_id":"session_demo_02","metadata":{"reason":"time_available was shorter than expected"}},
+  {"event_id":"evt_demo_06","user_id":"demo_user_03","exercise_id":"fp_start_01","event_type":"exercise_abandoned","timestamp":"2026-08-18T17:30:00Z","session_id":"session_demo_03","metadata":{"step_reached":"task identified"}}
+]

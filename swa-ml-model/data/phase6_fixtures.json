@@ -1,0 +1,11 @@
+{
+  "users": [
+    {"user_id":"pattern_user_a","description":"Mostly completes short exercises","exercise_ids":["sa_values_01","sa_strengths_01","sa_emotion_01","sa_pattern_01"]},
+    {"user_id":"pattern_user_b","description":"Frequently skips exercises","exercise_ids":["co_efficacy_01","co_assert_01","co_courage_01","co_compassion_01"]},
+    {"user_id":"pattern_user_c","description":"Frequently abandons difficult exercises","exercise_ids":["cm_difficult_02","cm_feedback_01","rs_conflict_02","cg_decision_01"]},
+    {"user_id":"pattern_user_d","description":"Strong reflection preference","exercise_ids":["sa_values_01","sa_strengths_01","sa_pattern_01","sa_review_01"]},
+    {"user_id":"pattern_user_e","description":"Increasing activity","exercise_ids":["co_efficacy_01","co_assert_01","co_courage_01"]},
+    {"user_id":"pattern_user_f","description":"Declining activity","exercise_ids":["cm_clear_01","cm_clear_02","cm_feedback_01"]},
+    {"user_id":"pattern_user_g","description":"Insufficient data","exercise_ids":["sa_values_01"]}
+  ]
+}

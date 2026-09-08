@@ -1,0 +1,15 @@
+{
+  "default_difficulty": 2,
+  "minimum_evidence": 3,
+  "increase_success_rate": 0.75,
+  "decrease_failure_rate": 0.5,
+  "maximum_change_per_update": 1,
+  "difficulty_rating_too_hard": 4,
+  "difficulty_rating_too_easy": 2,
+  "difficulty_tolerance": 0,
+  "recency_half_life_days": 30.0,
+  "minimum_confidence": 0.45,
+  "mastery_influence_min_evidence": 0.5,
+  "consecutive_success_threshold": 3,
+  "consecutive_failure_threshold": 2
+}

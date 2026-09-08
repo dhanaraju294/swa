@@ -1,0 +1,42 @@
+{
+  "users": [
+    {
+      "user_id": "demo_user_01",
+      "created_at": "2026-08-01T09:00:00Z",
+      "updated_at": "2026-08-21T09:00:00Z",
+      "goals": ["goal_demo_01"],
+      "selected_areas": ["Self-Awareness", "Confidence"],
+      "selected_skills": ["Values Awareness", "Self-Efficacy"],
+      "baseline_scores": {"Self-Awareness/Values Awareness": 52, "Confidence/Self-Efficacy": 44},
+      "preferences": {"preferred_minutes": 15, "delivery": "quiet_reflection"},
+      "onboarding_data": {"source": "development_fixture", "completed": true}
+    },
+    {
+      "user_id": "demo_user_02",
+      "created_at": "2026-08-03T10:00:00Z",
+      "updated_at": "2026-08-21T10:00:00Z",
+      "goals": ["goal_demo_02"],
+      "selected_areas": ["Communication", "Career Clarity / Growth"],
+      "selected_skills": ["Clarity", "Exploration"],
+      "baseline_scores": {"Communication/Clarity": 68, "Career Clarity / Growth/Exploration": 39},
+      "preferences": {"preferred_minutes": 20, "delivery": "structured_action"},
+      "onboarding_data": {"source": "development_fixture", "completed": true}
+    },
+    {
+      "user_id": "demo_user_03",
+      "created_at": "2026-08-05T11:00:00Z",
+      "updated_at": "2026-08-21T11:00:00Z",
+      "goals": ["goal_demo_03"],
+      "selected_areas": ["Focus / Procrastination", "Relationships / Social Awareness"],
+      "selected_skills": ["Task Initiation", "Boundaries"],
+      "baseline_scores": {"Focus / Procrastination/Task Initiation": 35, "Relationships / Social Awareness/Boundaries": 61},
+      "preferences": {"preferred_minutes": 10, "delivery": "micro_action"},
+      "onboarding_data": {"source": "development_fixture", "completed": true}
+    }
+  ],
+  "goals": [
+    {"goal_id":"goal_demo_01","user_id":"demo_user_01","area":"Self-Awareness","skill":"Values Awareness","priority":3,"status":"active","created_at":"2026-08-01T09:00:00Z","updated_at":"2026-08-01T09:00:00Z"},
+    {"goal_id":"goal_demo_02","user_id":"demo_user_02","area":"Career Clarity / Growth","skill":"Exploration","priority":2,"status":"active","created_at":"2026-08-03T10:00:00Z","updated_at":"2026-08-03T10:00:00Z"},
+    {"goal_id":"goal_demo_03","user_id":"demo_user_03","area":"Focus / Procrastination","skill":"Task Initiation","priority":3,"status":"active","created_at":"2026-08-05T11:00:00Z","updated_at":"2026-08-05T11:00:00Z"}
+  ]
+}

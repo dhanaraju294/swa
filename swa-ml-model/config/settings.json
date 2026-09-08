@@ -1,0 +1,7 @@
+{
+  "schema_version": "1.0.0",
+  "default_exercise_status": "active",
+  "default_safety_level": "low",
+  "supported_difficulties": [1, 2, 3, 4, 5],
+  "supported_types": ["reflection", "multiple_choice", "scenario", "journaling", "ranking", "self_assessment", "micro_action", "real_world_challenge", "communication_task", "decision_task", "habit_task", "gratitude", "perspective_taking", "situation_analysis", "goal_setting", "implementation_intention"]
+}

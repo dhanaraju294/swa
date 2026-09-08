@@ -1,0 +1,724 @@
+{
+  "model_version": "swa_ml_baseline_v1",
+  "dataset_version": "8.0.0",
+  "synthetic_data": true,
+  "evaluation_timestamp": "2026-08-22T04:51:51.450695+00:00",
+  "test_metrics": {
+    "mae": 0.03528057357333616,
+    "mse": 0.0018915200461831886,
+    "rmse": 0.04349160891693004,
+    "r2": 0.7487557186345741
+  },
+  "validation_metrics": {
+    "mae": 0.03594067843841362,
+    "mse": 0.0019484773973868163,
+    "rmse": 0.04414156088525661,
+    "r2": 0.7289633466359434
+  },
+  "training_metrics": {
+    "mae": 0.03014587456265168,
+    "mse": 0.0013871943984538307,
+    "rmse": 0.03724505871191279,
+    "r2": 0.8147227462511694
+  },
+  "baseline_metrics": {
+    "dummy_regressor": {
+      "mae": 0.06587430246780954,
+      "mse": 0.0075343135134801065,
+      "rmse": 0.0868004234637142,
+      "r2": -0.0007576647658744662
+    },
+    "selected_model": {
+      "mae": 0.03528057357333616,
+      "mse": 0.0018915200461831886,
+      "rmse": 0.04349160891693004,
+      "r2": 0.7487557186345741
+    }
+  },
+  "cross_validation": {
+    "mae_mean": 0.04244221662003541,
+    "mae_std": 0.00037954230218995233,
+    "mae_min": 0.04190569298352751,
+    "mae_max": 0.04272409200977992,
+    "folds": 3
+  },
+  "overfitting": {
+    "training_mae": 0.03014587456265168,
+    "validation_mae": 0.03594067843841362,
+    "test_mae": 0.03528057357333616,
+    "max_gap": 0.005794803875761943,
+    "flagged": false
+  },
+  "generalization": {
+    "cold_start": {
+      "status": "evaluated",
+      "rows": 150,
+      "mae": 0.03493963125355112,
+      "mse": 0.0017702744760032928,
+      "rmse": 0.04207462983798304,
+      "r2": 0.7695808808906686
+    },
+    "difficulty_sensitive": {
+      "status": "evaluated",
+      "rows": 150,
+      "mae": 0.03896746461384832,
+      "mse": 0.002193267013855338,
+      "rmse": 0.046832328725521837,
+      "r2": 0.7290525858082451
+    },
+    "high_engagement": {
+      "status": "evaluated",
+      "rows": 150,
+      "mae": 0.03223733652875121,
+      "mse": 0.0017279625510560248,
+      "rmse": 0.04156876893842329,
+      "r2": 0.7232169865806719
+    },
+    "inconsistent_activity": {
+      "status": "evaluated",
+      "rows": 150,
+      "mae": 0.03684726040997902,
+      "mse": 0.0020798890584283578,
+      "rmse": 0.04560580071030831,
+      "r2": 0.7494972533943562
+    },
+    "low_engagement": {
+      "status": "evaluated",
+      "rows": 150,
+      "mae": 0.039691113328328705,
+      "mse": 0.002221063342997102,
+      "rmse": 0.0471281587057791,
+      "r2": 0.6514233825460068
+    },
+    "multi_goal": {
+      "status": "evaluated",
+      "rows": 150,
+      "mae": 0.032293548628325626,
+      "mse": 0.001532794273114967,
+      "rmse": 0.03915091663186147,
+      "r2": 0.6979397253652289
+    },
+    "rapid_improvement": {
+      "status": "evaluated",
+      "rows": 150,
+      "mae": 0.0350260921667206,
+      "mse": 0.0019277514109637417,
+      "rmse": 0.04390616597886613,
+      "r2": 0.571821369976289
+    },
+    "reflection_preference": {
+      "status": "evaluated",
+      "rows": 150,
+      "mae": 0.03746728879374512,
+      "mse": 0.002078278958682477,
+      "rmse": 0.04558814493574483,
+      "r2": 0.6775219385108223
+    },
+    "short_preference": {
+      "status": "evaluated",
+      "rows": 150,
+      "mae": 0.031807055608575885,
+      "mse": 0.001649561419508373,
+      "rmse": 0.040614793111726825,
+      "r2": 0.7294433957441699
+    },
+    "slow_improvement": {
+      "status": "evaluated",
+      "rows": 150,
+      "mae": 0.03352894440153607,
+      "mse": 0.0017343579572222107,
+      "rmse": 0.041645623506224645,
+      "r2": 0.755959475757224
+    }
+  },
+  "cold_start": {
+    "cold_start_rows": 1440,
+    "rich_rows": 60,
+    "cold_start_metrics": {
+      "status": "evaluated",
+      "rows": 1440,
+      "mae": 0.03553457655293366,
+      "mse": 0.0019140356060077341,
+      "rmse": 0.04374969263900872,
+      "r2": 0.6552747942647055
+    },
+    "rich_metrics": {
+      "status": "evaluated",
+      "rows": 60,
+      "mae": 0.02918450206299621,
+      "mse": 0.0013511466103940904,
+      "rmse": 0.036757946221111025,
+      "r2": 0.7361435684114676
+    }
+  },
+  "feature_ablation": {
+    "without_nlp": {
+      "mae": 0.04469103043724709,
+      "mse": 0.0031693585573769147,
+      "rmse": 0.056297056382877735,
+      "r2": 0.5790247030454109
+    },
+    "without_behavior": {
+      "mae": 0.035274595830994085,
+      "mse": 0.0018962932391218702,
+      "rmse": 0.043546449213705936,
+      "r2": 0.7481217113809278
+    },
+    "without_mastery": {
+      "mae": 0.03550171735723126,
+      "mse": 0.0019179394118095606,
+      "rmse": 0.04379428515011474,
+      "r2": 0.7452465226605096
+    },
+    "without_exercise_metadata": {
+      "mae": 0.03583065751213021,
+      "mse": 0.0019388605205964602,
+      "rmse": 0.044032493917520274,
+      "r2": 0.7424676417529882
+    }
+  },
+  "feature_importance": [
+    {
+      "feature": "categorical__x0_synthetic_user_001335",
+      "value": -0.06873631094719206
+    },
+    {
+      "feature": "categorical__x0_synthetic_user_000256",
+      "value": -0.061149892184301356
+    },
+    {
+      "feature": "categorical__x0_synthetic_user_000603",
+      "value": 0.05711400333284025
+    },
+    {
+      "feature": "categorical__x0_synthetic_user_000046",
+      "value": 0.055391394498538686
+    },
+    {
+      "feature": "categorical__x0_synthetic_user_000420",
+      "value": -0.05503118879517151
+    },
+    {
+      "feature": "categorical__x0_synthetic_user_000766",
+      "value": -0.05456729937803415
+    },
+    {
+      "feature": "categorical__x0_synthetic_user_001191",
+      "value": -0.05324859062761234
+    },
+    {
+      "feature": "categorical__x0_synthetic_user_000417",
+      "value": -0.05233582818697033
+    },
+    {
+      "feature": "categorical__x0_synthetic_user_001204",
+      "value": 0.05232247052101653
+    },
+    {
+      "feature": "categorical__x0_synthetic_user_000636",
+      "value": 0.05225067170077024
+    },
+    {
+      "feature": "categorical__x0_synthetic_user_000695",
+      "value": 0.05172229142935643
+    },
+    {
+      "feature": "categorical__x0_synthetic_user_001082",
+      "value": 0.051678064465253574
+    },
+    {
+      "feature": "categorical__x0_synthetic_user_000914",
+      "value": -0.05137422967310571
+    },
+    {
+      "feature": "categorical__x0_synthetic_user_000122",
+      "value": -0.05049712332582926
+    },
+    {
+      "feature": "categorical__x0_synthetic_user_000664",
+      "value": 0.04969371107280315
+    },
+    {
+      "feature": "categorical__x0_synthetic_user_000920",
+      "value": -0.04966219223553398
+    },
+    {
+      "feature": "categorical__x0_synthetic_user_001267",
+      "value": -0.04933314899004375
+    },
+    {
+      "feature": "categorical__x0_synthetic_user_000197",
+      "value": -0.049258149880550856
+    },
+    {
+      "feature": "categorical__x0_synthetic_user_000477",
+      "value": 0.04912507151519025
+    },
+    {
+      "feature": "categorical__x0_synthetic_user_000372",
+      "value": -0.04908560937838043
+    }
+  ],
+  "prediction_distribution": {
+    "count": 1500,
+    "minimum": 0.3277789982521959,
+    "maximum": 0.8548558788858669,
+    "mean": 0.5229532053579399,
+    "median": 0.5213148354796322,
+    "standard_deviation": 0.07760780810436112,
+    "outside_expected_range": 0,
+    "constant_predictions": false
+  },
+  "residual_analysis": {
+    "mean_residual": 8.520797539348668e-05,
+    "mae": 0.03528057357333616,
+    "rmse": 0.04349160891693004
+  },
+  "error_analysis": [
+    {
+      "user_id": "synthetic_user_001998",
+      "exercise_id": "cg_decision_01",
+      "actual": 0.532914,
+      "predicted": 0.404019850498265,
+      "absolute_error": 0.128894149501735,
+      "difficulty": 4.0,
+      "profile": "inconsistent_activity"
+    },
+    {
+      "user_id": "synthetic_user_001915",
+      "exercise_id": "ei_relationship_02",
+      "actual": 0.305311,
+      "predicted": 0.4202222504674743,
+      "absolute_error": 0.1149112504674743,
+      "difficulty": 4.0,
+      "profile": "difficulty_sensitive"
+    },
+    {
+      "user_id": "synthetic_user_001755",
+      "exercise_id": "co_assert_02",
+      "actual": 0.271045,
+      "predicted": 0.384792170477287,
+      "absolute_error": 0.113747170477287,
+      "difficulty": 4.0,
+      "profile": "difficulty_sensitive"
+    },
+    {
+      "user_id": "synthetic_user_001756",
+      "exercise_id": "rs_review_01",
+      "actual": 0.673692,
+      "predicted": 0.7858666703606989,
+      "absolute_error": 0.11217467036069895,
+      "difficulty": 2.0,
+      "profile": "rapid_improvement"
+    },
+    {
+      "user_id": "synthetic_user_001892",
+      "exercise_id": "cm_feedback_02",
+      "actual": 0.452729,
+      "predicted": 0.34351577732270194,
+      "absolute_error": 0.10921322267729805,
+      "difficulty": 3.0,
+      "profile": "low_engagement"
+    },
+    {
+      "user_id": "synthetic_user_001902",
+      "exercise_id": "co_courage_01",
+      "actual": 0.620612,
+      "predicted": 0.5135558096323315,
+      "absolute_error": 0.10705619036766856,
+      "difficulty": 2.0,
+      "profile": "low_engagement"
+    },
+    {
+      "user_id": "synthetic_user_001753",
+      "exercise_id": "ei_relationship_01",
+      "actual": 0.480423,
+      "predicted": 0.5870507461150773,
+      "absolute_error": 0.10662774611507736,
+      "difficulty": 2.0,
+      "profile": "short_preference"
+    },
+    {
+      "user_id": "synthetic_user_001900",
+      "exercise_id": "cm_integrate_01",
+      "actual": 0.677993,
+      "predicted": 0.7845287691502997,
+      "absolute_error": 0.10653576915029972,
+      "difficulty": 2.0,
+      "profile": "multi_goal"
+    },
+    {
+      "user_id": "synthetic_user_001718",
+      "exercise_id": "ei_empathy_02",
+      "actual": 0.616176,
+      "predicted": 0.5097927231689647,
+      "absolute_error": 0.10638327683103521,
+      "difficulty": 2.0,
+      "profile": "inconsistent_activity"
+    },
+    {
+      "user_id": "synthetic_user_001882",
+      "exercise_id": "ei_regulate_02",
+      "actual": 0.53631,
+      "predicted": 0.43143937083674644,
+      "absolute_error": 0.10487062916325351,
+      "difficulty": 3.0,
+      "profile": "low_engagement"
+    }
+  ],
+  "area_metrics": {
+    "Career Clarity / Growth": {
+      "status": "evaluated",
+      "rows": 213,
+      "mae": 0.03579511631469845,
+      "mse": 0.0019405654684203403,
+      "rmse": 0.04405184977297026,
+      "r2": 0.6950871837934349
+    },
+    "Communication": {
+      "status": "evaluated",
+      "rows": 215,
+      "mae": 0.0354742271689518,
+      "mse": 0.0018478374530303268,
+      "rmse": 0.04298647988647508,
+      "r2": 0.7765941533819034
+    },
+    "Confidence": {
+      "status": "evaluated",
+      "rows": 208,
+      "mae": 0.03603667643803594,
+      "mse": 0.001967802308288611,
+      "rmse": 0.044359917812013705,
+      "r2": 0.7514211410929577
+    },
+    "Emotional Intelligence": {
+      "status": "evaluated",
+      "rows": 195,
+      "mae": 0.03209883031713619,
+      "mse": 0.0017029656862887572,
+      "rmse": 0.041267004813637216,
+      "r2": 0.7161330978187952
+    },
+    "Focus / Procrastination": {
+      "status": "evaluated",
+      "rows": 220,
+      "mae": 0.03691120833762352,
+      "mse": 0.002056465443971283,
+      "rmse": 0.045348268367946344,
+      "r2": 0.6824988579985677
+    },
+    "Relationships / Social Awareness": {
+      "status": "evaluated",
+      "rows": 236,
+      "mae": 0.03638576899020187,
+      "mse": 0.0020024731297384303,
+      "rmse": 0.044749001438450335,
+      "r2": 0.8060493045251383
+    },
+    "Self-Awareness": {
+      "status": "evaluated",
+      "rows": 213,
+      "mae": 0.03383630899873706,
+      "mse": 0.0016913959007391524,
+      "rmse": 0.04112658386906397,
+      "r2": 0.7240879257899672
+    }
+  },
+  "skill_metrics": {
+    "Active Listening": {
+      "status": "evaluated",
+      "rows": 64,
+      "mae": 0.034523595210198404,
+      "mse": 0.0017958674156516262,
+      "rmse": 0.042377675911399695,
+      "r2": 0.7931910609639995
+    },
+    "Assertiveness": {
+      "status": "evaluated",
+      "rows": 42,
+      "mae": 0.03530912171779435,
+      "mse": 0.0019050260156986503,
+      "rmse": 0.043646603713217484,
+      "r2": 0.6648149699271346
+    },
+    "Attention Management": {
+      "status": "evaluated",
+      "rows": 68,
+      "mae": 0.03610858911848397,
+      "mse": 0.0019399370717722252,
+      "rmse": 0.044044716729390206,
+      "r2": 0.7750709270440937
+    },
+    "Boundaries": {
+      "status": "evaluated",
+      "rows": 38,
+      "mae": 0.037345437733022104,
+      "mse": 0.0019549451015513485,
+      "rmse": 0.04421476112738085,
+      "r2": 0.7037685105567318
+    },
+    "Clarity": {
+      "status": "evaluated",
+      "rows": 81,
+      "mae": 0.03477676402697217,
+      "mse": 0.001803933531996725,
+      "rmse": 0.04247273869197423,
+      "r2": 0.6635692328147288
+    },
+    "Conflict Navigation": {
+      "status": "evaluated",
+      "rows": 46,
+      "mae": 0.03798205773939722,
+      "mse": 0.002112447599231901,
+      "rmse": 0.04596137072838343,
+      "r2": 0.5446721668599386
+    },
+    "Connection": {
+      "status": "evaluated",
+      "rows": 109,
+      "mae": 0.03607882164714249,
+      "mse": 0.0020937875092198652,
+      "rmse": 0.04575792291199269,
+      "r2": 0.8184215439483273
+    },
+    "Courageous Action": {
+      "status": "evaluated",
+      "rows": 38,
+      "mae": 0.035317977601638864,
+      "mse": 0.0021278443840428234,
+      "rmse": 0.046128563645997295,
+      "r2": 0.5936412837306583
+    },
+    "Difficult Conversations": {
+      "status": "evaluated",
+      "rows": 35,
+      "mae": 0.03939835682271626,
+      "mse": 0.0021292964025899047,
+      "rmse": 0.04614429978437103,
+      "r2": 0.6652321933056551
+    },
+    "Emotional Awareness": {
+      "status": "evaluated",
+      "rows": 61,
+      "mae": 0.029220053529917658,
+      "mse": 0.0013206131596808172,
+      "rmse": 0.03634024160184983,
+      "r2": 0.6216028314408417
+    },
+    "Empathy": {
+      "status": "evaluated",
+      "rows": 67,
+      "mae": 0.028560266647496096,
+      "mse": 0.0014716355702968959,
+      "rmse": 0.03836190258963828,
+      "r2": 0.505808107876613
+    },
+    "Exploration": {
+      "status": "evaluated",
+      "rows": 52,
+      "mae": 0.03559421496098077,
+      "mse": 0.0019090337313316399,
+      "rmse": 0.04369249055995366,
+      "r2": 0.3692257117486236
+    },
+    "Feedback": {
+      "status": "evaluated",
+      "rows": 35,
+      "mae": 0.03490252493977495,
+      "mse": 0.001763015646212421,
+      "rmse": 0.041988279867272736,
+      "r2": 0.5745765042578559
+    },
+    "Goal Setting": {
+      "status": "evaluated",
+      "rows": 52,
+      "mae": 0.03568936536421449,
+      "mse": 0.0019262579140920894,
+      "rmse": 0.0438891548573459,
+      "r2": 0.48293847819753366
+    },
+    "Interests and Values": {
+      "status": "evaluated",
+      "rows": 62,
+      "mae": 0.03693682583312289,
+      "mse": 0.0021456691179883554,
+      "rmse": 0.0463213678337369,
+      "r2": 0.8302072632350741
+    },
+    "Pattern Recognition": {
+      "status": "evaluated",
+      "rows": 64,
+      "mae": 0.03042580818449926,
+      "mse": 0.0014628278258629096,
+      "rmse": 0.03824693224119955,
+      "r2": 0.6896578713038134
+    },
+    "Persistence": {
+      "status": "evaluated",
+      "rows": 48,
+      "mae": 0.0369783969247343,
+      "mse": 0.0021184994421282466,
+      "rmse": 0.04602715983121538,
+      "r2": 0.5407631776953815
+    },
+    "Planning": {
+      "status": "evaluated",
+      "rows": 41,
+      "mae": 0.035102431217815235,
+      "mse": 0.002053946636033627,
+      "rmse": 0.0453204880383434,
+      "r2": 0.3135779484652963
+    },
+    "Reciprocity": {
+      "status": "evaluated",
+      "rows": 43,
+      "mae": 0.034608107727488346,
+      "mse": 0.0016953562020857104,
+      "rmse": 0.04117470342438073,
+      "r2": 0.5918058068450244
+    },
+    "Relationship Management": {
+      "status": "evaluated",
+      "rows": 40,
+      "mae": 0.04305184373798517,
+      "mse": 0.0025800841390300495,
+      "rmse": 0.05079452863281684,
+      "r2": 0.6969652118028291
+    },
+    "Self-Compassion": {
+      "status": "evaluated",
+      "rows": 43,
+      "mae": 0.03869608857462844,
+      "mse": 0.002159471639814039,
+      "rmse": 0.04647011555628024,
+      "r2": 0.24971919105699714
+    },
+    "Self-Efficacy": {
+      "status": "evaluated",
+      "rows": 85,
+      "mae": 0.03537212505168015,
+      "mse": 0.001830310827753609,
+      "rmse": 0.042782132108552154,
+      "r2": 0.8209580693806813
+    },
+    "Self-Regulation": {
+      "status": "evaluated",
+      "rows": 54,
+      "mae": 0.027918248552923495,
+      "mse": 0.0013335243507690637,
+      "rmse": 0.03651745268729822,
+      "r2": 0.8050433432963249
+    },
+    "Social Awareness": {
+      "status": "evaluated",
+      "rows": 34,
+      "mae": 0.03282573162006009,
+      "mse": 0.0017136777974613015,
+      "rmse": 0.041396591616476124,
+      "r2": 0.6812461625279196
+    },
+    "Strengths Awareness": {
+      "status": "evaluated",
+      "rows": 38,
+      "mae": 0.04152789077143976,
+      "mse": 0.0022393898778506464,
+      "rmse": 0.04732219223420071,
+      "r2": 0.5874757839059037
+    },
+    "Strengths and Skills": {
+      "status": "evaluated",
+      "rows": 47,
+      "mae": 0.03462830630780843,
+      "mse": 0.0017207190190685225,
+      "rmse": 0.041481550345527377,
+      "r2": 0.526665780203454
+    },
+    "Task Initiation": {
+      "status": "evaluated",
+      "rows": 63,
+      "mae": 0.038903476855596725,
+      "mse": 0.002136617325295814,
+      "rmse": 0.04622355812024659,
+      "r2": 0.6315799723494404
+    },
+    "Values Awareness": {
+      "status": "evaluated",
+      "rows": 50,
+      "mae": 0.037987979565667074,
+      "mse": 0.0020198425580671754,
+      "rmse": 0.04494265855584397,
+      "r2": 0.8074517161728926
+    }
+  },
+  "reliability": [
+    {
+      "lower": 0.2,
+      "upper": 0.4,
+      "rows": 72,
+      "predicted_mean": 0.37690289088747575,
+      "actual_mean": 0.3822308194444444
+    },
+    {
+      "lower": 0.4,
+      "upper": 0.6,
+      "rows": 1268,
+      "predicted_mean": 0.5128092667150304,
+      "actual_mean": 0.513738201104101
+    },
+    {
+      "lower": 0.6,
+      "upper": 0.8,
+      "rows": 150,
+      "predicted_mean": 0.6585454818382829,
+      "actual_mean": 0.6480909666666667
+    },
+    {
+      "lower": 0.8,
+      "upper": 1.01,
+      "rows": 10,
+      "predicted_mean": 0.8268827422610627,
+      "actual_mean": 0.8403317
+    }
+  ],
+  "robustness": {
+    "checked_variants": 3,
+    "results": [
+      {
+        "changed_feature": "mastery_score",
+        "baseline": 0.5450028116923794,
+        "variant_prediction": 0.5511615759358739,
+        "delta": 0.006158764243494486
+      },
+      {
+        "changed_feature": "activity_rate",
+        "baseline": 0.5450028116923794,
+        "variant_prediction": 0.5424312442596244,
+        "delta": -0.0025715674327549953
+      },
+      {
+        "changed_feature": "exercise_difficulty",
+        "baseline": 0.5450028116923794,
+        "variant_prediction": 0.5767964963645626,
+        "delta": 0.03179368467218324
+      }
+    ],
+    "status": "controlled predictions evaluated"
+  },
+  "reproducibility": {
+    "status": "deterministic configuration and held-out evaluation",
+    "random_seed": 42
+  },
+  "readiness": {
+    "status": "EXPERIMENTALLY_READY",
+    "checks": {
+      "beats_dummy": true,
+      "r2_threshold": true,
+      "mae_threshold": true,
+      "group_gap": true,
+      "predictions_in_range": true,
+      "not_constant": true
+    },
+    "group_mae_gap": 0.00788405771975282,
+    "note": "Synthetic-data evaluation only; never production readiness."
+  }
+}

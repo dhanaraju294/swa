@@ -1,0 +1,11 @@
+{
+  "dataset_version": "8.0.0",
+  "generator_version": "1.0.0",
+  "default_rows": 10000,
+  "default_seed": 42,
+  "train_fraction": 0.70,
+  "validation_fraction": 0.15,
+  "test_fraction": 0.15,
+  "profiles": ["high_engagement", "low_engagement", "short_preference", "reflection_preference", "difficulty_sensitive", "rapid_improvement", "slow_improvement", "inconsistent_activity", "cold_start", "multi_goal"],
+  "target_definition": "Synthetic recommendation_quality simulates utility from pre-outcome goal/skill fit, difficulty suitability, novelty, context, and historical usefulness. It is not a copy of the Phase 4 rule score and is not a real-user label."
+}

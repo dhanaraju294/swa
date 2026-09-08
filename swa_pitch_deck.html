@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en" data-themes="aurora">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SWA — The Inward Journey | Eureka! Pitch Deck</title>
+<meta name="description" content="SWA — The Continuous Self-Awareness Journey. A 2-minute pitch deck for IIT Bombay E-Cell Eureka.">
+<link rel="stylesheet" href=".agents/skills/html-ppt-skill/assets/fonts.css">
+<link rel="stylesheet" href=".agents/skills/html-ppt-skill/assets/base.css">
+<link rel="stylesheet" href=".agents/skills/html-ppt-skill/assets/themes/aurora.css">
+<link rel="stylesheet" href=".agents/skills/html-ppt-skill/assets/animations/animations.css">
+<style>
+/* ===== SWA Pitch — Custom Design System ===== */
+/* All colors use theme tokens for dark-theme compatibility */
+
+.tpl-swa {
+  --radius: 24px;
+  font-family: var(--font-sans);
+  --swa-card-bg: rgba(255,255,255,0.04);
+  --swa-card-border: rgba(180,220,255,0.10);
+  --swa-card-bg-hover: rgba(255,255,255,0.07);
+  --swa-glass: rgba(255,255,255,0.06);
+}
+
+/* Typography overrides — using theme tokens */
+.tpl-swa .slide {
+  padding: 72px 96px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.tpl-swa .h1 {
+  font-size: 68px;
+  line-height: 1.06;
+  font-weight: 800;
+  letter-spacing: var(--letter-tight);
+  font-family: var(--font-serif);
+  color: var(--text-1);
+  margin: 0;
+}
+
+.tpl-swa .h2 {
+  font-size: 52px;
+  line-height: 1.12;
+  font-weight: 700;
+  letter-spacing: var(--letter-tight);
+  font-family: var(--font-serif);
+  color: var(--text-1);
+  margin: 0;
+}
+
+.tpl-swa .h3 {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: var(--letter-normal);
+  color: var(--text-1);
+  margin: 0;
+}
+
+.tpl-swa .lede {
+  font-size: 22px;
+  color: var(--text-2);
+  max-width: 700px;
+  line-height: 1.55;
+  font-weight: 300;
+}
+
+.tpl-swa .kicker {
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 14px;
+}
+
+.tpl-swa .dim { color: var(--text-3); }
+
+/* ===== Phone Mockup ===== */
+.phone-mockup {
+  width: 300px;
+  height: 620px;
+  border-radius: 40px;
+  background: rgba(10,14,30,0.95);
+  box-shadow: var(--shadow-lg), inset 0 0 0 2px rgba(180,220,255,0.12);
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  padding: 52px 22px 28px;
+  backdrop-filter: blur(20px);
+}
+.phone-notch {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 24px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 20px;
+}
+.phone-ui-bubble {
+  background: var(--swa-glass);
+  padding: 14px 18px;
+  border-radius: 18px;
+  border-bottom-left-radius: 4px;
+  font-size: 14px;
+  margin-bottom: 14px;
+  color: var(--text-2);
+  border: 1px solid var(--swa-card-border);
+}
+.phone-ui-bubble.right {
+  background: var(--grad);
+  color: #fff;
+  border-radius: 18px;
+  border-bottom-right-radius: 4px;
+  align-self: flex-end;
+  border: none;
+}
+.phone-btn {
+  margin-top: auto;
+  background: var(--grad);
+  color: #fff;
+  border-radius: 30px;
+  padding: 14px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+/* ===== Constellation Diagram ===== */
+.constellation {
+  position: relative;
+  height: 380px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.node-core {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: var(--grad);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 22px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(94,242,198,0.25), 0 0 80px rgba(122,162,255,0.15);
+  z-index: 10;
+  position: relative;
+  line-height: 1.3;
+}
+.node-satellite {
+  position: absolute;
+  background: var(--swa-glass);
+  padding: 10px 22px;
+  border-radius: 30px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text-2);
+  border: 1px solid var(--swa-card-border);
+  backdrop-filter: blur(12px);
+}
+.sat-1 { top: 18%; left: 12%; }
+.sat-2 { bottom: 18%; left: 16%; }
+.sat-3 { top: 12%; right: 12%; }
+.sat-4 { bottom: 22%; right: 8%; }
+.sat-5 { top: -8%; left: 50%; transform: translateX(-50%); }
+
+/* ===== Comparison Grid ===== */
+.compare-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-top: 48px;
+}
+.compare-card {
+  padding: 28px 22px;
+  background: var(--swa-card-bg);
+  border: 1px solid var(--swa-card-border);
+  border-radius: var(--radius);
+  text-align: center;
+  opacity: 0.55;
+  transition: all 0.3s var(--ease);
+  backdrop-filter: blur(12px);
+}
+.compare-card:hover {
+  opacity: 1;
+  background: var(--swa-card-bg-hover);
+  box-shadow: var(--shadow);
+  transform: translateY(-4px);
+}
+
+/* ===== Flow Diagram ===== */
+.flow-container {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  margin-top: 48px;
+  position: relative;
+  gap: 18px;
+}
+.flow-line {
+  position: absolute;
+  top: 50%;
+  left: 5%;
+  right: 5%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent-3));
+  opacity: 0.3;
+  z-index: 0;
+}
+.flow-step {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+.flow-ui {
+  width: 100%;
+  min-height: 190px;
+  background: var(--swa-card-bg);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--swa-card-border);
+  backdrop-filter: blur(12px);
+}
+.flow-ui.highlight {
+  border: 1.5px solid var(--accent);
+  background: rgba(94,242,198,0.04);
+}
+
+/* ===== Signal Diagram ===== */
+.signal-diagram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  margin-top: 48px;
+}
+.signal-single {
+  background: var(--swa-glass);
+  padding: 18px 22px;
+  border-radius: 18px;
+  border-bottom-left-radius: 4px;
+  box-shadow: var(--shadow);
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--text-1);
+  border: 1px solid var(--swa-card-border);
+  backdrop-filter: blur(12px);
+}
+.signal-stack {
+  position: relative;
+  width: 280px;
+  height: 240px;
+}
+.signal-stack .bubble {
+  position: absolute;
+  background: var(--swa-glass);
+  padding: 10px 16px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  font-size: 12px;
+  color: var(--text-3);
+  border: 1px solid var(--swa-card-border);
+}
+.pattern-node {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: var(--grad);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  text-align: center;
+  box-shadow: 0 15px 40px rgba(94,242,198,0.3);
+  z-index: 10;
+  line-height: 1.3;
+}
+
+/* ===== Layer Stack ===== */
+.layer-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: 48px;
+}
+.layer {
+  width: 620px;
+  padding: 22px 36px;
+  border-radius: var(--radius);
+  background: var(--swa-card-bg);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--swa-card-border);
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  color: var(--text-1);
+}
+.layer.accent {
+  background: var(--grad);
+  color: #fff;
+  border: none;
+  box-shadow: 0 20px 50px rgba(94,242,198,0.2);
+}
+.layer-icon { font-size: 28px; }
+
+/* ===== Venn Diagram ===== */
+.venn-diagram {
+  position: relative;
+  height: 360px;
+  width: 520px;
+  margin: 48px auto 0;
+}
+.venn-circle {
+  position: absolute;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 36px;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text-2);
+  border: 1.5px solid rgba(94,242,198,0.18);
+  background: rgba(94,242,198,0.04);
+  backdrop-filter: blur(8px);
+}
+.venn-1 { top: 0; left: 50%; transform: translateX(-50%); }
+.venn-2 { bottom: 0; left: 8%; }
+.venn-3 { bottom: 0; right: 8%; }
+.venn-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  font-weight: 800;
+  font-size: 22px;
+  text-align: center;
+  color: var(--accent);
+  line-height: 1.3;
+}
+
+/* ===== Split / Grid Layouts ===== */
+.split-layout {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  gap: 56px;
+}
+.split-half { flex: 1; }
+
+.tracking-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 28px;
+}
+.track-card {
+  background: var(--swa-card-bg);
+  border-radius: 16px;
+  padding: 18px;
+  border: 1px solid var(--swa-card-border);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  backdrop-filter: blur(12px);
+  color: var(--text-1);
+}
+.track-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(94,242,198,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.track-label { font-weight: 600; font-size: 15px; }
+.track-sub { font-size: 12px; color: var(--text-3); }
+
+/* ===== Business Cards ===== */
+.biz-card {
+  flex: 1;
+  background: var(--swa-card-bg);
+  border-radius: 20px;
+  padding: 32px 28px;
+  border: 1px solid var(--swa-card-border);
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(12px);
+  color: var(--text-1);
+}
+.biz-card.featured {
+  flex: 1.15;
+  background: var(--grad);
+  color: #fff;
+  border: none;
+  box-shadow: 0 24px 50px rgba(94,242,198,0.2);
+  transform: scale(1.04);
+  z-index: 10;
+}
+.biz-label {
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.biz-card.featured .biz-label { color: rgba(255,255,255,0.7); }
+.biz-card .dim { color: var(--text-3); }
+.biz-card.featured .dim { color: rgba(255,255,255,0.85); }
+.biz-tier { margin-top: auto; font-weight: 700; padding-top: 16px; }
+
+/* ===== Orb Effect ===== */
+.orb {
+  width: 350px;
+  height: 350px;
+  border-radius: 50%;
+  background: var(--grad);
+  filter: blur(80px);
+  opacity: 0.12;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+}
+
+/* ===== Deck Footer Override ===== */
+.tpl-swa .deck-footer {
+  position: absolute;
+  bottom: 28px;
+  left: 96px;
+  right: 96px;
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-3);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  z-index: 100;
+}
+
+/* ===== Additional utilities ===== */
+.mt-xl { margin-top: 48px; }
+.pt-xl { padding-top: 32px; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+
+/* Mini bar chart inside flow-ui */
+.mini-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  height: 55px;
+  margin-top: auto;
+}
+.mini-chart .bar {
+  flex: 1;
+  border-radius: 4px;
+  transition: height 0.3s var(--ease);
+}
+</style>
+</head>
+<body class="tpl-swa">
+<div class="deck">
+
+  <!-- ========== 1. OPENING ========== -->
+  <section class="slide" data-title="Opening">
+    <div class="split-layout">
+      <div class="split-half anim-fade-up" data-anim="fade-up">
+        <h2 class="h2">We track everything<br>around us.</h2>
+        <div class="tracking-grid">
+          <div class="track-card">
+            <div class="track-icon">10k</div>
+            <div><span class="track-label">Steps</span><br><span class="track-sub">Daily Activity</span></div>
+          </div>
+          <div class="track-card">
+            <div class="track-icon">₹</div>
+            <div><span class="track-label">Finances</span><br><span class="track-sub">Budget & Spend</span></div>
+          </div>
+          <div class="track-card">
+            <div class="track-icon">📅</div>
+            <div><span class="track-label">Schedule</span><br><span class="track-sub">Meetings & Deadlines</span></div>
+          </div>
+          <div class="track-card">
+            <div class="track-icon">🔔</div>
+            <div><span class="track-label">Notifications</span><br><span class="track-sub">Emails & Social</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="split-half anim-fade-up" data-anim="fade-up" style="animation-delay:0.4s; display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; border-left:1px solid var(--border);">
+        <div class="orb"></div>
+        <h2 class="h2 tc" style="font-weight:400; color:var(--text-2);">But we rarely<br><span class="gradient-text" style="font-weight:800;">understand ourselves.</span></h2>
+      </div>
+    </div>
+    <div class="deck-footer"><span>Press 'S' for Presenter Mode</span><span class="slide-number" data-current="1" data-total="10"></span></div>
+    <aside class="notes">
+      <p>Look at the world today. <strong>We track absolutely everything.</strong> We know exactly how many steps we took, where our money went, and what our schedule looks like for the next week.</p>
+      <p>But when it comes to our inner world—our emotions, our motivations, our triggers—we are almost entirely blind. We are highly connected externally, but disconnected internally.</p>
+    </aside>
+  </section>
+
+  <!-- ========== 2. PROBLEM ========== -->
+  <section class="slide" data-title="Problem">
+    <div class="tc">
+      <h2 class="h2 anim-fade-up" data-anim="fade-up">These aren't separate problems.</h2>
+      <p class="lede mt-s mx-auto anim-fade-up" data-anim="fade-up" style="animation-delay:0.1s;">They are symptoms of a deeper disconnect.</p>
+    </div>
+
+    <div class="constellation mt-l anim-fade-up" data-anim="fade-up" style="animation-delay:0.3s;">
+      <div class="node-satellite sat-1">Procrastination</div>
+      <div class="node-satellite sat-2">Confidence Issues</div>
+      <div class="node-satellite sat-3">Overthinking</div>
+      <div class="node-satellite sat-4">Difficult Relationships</div>
+      <div class="node-satellite sat-5">Career Uncertainty</div>
+
+      <svg style="position:absolute; inset:0; width:100%; height:100%; z-index:0; pointer-events:none;">
+        <line x1="50%" y1="50%" x2="22%" y2="23%" stroke="rgba(94,242,198,0.15)" stroke-width="1.5" stroke-dasharray="6,4"/>
+        <line x1="50%" y1="50%" x2="24%" y2="78%" stroke="rgba(122,162,255,0.15)" stroke-width="1.5" stroke-dasharray="6,4"/>
+        <line x1="50%" y1="50%" x2="78%" y2="18%" stroke="rgba(94,242,198,0.15)" stroke-width="1.5" stroke-dasharray="6,4"/>
+        <line x1="50%" y1="50%" x2="82%" y2="72%" stroke="rgba(201,132,255,0.15)" stroke-width="1.5" stroke-dasharray="6,4"/>
+        <line x1="50%" y1="50%" x2="50%" y2="2%" stroke="rgba(122,162,255,0.15)" stroke-width="1.5" stroke-dasharray="6,4"/>
+      </svg>
+
+      <div class="node-core">Lack of<br>Self-Awareness</div>
+    </div>
+    <div class="deck-footer"><span>The Problem</span><span class="slide-number" data-current="2" data-total="10"></span></div>
+    <aside class="notes">
+      <p>Take a modern college student or young professional. They struggle with procrastination, overthinking, career uncertainty, and confidence issues.</p>
+      <p>We treat these as separate, isolated problems. But they aren't. They are all symptoms orbiting one central core: <strong>A fundamental lack of self-awareness.</strong></p>
+    </aside>
+  </section>
+
+  <!-- ========== 3. EXISTING GAP ========== -->
+  <section class="slide" data-title="Existing Gap">
+    <h2 class="h2 tc anim-fade-up" data-anim="fade-up">The missing layer in mental wellbeing.</h2>
+
+    <div class="compare-grid anim-fade-up" data-anim="fade-up" style="animation-delay:0.2s;">
+      <div class="compare-card">
+        <div style="font-size:28px; margin-bottom:10px;">📚</div>
+        <h4 class="h3" style="font-size:18px;">Generic Self-Help</h4>
+        <p class="dim mt-s" style="font-size:13px;">Inspiring, but lacks personal context.</p>
+      </div>
+      <div class="compare-card">
+        <div style="font-size:28px; margin-bottom:10px;">📓</div>
+        <h4 class="h3" style="font-size:18px;">Blank Journals</h4>
+        <p class="dim mt-s" style="font-size:13px;">Overwhelming, lacks guided direction.</p>
+      </div>
+      <div class="compare-card">
+        <div style="font-size:28px; margin-bottom:10px;">✅</div>
+        <h4 class="h3" style="font-size:18px;">Productivity Apps</h4>
+        <p class="dim mt-s" style="font-size:13px;">Focuses on output, ignores internal state.</p>
+      </div>
+      <div class="compare-card">
+        <div style="font-size:28px; margin-bottom:10px;">🛋️</div>
+        <h4 class="h3" style="font-size:18px;">Therapy</h4>
+        <p class="dim mt-s" style="font-size:13px;">Crucial for crisis, but not an everyday tool.</p>
+      </div>
+    </div>
+
+    <div class="mt-xl tc anim-fade-up" data-anim="fade-up" style="animation-delay:0.4s;">
+      <p class="lede mx-auto" style="color:var(--text-1);">We lack a space for <strong class="gradient-text">continuous, everyday self-awareness.</strong></p>
+    </div>
+    <div class="deck-footer"><span>The Existing Landscape</span><span class="slide-number" data-current="3" data-total="10"></span></div>
+    <aside class="notes">
+      <p>When people try to fix this, where do they go?</p>
+      <p>Self-help books are generic. Blank journals are intimidating. Productivity apps focus on doing, not feeling. And therapy is essential for clinical needs, but it's not a continuous, everyday practice.</p>
+      <p>There is a massive gap in the market for something that lives in your pocket every single day.</p>
+    </aside>
+  </section>
+
+  <!-- ========== 4. SWA REVEAL ========== -->
+  <section class="slide" data-title="Reveal" data-fx="gradient-blob">
+    <div class="split-layout">
+      <div class="split-half anim-fade-up" data-anim="fade-up">
+        <span class="kicker" style="font-size:28px; letter-spacing:0.2em;">SWA</span>
+        <h1 class="h1 mt-m">The Continuous<br>Self-Awareness<br><span class="gradient-text">Journey.</span></h1>
+        <p class="lede mt-l">Small moments of reflection, repeated consistently, to build lasting self-awareness.</p>
+      </div>
+
+      <div class="split-half anim-fade-up" style="display:flex; justify-content:center; animation-delay:0.3s;" data-anim="fade-up">
+        <div class="phone-mockup">
+          <div class="phone-notch"></div>
+          <div style="font-size:12px; color:var(--text-3); text-align:center; margin-bottom:24px; letter-spacing:0.08em; text-transform:uppercase;">Morning Check-in</div>
+          <h3 class="h3" style="font-size:20px; margin-bottom:20px; color:var(--text-1);">How did you wake up feeling today?</h3>
+          <div class="phone-ui-bubble">Honestly, a bit overwhelmed by my schedule.</div>
+          <div class="phone-ui-bubble right">It makes sense to feel that way. What's one small thing you can control right now?</div>
+          <div class="phone-btn">Reflect</div>
+        </div>
+      </div>
+    </div>
+    <div class="deck-footer"><span>Introducing SWA</span><span class="slide-number" data-current="4" data-total="10"></span></div>
+    <aside class="notes">
+      <p>Introducing SWA.</p>
+      <p>SWA is not a habit tracker, and it's not an AI therapist. It is a continuous self-awareness journey.</p>
+      <p>We designed SWA to be incredibly lightweight. Through tiny, personalized micro-reflections directly on your phone, SWA helps you pause, notice what you are feeling, and understand why.</p>
+    </aside>
+  </section>
+
+  <!-- ========== 5. THE EXPERIENCE ========== -->
+  <section class="slide" data-title="The Experience">
+    <h2 class="h2 tc anim-fade-up" data-anim="fade-up">Small moments. <span class="gradient-text">Accumulated understanding.</span></h2>
+
+    <div class="flow-container anim-fade-up" data-anim="fade-up" style="animation-delay:0.2s;">
+      <div class="flow-line"></div>
+
+      <div class="flow-step">
+        <div class="flow-ui">
+          <div style="font-size:11px; color:var(--accent); font-weight:700; letter-spacing:0.1em; margin-bottom:10px;">MORNING</div>
+          <div style="font-size:15px; font-weight:600; color:var(--text-1);">Check-in</div>
+          <div style="font-size:12px; color:var(--text-3); margin-top:8px; line-height:1.5;">A 30-second pause to set your daily emotional baseline.</div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-ui">
+          <div style="font-size:11px; color:var(--accent-2); font-weight:700; letter-spacing:0.1em; margin-bottom:10px;">DURING THE DAY</div>
+          <div style="font-size:15px; font-weight:600; color:var(--text-1);">Micro-moments</div>
+          <div style="font-size:12px; color:var(--text-3); margin-top:8px; line-height:1.5;">Contextual nudges to notice thoughts as they happen.</div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-ui">
+          <div style="font-size:11px; color:var(--accent-3); font-weight:700; letter-spacing:0.1em; margin-bottom:10px;">EVENING</div>
+          <div style="font-size:15px; font-weight:600; color:var(--text-1);">Reflection</div>
+          <div style="font-size:12px; color:var(--text-3); margin-top:8px; line-height:1.5;">Unpack the day's friction points with guided AI processing.</div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-ui highlight">
+          <div style="font-size:11px; color:var(--accent); font-weight:700; letter-spacing:0.1em; margin-bottom:10px;">OVER TIME</div>
+          <div style="font-size:15px; font-weight:600; color:var(--text-1);">Insights</div>
+          <div class="mini-chart">
+            <div class="bar" style="height:35%; background:var(--accent);"></div>
+            <div class="bar" style="height:55%; background:var(--accent);"></div>
+            <div class="bar" style="height:25%; background:var(--accent-2);"></div>
+            <div class="bar" style="height:70%; background:var(--accent-2);"></div>
+            <div class="bar" style="height:45%; background:var(--accent-3);"></div>
+            <div class="bar" style="height:85%; background:var(--accent-3);"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="deck-footer"><span>The Experience</span><span class="slide-number" data-current="5" data-total="10"></span></div>
+    <aside class="notes">
+      <p>Here is how it actually fits into a user's day.</p>
+      <p>You wake up, do a 30-second check-in. During the day, you receive small nudges to notice your state. In the evening, you reflect on friction points.</p>
+      <p>Because these take less than a minute, it becomes effortless. And over weeks and months, these tiny interactions accumulate into deep, personalized insights.</p>
+    </aside>
+  </section>
+
+  <!-- ========== 6. DIFFERENTIATOR ========== -->
+  <section class="slide" data-title="Differentiator">
+    <div class="tc">
+      <h2 class="h2 anim-fade-up" data-anim="fade-up">Signal <span class="gradient-text">≠</span> Label</h2>
+      <p class="lede mt-s mx-auto anim-fade-up" data-anim="fade-up" style="animation-delay:0.1s;">One response does not define you. Repeated signals reveal patterns.</p>
+    </div>
+
+    <div class="signal-diagram anim-fade-up" data-anim="fade-up" style="animation-delay:0.3s;">
+
+      <div style="display:flex; flex-direction:column; align-items:center; gap:18px;">
+        <div class="signal-single">"I hesitated before speaking in class."</div>
+        <div style="color:var(--bad); font-weight:800; font-size:22px;">≠ "I am an insecure person"</div>
+        <p class="dim" style="font-size:13px;">(A single signal)</p>
+      </div>
+
+      <div style="font-size:36px; color:var(--text-3);">→</div>
+
+      <div class="signal-stack">
+        <div class="bubble" style="top:8%; left:8%; opacity:0.35;">"Skipped the meeting"</div>
+        <div class="bubble" style="top:18%; right:3%; opacity:0.5;">"Didn't send the email"</div>
+        <div class="bubble" style="bottom:8%; left:15%; opacity:0.4;">"Stayed quiet again"</div>
+        <div class="bubble" style="bottom:22%; right:10%; opacity:0.55;">"Felt judged by peers"</div>
+        <div class="bubble" style="top:38%; left:3%; opacity:0.25;">"Avoided feedback"</div>
+        <div class="pattern-node">Fear of<br>Evaluation</div>
+      </div>
+
+    </div>
+    <div class="deck-footer"><span>The Differentiator</span><span class="slide-number" data-current="6" data-total="10"></span></div>
+    <aside class="notes">
+      <p>This brings us to our biggest differentiator: Signal vs Label.</p>
+      <p>Most apps try to diagnose you immediately. SWA knows that a single moment—like hesitating in class—does not mean you are an insecure person. It's just a signal.</p>
+      <p>SWA's intelligence lies in collecting hundreds of these lightweight signals over time. When SWA sees a cluster, it identifies the underlying pattern—like a fear of evaluation—and brings it to your awareness.</p>
+    </aside>
+  </section>
+
+  <!-- ========== 7. INTELLIGENCE STACK ========== -->
+  <section class="slide" data-title="Architecture">
+    <h2 class="h2 tc anim-fade-up" data-anim="fade-up">A reflective intelligence layer.</h2>
+    <p class="lede tc mx-auto mt-s anim-fade-up" data-anim="fade-up" style="animation-delay:0.1s;">AI helps you notice yourself better. It doesn't decide who you are.</p>
+
+    <div class="layer-stack anim-fade-up" data-anim="fade-up" style="animation-delay:0.2s;">
+      <div class="layer">
+        <div class="layer-icon">🔒</div>
+        <div>
+          <h4 class="h3" style="font-size:18px;">Human-Centered Safety</h4>
+          <p class="dim mt-s" style="font-size:13px;">No clinical diagnosis. No fixed labels. Absolute privacy and user control.</p>
+        </div>
+      </div>
+
+      <div class="layer accent">
+        <div class="layer-icon">✨</div>
+        <div>
+          <h4 class="h3" style="font-size:18px; color:#fff;">Reflective AI Engine</h4>
+          <p class="mt-s" style="font-size:13px; opacity:0.9;">Personalizes prompts, identifies longitudinal patterns, adapts to each individual journey.</p>
+        </div>
+      </div>
+
+      <div class="layer">
+        <div class="layer-icon">🧠</div>
+        <div>
+          <h4 class="h3" style="font-size:18px;">Evidence-Informed Psychology</h4>
+          <p class="dim mt-s" style="font-size:13px;">Grounded in Self-Determination Theory, ACT, and metacognition.</p>
+        </div>
+      </div>
+    </div>
+    <div class="deck-footer"><span>Psychology + AI + Safety</span><span class="slide-number" data-current="7" data-total="10"></span></div>
+    <aside class="notes">
+      <p>How do we do this safely? Through a three-tiered architecture.</p>
+      <p>At the base, everything is grounded in evidence-based psychology like ACT and metacognition.</p>
+      <p>In the middle, our Reflective AI engine acts as a mirror, not a doctor. It personalizes prompts but never prescribes.</p>
+      <p>And at the top, human-centered safety ensures strict non-clinical boundaries and absolute privacy.</p>
+    </aside>
+  </section>
+
+  <!-- ========== 8. INITIAL MARKET ========== -->
+  <section class="slide" data-title="Market">
+    <div class="split-layout">
+      <div class="split-half anim-fade-up" data-anim="fade-up">
+        <h2 class="h2">The perfect crucible<br>for <span class="gradient-text">self-awareness.</span></h2>
+        <p class="lede mt-m">We are launching first with <strong>College Students</strong>.</p>
+        <p class="dim mt-l" style="font-size:16px; line-height:1.65;">College is a highly volatile period of identity formation. Students are isolated from old support structures while facing immense new pressures.</p>
+      </div>
+
+      <div class="split-half anim-fade-up" data-anim="fade-up" style="animation-delay:0.3s;">
+        <div class="venn-diagram">
+          <div class="venn-circle venn-1">Identity Formation</div>
+          <div class="venn-circle venn-2" style="padding-top:160px; padding-left:36px;">Academic Pressure</div>
+          <div class="venn-circle venn-3" style="padding-top:160px; padding-right:36px; text-align:right;">Career Uncertainty</div>
+          <div class="venn-core">College<br>Stage</div>
+        </div>
+      </div>
+    </div>
+    <div class="deck-footer"><span>Initial Market</span><span class="slide-number" data-current="8" data-total="10"></span></div>
+    <aside class="notes">
+      <p>To bring this to market, we are starting with college students.</p>
+      <p>Why? Because college is the ultimate crucible for self-awareness. It is where identity formation, intense academic pressure, and career uncertainty all violently collide.</p>
+      <p>Students need a safe, private space to process this transition, making them the perfect early adopters.</p>
+    </aside>
+  </section>
+
+  <!-- ========== 9. BUSINESS MODEL ========== -->
+  <section class="slide" data-title="Business Model">
+    <h2 class="h2 tc anim-fade-up" data-anim="fade-up">Scaling the inward journey.</h2>
+
+    <div style="display:flex; gap:18px; align-items:stretch; margin-top:48px;" class="anim-fade-up" data-anim="fade-up">
+
+      <div class="biz-card">
+        <div class="biz-label">Foundation</div>
+        <h3 class="h3 mt-s" style="font-size:22px;">Daily Experience</h3>
+        <p class="dim mt-s" style="font-size:14px; line-height:1.5;">The continuous core loop of morning checks and evening reflections.</p>
+        <div class="biz-tier">Free / Base Tier</div>
+      </div>
+
+      <div class="biz-card featured">
+        <div class="biz-label">Monetization</div>
+        <h3 class="h3 mt-s" style="font-size:22px; color:#fff;">Premium Modules</h3>
+        <p class="dim mt-s" style="font-size:14px; line-height:1.5;">7-day and 21-day guided growth modules (Confidence, Communication) built on user patterns.</p>
+        <div class="biz-tier">Subscription Revenue</div>
+      </div>
+
+      <div class="biz-card">
+        <div class="biz-label" style="color:var(--text-3);">Expansion</div>
+        <h3 class="h3 mt-s" style="font-size:22px;">Broader Ecosystem</h3>
+        <p class="dim mt-s" style="font-size:14px; line-height:1.5;">Expanding from college students to working professionals and organizational wellbeing.</p>
+        <div class="biz-tier">B2B & Global Scale</div>
+      </div>
+
+    </div>
+    <div class="deck-footer"><span>Business Model & Scale</span><span class="slide-number" data-current="9" data-total="10"></span></div>
+    <aside class="notes">
+      <p>Our business model is built on engagement.</p>
+      <p>The daily check-in is the free foundation. But once users discover their patterns, they want to take action.</p>
+      <p>This is where our Premium 7-day and 21-day guided modules come in—specialized sprints for confidence, communication, or anxiety, generating subscription revenue.</p>
+      <p>From our college beachhead, the model naturally expands to professionals and B2B organizational wellbeing.</p>
+    </aside>
+  </section>
+
+  <!-- ========== 10. CLOSING ========== -->
+  <section class="slide" data-title="Closing" data-fx="gradient-blob">
+    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; text-align:center;">
+      <p class="kicker anim-fade-up" data-anim="fade-up" style="font-size:16px; letter-spacing:0.16em;">THE ANSWER TO EVERY QUESTION BEGINS WITHIN.</p>
+
+      <h2 class="h2 mt-xl anim-fade-up" data-anim="fade-up" style="animation-delay:0.2s; font-weight:400; color:var(--text-2);">The world keeps asking us to look outward.</h2>
+      <h1 class="h1 mt-s anim-fade-up" data-anim="fade-up" style="animation-delay:0.4s; font-size:60px;"><span class="gradient-text">SWA helps us look inward.</span></h1>
+
+      <div class="mt-xl pt-xl anim-fade-up" data-anim="fade-up" style="animation-delay:0.6s;">
+        <span style="font-size:36px; font-weight:900; letter-spacing:0.2em; color:var(--text-1);">SWA</span>
+        <p class="mt-s" style="font-size:14px; color:var(--text-2); font-weight:600; letter-spacing:0.16em; text-transform:uppercase;">The Inward Journey</p>
+      </div>
+    </div>
+    <div class="deck-footer"><span>Thank you</span><span class="slide-number" data-current="10" data-total="10"></span></div>
+    <aside class="notes">
+      <p>To conclude: The world will never stop demanding that we look outward.</p>
+      <p>SWA exists to help us look inward.</p>
+      <p>Thank you.</p>
+    </aside>
+  </section>
+
+</div>
+
+<script src=".agents/skills/html-ppt-skill/assets/runtime.js"></script>
+<script src=".agents/skills/html-ppt-skill/assets/animations/fx/gradient-blob.js"></script>
+<script src=".agents/skills/html-ppt-skill/assets/animations/fx-runtime.js"></script>
+</body>
+</html>

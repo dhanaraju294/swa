@@ -1,0 +1,41 @@
+{
+  "name": "swa-mobile",
+  "private": true,
+  "workspaces": [
+    "apps/mobile"
+  ],
+  "scripts": {
+    "setup": "npm install",
+    "generate:ios": "if command -v ubrn >/dev/null 2>&1; then ubrn build ios --and-generate --config ubrn.config.yaml && sed -i '' 's#\"apps/[^\"]*mobile/cpp/generated/inward_core.hpp\"#\"generated/inward_core.hpp\"#' apps/mobile/cpp/swa-mobile.cpp; else echo 'ubrn CLI not found. Skipping native binding generation and using existing bindings or JS fallback.'; fi",
+    "generate:android": "if command -v ubrn >/dev/null 2>&1; then ubrn build android --and-generate --config ubrn.config.yaml && sed -i '' 's#\"apps/[^\"]*mobile/cpp/generated/inward_core.hpp\"#\"generated/inward_core.hpp\"#' apps/mobile/cpp/swa-mobile.cpp; else echo 'ubrn CLI not found. Skipping native binding generation and using existing bindings or JS fallback.'; fi",
+    "generate": "npm run generate:android && npm run generate:ios",
+    "prebuild": "npm run generate && npm run --workspace inward-journey prebuild",
+    "ios": "npm run generate:ios && npm run --workspace inward-journey ios",
+    "android": "npm run generate:android && npm run --workspace inward-journey android",
+    "start": "npm run --workspace inward-journey start",
+    "test:rust": "cd rust/inward_core && cargo test",
+    "test:rust:ml": "cd rust/inward_core && cargo test --test ml_integration_tests -- --nocapture",
+    "test:ml": "cd swa-ml-model && python -m pytest -q",
+    "test:all": "npm run test:rust && npm run test:rust:ml",
+    "ml:install": "cd swa-ml-model && python -m venv .venv && .venv/bin/pip install -e \".[dev]\"",
+    "ml:train": "cd swa-ml-model && python -m swa_ml_api.train_suite",
+    "ml:serve": "cd swa-ml-model && python -m uvicorn swa_ml_api.main:app --host 0.0.0.0 --port 8001 --reload",
+    "ml:health": "curl -s http://127.0.0.1:8001/health | python -m json.tool",
+    "test:app": "npm run --workspace inward-journey test",
+    "typecheck": "npm run --workspace inward-journey typecheck"
+  },
+  "devDependencies": {
+    "uniffi-bindgen-react-native": "^0.29.3-1"
+  },
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anomalyco/inward.git"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "^2.1.2",
+    "expo": "~52.0.49",
+    "react": "18.3.1",
+    "react-native": "0.76.9"
+  }
+}
