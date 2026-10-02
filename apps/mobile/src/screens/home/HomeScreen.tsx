@@ -2,10 +2,10 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useIsFocused } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
-import { Alert, ToastAndroid, View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BlossomMascot3D } from './BlossomMascot3D';
+import { BlossomMascot } from './BlossomMascot';
 import { Button } from '../../design-system/Button';
 import { Card } from '../../design-system/Card';
 import { EyebrowLabel } from '../../design-system/EyebrowLabel';
@@ -16,7 +16,7 @@ import { useProfile } from '../../hooks/useProfile';
 import { useLatestSpotCheckin } from '../../hooks/useSpotCheckins';
 import { streakMoodFor, streakMoodLabel } from '../../journey/streakMood';
 import type { JourneyPart } from '../../journey/types';
-import { hasAndroidStreakWidget, requestStreakWidget, syncStreakWidget } from '../../widgets/streakWidget';
+import { syncStreakWidget } from '../../widgets/streakWidget';
 
 const greetingFor = (hours: number) => (hours < 12 ? 'Good morning' : hours < 18 ? 'Good afternoon' : 'Good evening');
 
@@ -38,10 +38,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const isFocused = useIsFocused();
   const hasFocusedBefore = useRef(false);
-  const requestWidgetRef = useRef(false);
   const [now, setNow] = useState(() => new Date());
-  const [widgetRequested, setWidgetRequested] = useState(false);
-  const [requestingWidget, setRequestingWidget] = useState(false);
   const { data: profile } = useProfile();
   const { data: streak, loading: streakLoading, refresh: refreshStreak } = useStreak();
   const { data: spotCheckin, loading: spotCheckinLoading, refresh: refreshSpotCheckin } = useLatestSpotCheckin();
@@ -104,30 +101,6 @@ export default function HomeScreen() {
   const streakNum = streakLoading ? '—' : String(mascotMood === 'sad' ? 0 : (streak?.currentStreak ?? 0));
   const longest = streakLoading ? '—' : String(streak?.longestStreak ?? 0);
 
-  const addAndroidWidget = async () => {
-    if (requestWidgetRef.current) return;
-    requestWidgetRef.current = true;
-    setRequestingWidget(true);
-    try {
-      const requested = await requestStreakWidget(streak);
-      if (requested) {
-        setWidgetRequested(true);
-        ToastAndroid.show('Choose a spot on your home screen for Blossom', ToastAndroid.LONG);
-      } else {
-        Alert.alert(
-          'Widget unavailable',
-          'Your launcher could not open the widget picker. Long-press your home screen, choose Widgets, then select SWA.',
-        );
-      }
-    } catch (error) {
-      console.warn('Could not request the streak widget:', error);
-      Alert.alert('Could not add widget', 'Please try adding SWA from your home-screen widget picker.');
-    } finally {
-      requestWidgetRef.current = false;
-      setRequestingWidget(false);
-    }
-  };
-
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -165,7 +138,7 @@ export default function HomeScreen() {
 
         {/* Blossom mirrors the streak gently; missed days never block the daily path. */}
         <View style={styles.illustrationCard}>
-          <BlossomMascot3D mood={mascotMood} active={isFocused} />
+          <BlossomMascot mood={mascotMood} active={isFocused} />
           <View style={[styles.moodBadge, mascotMood === 'sad' && styles.moodBadgeSad]}>
             <View style={[styles.moodDot, mascotMood === 'sad' && styles.moodDotSad]} />
             <Text style={styles.moodBadgeText}>{streakMoodLabel(mascotMood)}</Text>
@@ -199,34 +172,6 @@ export default function HomeScreen() {
             {'  '}Practice: Day {exerciseDay} · {exerciseCompletedDays.length}/{total} complete
           </Text>
         </Card>
-
-        {hasAndroidStreakWidget ? (
-          <TouchableOpacity
-            onPress={addAndroidWidget}
-            disabled={requestingWidget}
-            activeOpacity={0.82}
-            style={styles.widgetAction}
-            accessibilityRole="button"
-            accessibilityLabel="Add the SWA streak widget to your Android home screen"
-            accessibilityHint="Opens the Android widget picker."
-            accessibilityState={{ disabled: requestingWidget }}
-          >
-            <View style={styles.widgetActionIcon}>
-              <Ionicons name="phone-portrait-outline" size={18} color="#52734F" accessible={false} />
-            </View>
-            <View style={styles.widgetActionCopy}>
-              <Text style={styles.widgetActionTitle}>
-                {requestingWidget
-                  ? 'Opening widget picker…'
-                  : widgetRequested
-                    ? 'Widget requested'
-                    : 'Keep Blossom close'}
-              </Text>
-              <Text style={styles.widgetActionSub}>Add your streak to your home screen</Text>
-            </View>
-            <Ionicons name="add-circle-outline" size={21} color="#52734F" accessible={false} />
-          </TouchableOpacity>
-        ) : null}
 
         {/* The reflection pair and exercise each keep their own sequence day. */}
         <EyebrowLabel label="CONTINUE YOUR PATH" />
@@ -368,30 +313,6 @@ const styles = StyleSheet.create({
     color: '#5F6558',
     letterSpacing: 0.15,
   },
-  widgetAction: {
-    marginTop: spacing.md,
-    minHeight: 68,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 10,
-    borderRadius: radius.md,
-    backgroundColor: '#EEF3E8',
-    borderWidth: 1,
-    borderColor: '#DDE7D7',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 11,
-  },
-  widgetActionIcon: {
-    width: 38,
-    height: 38,
-    borderRadius: 13,
-    backgroundColor: '#DDE9D7',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  widgetActionCopy: { flex: 1 },
-  widgetActionTitle: { fontFamily: 'Nunito_800ExtraBold', fontSize: 13, color: '#3F5840' },
-  widgetActionSub: { fontFamily: 'Nunito_400Regular', fontSize: 11, color: '#6C7866', marginTop: 2 },
   rhythmCard: {
     padding: spacing.lg,
     marginTop: spacing.lg,

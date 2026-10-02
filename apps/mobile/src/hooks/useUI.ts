@@ -6,6 +6,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 
 type UIState = {
   currentTab: string;
+  widgetPromptSeen: boolean;
   journalDrafts: Record<string, string>;
   onTheSpotDraft: {
     feeling: string;
@@ -22,6 +23,7 @@ type UIState = {
     oneWord: string;
   };
   setCurrentTab: (tab: string) => void;
+  setWidgetPromptSeen: (seen: boolean) => void;
   setJournalDraft: (key: string, text: string) => void;
   clearJournalDraft: (key: string) => void;
   setOnTheSpotDraft: (draft: Partial<UIState['onTheSpotDraft']>) => void;
@@ -101,11 +103,13 @@ export const useUI = create<UIState>()(
   persist(
     (set) => ({
       currentTab: 'home',
+      widgetPromptSeen: false,
       journalDrafts: {},
       onTheSpotDraft: defaultOnTheSpot,
       spotCheckinDraft: defaultSpotCheckin,
       checkinDraft: defaultCheckin,
       setCurrentTab: (tab) => set({ currentTab: tab }),
+      setWidgetPromptSeen: (seen) => set({ widgetPromptSeen: seen }),
       setJournalDraft: (key, text) => set((s) => ({ journalDrafts: { ...s.journalDrafts, [key]: text } })),
       clearJournalDraft: (key) =>
         set((s) => {

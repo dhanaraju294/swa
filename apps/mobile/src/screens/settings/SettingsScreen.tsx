@@ -1,15 +1,17 @@
 import { useIsFocused } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Switch, TouchableOpacity } from 'react-native';
+import { Modal, View, Text, StyleSheet, ScrollView, Switch, TouchableOpacity } from 'react-native';
 
 import { Button } from '../../design-system/Button';
 import { Card } from '../../design-system/Card';
 import { EyebrowLabel } from '../../design-system/EyebrowLabel';
 import { WritingLineInput } from '../../design-system/WritingLineInput';
 import { colors, spacing } from '../../design-system/tokens';
+import { useStreak } from '../../hooks/useAwareness';
 import { useExportData } from '../../hooks/useExport';
 import { useProfile, useSettings, useDeleteAllData } from '../../hooks/useProfile';
+import { useUI } from '../../hooks/useUI';
 import { useAppLockContext } from '../../navigation/AppLockContext';
 import { requestReminderPermission, syncReflectionReminders } from '../../notifications/reminders';
 import {
@@ -21,6 +23,7 @@ import {
   type ReminderPrefs,
   type ReminderSlot,
 } from '../../state/appStore';
+import { useAddStreakWidget } from '../../widgets/useAddStreakWidget';
 
 type PasscodeMode = 'create' | 'verify' | null;
 type SettingsNotice = { tone: 'success' | 'error'; message: string } | null;
@@ -49,6 +52,34 @@ export default function SettingsScreen() {
   const [notice, setNotice] = useState<SettingsNotice>(null);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [deleteError, setDeleteError] = useState('');
+
+  // Blossom home-screen widget: offered once, as a popup, the first time the
+  // Profile tab opens, and always available from the card below.
+  const { data: streak } = useStreak();
+  const widget = useAddStreakWidget(streak);
+  const widgetPromptSeen = useUI((state) => state.widgetPromptSeen);
+  const setWidgetPromptSeen = useUI((state) => state.setWidgetPromptSeen);
+  const [uiHydrated, setUiHydrated] = useState(() => useUI.persist.hasHydrated());
+  const [widgetPopupVisible, setWidgetPopupVisible] = useState(false);
+
+  useEffect(() => {
+    if (useUI.persist.hasHydrated()) {
+      setUiHydrated(true);
+      return undefined;
+    }
+    return useUI.persist.onFinishHydration(() => setUiHydrated(true));
+  }, []);
+
+  useEffect(() => {
+    if (!isFocused || !uiHydrated || !widget.supported || widgetPromptSeen) return;
+    setWidgetPopupVisible(true);
+    setWidgetPromptSeen(true);
+  }, [isFocused, uiHydrated, widget.supported, widgetPromptSeen, setWidgetPromptSeen]);
+
+  const addWidgetFromPopup = async () => {
+    setWidgetPopupVisible(false);
+    await widget.add();
+  };
 
   useEffect(() => {
     if (isFocused) {
@@ -302,6 +333,29 @@ export default function SettingsScreen() {
           />
         </Card>
 
+        {widget.supported ? (
+          <Card style={styles.card}>
+            <EyebrowLabel label="HOME SCREEN WIDGET" />
+            <Text style={styles.rowLabel}>Keep Blossom close</Text>
+            <Text style={styles.rowDesc}>
+              Add your streak and Blossom to your home screen. Blossom changes mood with your streak.
+            </Text>
+            <Button
+              title={widget.requesting ? 'Opening widget picker…' : widget.requested ? 'Widget requested' : 'Add widget'}
+              onPress={() => {
+                widget.add();
+              }}
+              variant="secondary"
+              color={colors.sage}
+              disabled={widget.requesting}
+              loading={widget.requesting}
+              style={{ marginTop: spacing.md }}
+              accessibilityLabel="Add the SWA streak widget to your Android home screen"
+              accessibilityHint="Opens the Android widget picker."
+            />
+          </Card>
+        ) : null}
+
         <Card style={styles.card}>
           <EyebrowLabel label="PRIVACY" />
           <View style={styles.row}>
@@ -396,6 +450,28 @@ export default function SettingsScreen() {
 
         <View style={{ height: 80 }} />
       </ScrollView>
+
+      <Modal
+        visible={widgetPopupVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setWidgetPopupVisible(false)}
+      >
+        <View style={styles.widgetBackdrop}>
+          <View style={styles.modalCard} accessibilityViewIsModal accessibilityLabel="Add the Blossom widget">
+            <EyebrowLabel label="NEW · HOME SCREEN WIDGET" />
+            <Text style={styles.modalTitle}>Keep Blossom close</Text>
+            <Text style={styles.modalBody}>
+              Add the streak widget to your home screen to see your streak and Blossom's mood at a glance. You can
+              always add it later from Profile.
+            </Text>
+            <View style={styles.modalButtons}>
+              <Button title="Not now" variant="ghost" onPress={() => setWidgetPopupVisible(false)} />
+              <Button title="Add widget" color={colors.sage} onPress={addWidgetFromPopup} />
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       {confirmingDelete && (
         <View
@@ -721,6 +797,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: spacing.lg,
     zIndex: 50,
+  },
+  widgetBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(40, 34, 28, 0.45)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing.lg,
   },
   modalCard: {
     width: '100%',

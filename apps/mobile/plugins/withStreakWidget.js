@@ -40,7 +40,7 @@ function withWidgetReceiver(config) {
     });
     if (!hasReceiver) {
       receivers.push({
-        $: { 'android:name': RECEIVER_NAME, 'android:exported': 'false' },
+        $: { 'android:name': RECEIVER_NAME, 'android:exported': 'true' },
         'intent-filter': [{ action: ACTIONS.map((name) => ({ $: { 'android:name': name } })) }],
         'meta-data': [
           {

@@ -49,7 +49,7 @@
             android:layout_marginTop="6dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
-            <View
+            <FrameLayout
                 android:id="@+id/streak_accent"
                 android:layout_width="7dp"
                 android:layout_height="7dp"
