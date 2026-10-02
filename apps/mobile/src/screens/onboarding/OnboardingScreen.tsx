@@ -106,7 +106,9 @@ export default function OnboardingScreen() {
         if (row) {
           setDraft(row.draft);
           if (!row.completed && row.step >= 1 && row.step <= 7) {
-            setStep(row.step as Step);
+            // Email is required; a draft saved before that rule goes back to
+            // the details step instead of skipping past it.
+            setStep(isValidEmail(row.draft.email) ? (row.step as Step) : 1);
           }
         }
       })
@@ -128,7 +130,7 @@ export default function OnboardingScreen() {
       if (!isValidName(draft.displayName)) return false;
       if (!draft.role || !draft.fieldOfStudy) return false;
       if (draft.role === 'college_student' && !draft.yearOfStudy) return false;
-      if (draft.email?.trim() && !isValidEmail(draft.email)) return false;
+      if (!isValidEmail(draft.email)) return false;
       return true;
     }
     if (step === 2) return draft.goals.length > 0;
@@ -163,6 +165,11 @@ export default function OnboardingScreen() {
 
   const finish = async () => {
     if (finishingRef.current || savingStepRef.current) return;
+    if (!isValidEmail(draftRef.current.email)) {
+      setStep(1);
+      setOnboardingError('Please add your email address to continue.');
+      return;
+    }
     finishingRef.current = true;
     setFinishing(true);
     try {
@@ -309,8 +316,8 @@ function Welcome({ onContinue, busy }: { onContinue: () => void; busy: boolean }
       <View style={styles.privacy}>
         <Ionicons name="shield-checkmark" size={16} color={colors.leaf} />
         <Text style={styles.privacyText}>
-          Your journal and check-ins stay on this device. Setup details you choose, including an email if you add one,
-          are saved locally and sync online when a connection is available.
+          Your journal and check-ins stay on this device. Your setup details, including your email, are saved locally
+          and sync online when a connection is available.
         </Text>
       </View>
     </View>
@@ -329,7 +336,8 @@ function AboutStep({ draft, patch }: { draft: OnboardingDraft; patch: (p: Partia
   const emailProblem = describeEmailProblem(draft.email);
   const hasEmailText = Boolean(draft.email?.trim());
   const emailAccepted = hasEmailText && !emailProblem;
-  const showEmailProblem = hasEmailText && Boolean(emailProblem) && (emailTouched || hasEmailShape(draft.email));
+  const showEmailProblem =
+    Boolean(emailProblem) && (hasEmailText ? emailTouched || hasEmailShape(draft.email) : emailTouched);
 
   return (
     <View>
@@ -396,7 +404,7 @@ function AboutStep({ draft, patch }: { draft: OnboardingDraft; patch: (p: Partia
       </Card>
 
       <View style={{ height: spacing.lg }} />
-      <EyebrowLabel label="YOUR EMAIL (OPTIONAL)" />
+      <EyebrowLabel label="YOUR EMAIL (REQUIRED)" />
       <Card style={styles.padCard}>
         <WritingLineInput
           value={draft.email ?? ''}
@@ -418,8 +426,7 @@ function AboutStep({ draft, patch }: { draft: OnboardingDraft; patch: (p: Partia
           <Text style={styles.emailOk}>This is stored with your online setup profile.</Text>
         ) : (
           <Text style={styles.emailNote}>
-            Optional. If added, this is stored with your setup profile and syncs online. It is not needed to use the
-            app.
+            Required. This is stored with your setup profile and syncs online.
           </Text>
         )}
       </Card>

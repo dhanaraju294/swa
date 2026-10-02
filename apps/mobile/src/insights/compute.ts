@@ -257,8 +257,8 @@ export function computeInsightCards(args: {
       'loop-today',
       'sunny',
       'Your two flows',
-      `Reflections · Day ${reflectionDay}: ${reflectionPartsDone}/2 complete. Practice · Day ${exerciseDay}: ${exerciseDone ? 'complete' : 'open'}. Each flow stays on its current day until its required step is finished.`,
-      'At your pace',
+      `Reflections · Day ${reflectionDay}: ${reflectionPartsDone}/2 complete. Practice · Day ${exerciseDay}: ${exerciseDone ? 'complete' : 'open'}. Finish all three sessions to complete the day; the next day opens tomorrow.`,
+      'One day at a time',
       'evidence',
     ),
   );

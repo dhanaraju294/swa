@@ -12,7 +12,8 @@ import { useDailyCatalog } from '../../hooks/useDailyJourney';
 export default function PathScreen() {
   const router = useRouter();
   const focused = useIsFocused();
-  const { catalog, loading, refresh, exerciseDay, exerciseCompletedDays, statusByDay, total } = useDailyCatalog();
+  const { catalog, loading, refresh, exerciseDay, exerciseCompletedDays, statusByDay, total, nextDayLocked } =
+    useDailyCatalog();
 
   // Refresh when the tab gains focus (coming back from an exercise).
   useEffect(() => {
@@ -69,6 +70,11 @@ export default function PathScreen() {
         <Text style={styles.foot}>
           Exercises {exerciseCompletedDays.length}/{total} complete
         </Text>
+        {nextDayLocked ? (
+          <Text style={styles.lockNote}>
+            Day {exerciseDay} is complete. Day {exerciseDay + 1} opens tomorrow.
+          </Text>
+        ) : null}
 
         <View style={styles.exerciseCardWrap}>
           <TouchableOpacity
@@ -77,7 +83,7 @@ export default function PathScreen() {
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             accessibilityRole="button"
             accessibilityLabel={`${allExercisesDone ? 'Review' : 'Open'} exercise, Day ${exerciseDay}. ${exerciseDone ? 'Complete' : 'Still open'}.`}
-            accessibilityHint="Exercise progress advances independently and stays on its current day until the exercise is complete."
+            accessibilityHint="You stay on the current day until all of its sessions are complete, and the next day opens the following day."
           >
             <View style={styles.exerciseCard}>
               <View style={{ flex: 1 }}>
@@ -87,7 +93,9 @@ export default function PathScreen() {
                 <Text style={styles.exerciseSub}>
                   {allExercisesDone
                     ? `All ${total} exercises are complete.`
-                    : `${exerciseDone ? 'Completed' : 'Still open'}. Your exercise path advances when you finish this practice.`}
+                    : nextDayLocked
+                      ? `Completed. Day ${exerciseDay + 1} opens tomorrow.`
+                      : `${exerciseDone ? 'Completed' : 'Still open'}. Finish all of today's sessions to unlock the next day.`}
                 </Text>
               </View>
               <Text style={styles.exerciseLeaf}>🌱</Text>
@@ -146,6 +154,14 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
     marginBottom: spacing.sm,
     lineHeight: 17,
+  },
+  lockNote: {
+    fontFamily: 'Nunito_700Bold',
+    fontSize: 12.5,
+    fontWeight: '700',
+    color: colors.leafInk,
+    textAlign: 'center',
+    marginBottom: spacing.sm,
   },
   exerciseCardWrap: {
     marginTop: spacing.lg,

@@ -93,3 +93,12 @@ describe('toRpcProfile display_name', () => {
     expect(toRpcProfile(draft, { step: 1, completed: false }).display_name).toBeNull();
   });
 });
+
+describe('required email', () => {
+  it('treats a missing email as invalid so onboarding cannot continue', () => {
+    expect(isValidEmail(null)).toBe(false);
+    expect(isValidEmail('')).toBe(false);
+    expect(isValidEmail('   ')).toBe(false);
+    expect(isValidEmail('student@example.com')).toBe(true);
+  });
+});

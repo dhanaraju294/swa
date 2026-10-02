@@ -1,11 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import {
-  completedExerciseDays,
-  completedReflectionDays,
-  nextExerciseDay,
-  nextReflectionDay,
-} from '../journey/progress';
+import { localIsoDate } from '../journey/calendar';
+import { completedExerciseDays, completedReflectionDays } from '../journey/progress';
 import {
   allPartsComplete,
   JOURNEY_ID,
@@ -19,6 +15,7 @@ import {
   type PartStatus,
   type StoredPart,
 } from '../journey/types';
+import { currentJourneyDay, dayCompletionDates } from '../journey/unlock';
 import type { InwardEngine, JournalDay, JournalProgress, Reflection } from '../native/InwardEngine';
 import { getInwardEngine } from '../native/InwardEngineProvider';
 import { seededJournalDay } from '../native/seedContent';
@@ -123,8 +120,18 @@ export function useDailyCatalog() {
     return map;
   }, [reflections, total]);
 
-  const exerciseDay = nextExerciseDay(total, statusByDay);
-  const reflectionDay = nextReflectionDay(total, statusByDay);
+  // One day at a time: the user stays on the first unfinished day, and a
+  // finished day unlocks the next one only on a later calendar day. `today` is
+  // read on every render so a screen left open past midnight unlocks on its
+  // next refresh.
+  const today = localIsoDate();
+  const completedOn = useMemo(() => dayCompletionDates(reflections, total), [reflections, total]);
+  const journeyDay = useMemo(
+    () => currentJourneyDay(total, statusByDay, completedOn, today),
+    [total, statusByDay, completedOn, today],
+  );
+  const exerciseDay = journeyDay.day;
+  const reflectionDay = journeyDay.day;
   const exerciseCompletedDays = completedExerciseDays(total, statusByDay);
   const reflectionCompletedDays = completedReflectionDays(total, statusByDay);
 
@@ -142,6 +149,10 @@ export function useDailyCatalog() {
     exerciseCompletedDays,
     reflectionCompletedDays,
     statusByDay,
+    currentDay: journeyDay.day,
+    nextDayLocked: journeyDay.waiting,
+    nextDayUnlocksOn: journeyDay.unlocksOn,
+    allDaysDone: journeyDay.allDone,
   };
 }
 
@@ -233,11 +244,18 @@ export function useSaveJourneyPart() {
       setError(null);
       try {
         const engine = await getInwardEngine();
+        // Editing an already-submitted part must not move the day's completion
+        // date, otherwise the next day would be locked again.
+        const previous = (await engine.listReflections(PART_JOURNALS[part])).find(
+          (r) => r.dayNumber === day && r.prompt === SESSION_PROMPT,
+        );
+        const now = new Date().toISOString();
+        const completedAt = (previous && parseStoredPart(previous.response)?.completedAt) || now;
         await engine.saveReflection(
           PART_JOURNALS[part],
           day,
           SESSION_PROMPT,
-          JSON.stringify({ part, day, answers, completedAt: new Date().toISOString() }),
+          JSON.stringify({ part, day, answers, completedAt, updatedAt: now }),
         );
 
         const [morning, exercise, evening, progress] = await Promise.all([

@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useIsFocused } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -12,10 +12,12 @@ import { EyebrowLabel } from '../../design-system/EyebrowLabel';
 import { colors, spacing, radius } from '../../design-system/tokens';
 import { useStreak } from '../../hooks/useAwareness';
 import { useDailyCatalog, useDailyDay } from '../../hooks/useDailyJourney';
+import { isoDay } from '../../hooks/appIcon';
 import { useProfile } from '../../hooks/useProfile';
 import { useLatestSpotCheckin } from '../../hooks/useSpotCheckins';
 import { streakMoodFor, streakMoodLabel } from '../../journey/streakMood';
-import type { JourneyPart } from '../../journey/types';
+import { allPartsComplete, type JourneyPart } from '../../journey/types';
+import type { Streak } from '../../native/InwardEngine';
 import { syncStreakWidget } from '../../widgets/streakWidget';
 
 const greetingFor = (hours: number) => (hours < 12 ? 'Good morning' : hours < 18 ? 'Good afternoon' : 'Good evening');
@@ -46,10 +48,11 @@ export default function HomeScreen() {
     catalog,
     exerciseDay,
     reflectionDay,
-    exerciseCompletedDays,
-    reflectionCompletedDays,
     statusByDay,
     total,
+    currentDay,
+    nextDayLocked,
+    allDaysDone,
     refresh,
   } = useDailyCatalog();
   const { content: reflectionContent } = useDailyDay(reflectionDay);
@@ -69,14 +72,23 @@ export default function HomeScreen() {
     return () => clearInterval(timer);
   }, []);
 
+  // Finishing a day today means the user showed up today, so Blossom and the
+  // widget must never read it as a lapsed rhythm while the next day is locked.
+  const todayUtc = isoDay(now);
+  const effectiveStreak = useMemo<Streak | null | undefined>(() => {
+    if (!nextDayLocked || !streak || streak.lastActiveDate === todayUtc) return streak;
+    return { ...streak, currentStreak: Math.max(1, streak.currentStreak), lastActiveDate: todayUtc };
+  }, [nextDayLocked, streak, todayUtc]);
+
   useEffect(() => {
     if (streakLoading) return;
-    syncStreakWidget(streak).catch((error) => console.warn('Failed to sync streak widget:', error));
-  }, [streak, streakLoading]);
+    syncStreakWidget(effectiveStreak).catch((error) => console.warn('Failed to sync streak widget:', error));
+  }, [effectiveStreak, streakLoading]);
 
-  const reflectionStatus = statusByDay[reflectionDay];
-  const exerciseStatus = statusByDay[exerciseDay];
-  const reflectionPartsDone = Number(Boolean(reflectionStatus?.morning)) + Number(Boolean(reflectionStatus?.evening));
+  const dayStatus = statusByDay[currentDay];
+  const partsDone =
+    Number(Boolean(dayStatus?.morning)) + Number(Boolean(dayStatus?.exercise)) + Number(Boolean(dayStatus?.evening));
+  const daysComplete = Object.values(statusByDay).filter(allPartsComplete).length;
   const greeting = greetingFor(now.getHours());
   const name = profile?.displayName?.trim();
 
@@ -92,14 +104,22 @@ export default function HomeScreen() {
     return session?.title || catalog?.days.find((d) => d.day === day)?.theme || PART_META[part].sub;
   };
 
-  const statusFor = (part: JourneyPart) =>
-    part === 'exercise' ? Boolean(exerciseStatus?.exercise) : Boolean(reflectionStatus?.[part]);
+  const statusFor = (part: JourneyPart) => Boolean(dayStatus?.[part]);
 
-  const dayFor = (part: JourneyPart) => (part === 'exercise' ? exerciseDay : reflectionDay);
+  const dayFor = (_part: JourneyPart) => currentDay;
 
-  const mascotMood = streakMoodFor(streak, now);
-  const streakNum = streakLoading ? '—' : String(mascotMood === 'sad' ? 0 : (streak?.currentStreak ?? 0));
-  const longest = streakLoading ? '—' : String(streak?.longestStreak ?? 0);
+  const mascotMood = streakMoodFor(effectiveStreak, now);
+  const streakNum = streakLoading ? '—' : String(mascotMood === 'sad' ? 0 : (effectiveStreak?.currentStreak ?? 0));
+  const longest = streakLoading ? '—' : String(effectiveStreak?.longestStreak ?? 0);
+  const moodBadgeLabel = allDaysDone
+    ? 'Journey complete'
+    : nextDayLocked
+      ? `Day ${currentDay} complete`
+      : streakMoodLabel(mascotMood);
+  const unfinishedNote =
+    mascotMood === 'sad' && !nextDayLocked
+      ? `Blossom is resting. Day ${currentDay} is still waiting for you — finish it to move forward.`
+      : null;
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
@@ -141,7 +161,7 @@ export default function HomeScreen() {
           <BlossomMascot mood={mascotMood} active={isFocused} />
           <View style={[styles.moodBadge, mascotMood === 'sad' && styles.moodBadgeSad]}>
             <View style={[styles.moodDot, mascotMood === 'sad' && styles.moodDotSad]} />
-            <Text style={styles.moodBadgeText}>{streakMoodLabel(mascotMood)}</Text>
+            <Text style={styles.moodBadgeText}>{moodBadgeLabel}</Text>
           </View>
         </View>
 
@@ -165,19 +185,33 @@ export default function HomeScreen() {
           </View>
           <View style={styles.rhythmDivider} />
           <Text style={styles.rhythmNote}>
-            Reflections and exercises move independently. Each stays on its current day until you complete it.
+            Each day has a morning reflection, a practice and an evening reflection. Finish all three to complete the
+            day; the next day opens tomorrow. Until then you stay on the same day.
           </Text>
           <Text style={styles.flowProgressNote}>
-            Reflections: Day {reflectionDay} · {reflectionCompletedDays.length}/{total} complete
-            {'  '}Practice: Day {exerciseDay} · {exerciseCompletedDays.length}/{total} complete
+            Day {currentDay} of {total} · {partsDone}/3 done · {daysComplete}/{total} days complete
           </Text>
         </Card>
+
+        {unfinishedNote ? <Text style={styles.lockNote}>{unfinishedNote}</Text> : null}
+
+        {nextDayLocked || allDaysDone ? (
+          <Card style={styles.lockCard}>
+            <Text style={styles.lockTitle}>
+              {allDaysDone ? 'You finished the whole journey 🌸' : `Day ${currentDay} complete 🌿`}
+            </Text>
+            <Text style={styles.lockBody}>
+              {allDaysDone
+                ? 'Every day is complete. You can revisit any of them below.'
+                : `Day ${currentDay + 1} opens tomorrow. Rest well — Blossom will be here. You can still revisit today's sessions.`}
+            </Text>
+          </Card>
+        ) : null}
 
         {/* The reflection pair and exercise each keep their own sequence day. */}
         <EyebrowLabel label="CONTINUE YOUR PATH" />
         <Text style={styles.pathKicker}>
-          Reflections · Day {reflectionDay} ({reflectionPartsDone}/2) · Practice · Day {exerciseDay} (
-          {exerciseStatus?.exercise ? 1 : 0}/1)
+          Day {currentDay} · {partsDone}/3 done
         </Text>
         <Card style={styles.pathCard}>
           {PARTS.map((part, i) => {
@@ -243,7 +277,7 @@ export default function HomeScreen() {
           style={{ marginTop: spacing.lg }}
         />
 
-        <Text style={styles.dayMeta}>Progress at your pace · no calendar-day reset or catch-up required</Text>
+        <Text style={styles.dayMeta}>One day at a time · the next day opens tomorrow once today is complete</Text>
         <View style={{ height: 24 }} />
       </ScrollView>
     </SafeAreaView>
@@ -387,6 +421,29 @@ const styles = StyleSheet.create({
     color: colors.inkSoft,
     lineHeight: 18,
     marginTop: spacing.sm,
+  },
+  lockNote: {
+    fontFamily: 'Nunito_600SemiBold',
+    fontSize: 12.5,
+    fontWeight: '600',
+    color: colors.inkSoft,
+    lineHeight: 18,
+    marginTop: spacing.md,
+  },
+  lockCard: {
+    padding: spacing.lg,
+    marginTop: spacing.md,
+    backgroundColor: '#EEF3E8',
+    borderColor: '#DDE7D7',
+    borderWidth: 1,
+  },
+  lockTitle: { fontFamily: 'Fraunces_600SemiBold', fontSize: 18, fontWeight: '600', color: colors.leafInk },
+  lockBody: {
+    fontFamily: 'Nunito_400Regular',
+    fontSize: 13,
+    color: colors.inkSoft,
+    lineHeight: 19,
+    marginTop: 4,
   },
   pathKicker: {
     fontFamily: 'Nunito_700Bold',
