@@ -1,13 +1,15 @@
 import React from 'react';
 import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
-import { colors, spacing } from './tokens';
+
+import { colors } from './tokens';
 
 type Props = {
   value: number;
-  onChange: (val: number) => void;
+  onChange: (value: number) => void;
   /** Optional names for each mood (1..5); the selected one is shown under the row. */
   labels?: string[];
+  accessibilityLabel?: string;
 };
 
 const faces = [
@@ -18,34 +20,44 @@ const faces = [
   { bg: '#FBEFEC', stroke: '#d4795f', mouth: 'M12 19 Q19 27 26 19' },
 ];
 
-export function MoodFacePicker({ value, onChange, labels }: Props) {
+const DEFAULT_LABELS = ['Very low', 'Low', 'Neutral', 'Good', 'Very good'];
+
+export function MoodFacePicker({ value, onChange, labels = DEFAULT_LABELS, accessibilityLabel = 'Mood' }: Props) {
+  const selectedIndex = Math.min(faces.length - 1, Math.max(0, Math.round(value) - 1));
+
   return (
-    <View>
+    <View accessibilityRole="radiogroup" accessibilityLabel={accessibilityLabel}>
       <View style={styles.row}>
-        {faces.map((f, i) => {
-          const selected = value === i + 1;
+        {faces.map((face, index) => {
+          const moodValue = index + 1;
+          const selected = value === moodValue;
+          const name = labels[index] || `Mood ${moodValue}`;
           return (
             <TouchableOpacity
-              key={i}
-              onPress={() => onChange(i + 1)}
-              style={[styles.face, selected && styles.selected]}
-              activeOpacity={0.7}
+              key={moodValue}
+              onPress={() => onChange(moodValue)}
+              style={styles.face}
+              activeOpacity={0.75}
+              accessibilityRole="radio"
+              accessibilityLabel={name}
+              accessibilityHint={`Select mood ${moodValue} of 5`}
+              accessibilityState={{ checked: selected, selected }}
             >
-              <View style={[styles.bubble, selected && styles.bubbleSelected, { backgroundColor: f.bg }]}>
-                <Svg width="38" height="38" viewBox="0 0 38 38">
-                  <Circle cx="19" cy="19" r="17" fill={f.bg} />
-                  <Path d={f.mouth} stroke={f.stroke} strokeWidth="2" fill="none" strokeLinecap="round" />
+              <View style={[styles.bubble, { backgroundColor: face.bg }, selected && styles.bubbleSelected]}>
+                <Svg width="38" height="38" viewBox="0 0 38 38" accessible={false}>
+                  <Circle cx="19" cy="19" r="17" fill={face.bg} />
+                  <Path d={face.mouth} stroke={face.stroke} strokeWidth="2" fill="none" strokeLinecap="round" />
                 </Svg>
               </View>
             </TouchableOpacity>
           );
         })}
       </View>
-      {labels ? (
-        <View style={styles.labelWrap}>
-          <Text style={styles.label}>{labels[Math.min(labels.length - 1, Math.max(0, value - 1))] || ''}</Text>
-        </View>
-      ) : null}
+      <View style={styles.labelWrap}>
+        <Text style={styles.label} accessibilityLiveRegion="polite">
+          {labels[selectedIndex] || `Mood ${selectedIndex + 1}`}
+        </Text>
+      </View>
     </View>
   );
 }
@@ -57,9 +69,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   face: {
+    minWidth: 46,
+    minHeight: 46,
     padding: 2,
-    borderRadius: 22,
+    borderRadius: 23,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   bubble: {
     width: 42,
@@ -71,21 +86,18 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   bubbleSelected: {
-    borderColor: colors.leaf,
-    borderWidth: 2.5,
-    transform: [{ scale: 1.12 }],
+    borderColor: colors.leafInk,
+    borderWidth: 3,
+    transform: [{ scale: 1.08 }],
   },
   labelWrap: {
     alignItems: 'center',
     marginTop: 10,
   },
   label: {
-    fontFamily: 'Nunito',
-    fontSize: 13,
+    fontFamily: 'Nunito_700Bold',
+    fontSize: 14,
     fontWeight: '700',
     color: colors.ink,
-  },
-  selected: {
-    transform: [{ scale: 1.05 }],
   },
 });

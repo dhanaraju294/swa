@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import {
   JOURNEY_STARTED_ON_KEY,
   clearJourneyStartedOn,
@@ -10,14 +11,14 @@ beforeEach(async () => {
   await AsyncStorage.clear();
 });
 
-describe('ensureJourneyStartedOn', () => {
-  it('seeds today when the user has never completed a day, then reuses it', async () => {
+describe('legacy startedOn storage', () => {
+  it('seeds today when there is no prior progress, then reuses the legacy origin', async () => {
     const first = await ensureJourneyStartedOn([], undefined, 28, '2026-08-31');
     expect(first).toBe('2026-08-31');
     expect(await readJourneyStartedOn()).toBe('2026-08-31');
 
-    // Next calendar day must not rewrite the origin — that's how day 2 unlocks
-    // even if day 1 was left entirely undone.
+    // A legacy origin remains stable if older clients still read it; current
+    // flow progression no longer uses calendar dates.
     const again = await ensureJourneyStartedOn([], undefined, 28, '2026-09-01');
     expect(again).toBe('2026-08-31');
   });

@@ -8,9 +8,9 @@
 // the Rust crate into Hermes) is never evaluated in environments without it.
 import { Platform } from 'react-native';
 
+import type { InwardEngine } from './InwardEngine';
 import { MockCoreEngine } from './MockInwardCore';
 import { NativeInwardEngine } from './NativeInwardEngine';
-import type { InwardEngine } from './InwardEngine';
 
 let engineInstance: InwardEngine | null = null;
 let nativeAvailability: boolean | null = null;
@@ -33,9 +33,7 @@ function probeNativeBridge(): { available: boolean; detail: string } {
   // or a dev client built before the Rust bridge was wired in) the require
   // throws and we fall back to the in-memory mock engine.
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     require('../native/generated');
-    // eslint-disable-next-line no-console
     const g: any = (globalThis as any).NativeInwardCore;
     console.log(
       '[InwardEngine] DIAG NativeInwardCore global =',
@@ -60,7 +58,6 @@ export async function getInwardEngine(): Promise<InwardEngine> {
   if (nativeAvailability === null) {
     const { available, detail } = probeNativeBridge();
     nativeAvailability = available;
-    // eslint-disable-next-line no-console
     console.log(`[InwardEngine] native bridge probe → ${available ? 'AVAILABLE' : 'UNAVAILABLE'} (${detail})`);
   }
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, StyleSheet } from 'react-native';
-import { typography, spacing } from './tokens';
+
+import { spacing } from './tokens';
 
 type Props = {
   label: string;
@@ -8,16 +9,12 @@ type Props = {
 };
 
 export function EyebrowLabel({ label, color }: Props) {
-  return (
-    <Text style={[styles.label, color && { color }]}>
-      {label}
-    </Text>
-  );
+  return <Text style={[styles.label, color && { color }]}>{label}</Text>;
 }
 
 const styles = StyleSheet.create({
   label: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_800ExtraBold',
     fontSize: 10.5,
     fontWeight: '800',
     color: '#6B6560',

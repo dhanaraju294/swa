@@ -27,6 +27,7 @@ class MainApplication : Application(), ReactApplication {
             // The InwardCore TurboModule implements the RustUniFFI JSI bridge on
             // Android and is checked in as project source, so register it manually.
             packages.add(InwardCorePackage())
+            packages.add(StreakWidgetPackage())
             return packages
           }
 

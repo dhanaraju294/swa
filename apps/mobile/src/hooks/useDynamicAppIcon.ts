@@ -1,12 +1,13 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { AppState } from 'react-native';
-import { usePathname } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ExpoDynamicAppIcon from '@variant-systems/expo-dynamic-app-icon';
-import { useStreak } from './useAwareness';
-import { useDailyCatalog } from './useDailyJourney';
+import { usePathname } from 'expo-router';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { AppState } from 'react-native';
+
 import { iconForState, isStreakMaintained, nextBoundary, showedUpToday } from './appIcon';
 import type { AppIconName } from './appIcon';
+import { useStreak } from './useAwareness';
+import { useDailyCatalog } from './useDailyJourney';
 
 export type { AppIconName };
 
@@ -14,29 +15,19 @@ const STORAGE_KEY = 'swa:appIcon';
 
 export function useDynamicAppIcon() {
   const { data: streak, loading: streakLoading, refresh: refreshStreak } = useStreak();
-  const {
-    reflections,
-    unlockedDay,
-    loading: catalogLoading,
-    refresh: refreshCatalog,
-  } = useDailyCatalog();
+  const { reflections, loading: catalogLoading, refresh: refreshCatalog } = useDailyCatalog();
   const [now, setNow] = useState(() => new Date());
   const pathname = usePathname();
   const applied = useRef<AppIconName | null>(null);
   const pending = useRef(false);
 
-  const activeToday = useMemo(
-    () => showedUpToday(reflections, unlockedDay, now),
-    [reflections, unlockedDay, now],
-  );
+  const activeToday = useMemo(() => showedUpToday(reflections, now), [reflections, now]);
 
   // Don't apply anything until the data is loaded — otherwise every launch
   // would flash "irregular" for a moment and, on iOS, pop a needless system
   // alert when the real target arrives.
   const target =
-    streakLoading || catalogLoading
-      ? null
-      : iconForState(isStreakMaintained(streak, now) || activeToday, now);
+    streakLoading || catalogLoading ? null : iconForState(isStreakMaintained(streak, now) || activeToday, now);
 
   useEffect(() => {
     if (!target || applied.current === target || pending.current) return;

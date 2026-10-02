@@ -1,12 +1,8 @@
 import {
   addDaysIso,
-  calendarUnlockedDay,
   daysBetween,
   inferStartedOn,
   kindOfDay,
-  missedDays,
-  nonePartsComplete,
-  notDoneDays,
   partsCompleteCount,
   unlockedDayOf,
 } from '../src/journey/calendar';
@@ -25,21 +21,9 @@ describe('calendar day math', () => {
     expect(addDaysIso('2026-09-01', -1)).toBe('2026-08-31');
   });
 
-  it('advances the journey one day per calendar day even with zero completions', () => {
-    expect(calendarUnlockedDay('2026-08-31', '2026-08-31', 28)).toBe(1);
-    expect(calendarUnlockedDay('2026-08-31', '2026-09-01', 28)).toBe(2);
-    expect(calendarUnlockedDay('2026-08-31', '2026-09-06', 28)).toBe(7);
-    expect(calendarUnlockedDay('2026-08-31', '2026-10-10', 28)).toBe(28);
-  });
-
-  it('does not skip ahead of the start date if the clock rolls back', () => {
-    expect(calendarUnlockedDay('2026-08-31', '2026-08-30', 28)).toBe(1);
-  });
-
-  it('seeds startedOn so today still maps to the legacy unlocked day', () => {
+  it('retains the old date seed helper only for migrating existing progress', () => {
     expect(inferStartedOn(1, '2026-08-31')).toBe('2026-08-31');
     expect(inferStartedOn(3, '2026-08-31')).toBe('2026-08-29');
-    expect(calendarUnlockedDay(inferStartedOn(3, '2026-08-31'), '2026-08-31', 28)).toBe(3);
   });
 });
 
@@ -54,28 +38,19 @@ describe('legacy unlockedDayOf (migration hint)', () => {
   });
 });
 
-describe('not-done days', () => {
-  it('marks a past day with no parts as missed / not done', () => {
-    const status = { 1: empty, 2: empty };
-    expect(kindOfDay(1, 2, [], status[1])).toBe('missed');
-    expect(kindOfDay(2, 2, [], status[2])).toBe('today');
+describe('open flow days', () => {
+  it('keeps an unfinished prior step incomplete instead of marking it missed', () => {
+    expect(kindOfDay(1, 2, [], empty)).toBe('incomplete');
+    expect(kindOfDay(2, 2, [], empty)).toBe('today');
     expect(kindOfDay(3, 2, [], empty)).toBe('locked');
-    expect(missedDays(2, [], status)).toEqual([1]);
-    expect(notDoneDays(2, [], status)).toEqual([1]);
   });
 
-  it('marks a past day with some parts as incomplete (still not done)', () => {
-    const status = { 1: morningOnly, 2: empty };
-    expect(kindOfDay(1, 2, [], status[1])).toBe('incomplete');
-    expect(nonePartsComplete(status[1])).toBe(false);
-    expect(partsCompleteCount(status[1])).toBe(1);
-    expect(missedDays(2, [], status)).toEqual([]);
-    expect(notDoneDays(2, [], status)).toEqual([1]);
+  it('shows saved parts without treating the remaining flow as missed', () => {
+    expect(kindOfDay(1, 2, [], morningOnly)).toBe('incomplete');
+    expect(partsCompleteCount(morningOnly)).toBe(1);
   });
 
   it('treats a fully finished past day as lived', () => {
-    const status = { 1: full, 2: empty };
-    expect(kindOfDay(1, 2, [1], status[1])).toBe('lived');
-    expect(notDoneDays(2, [1], status)).toEqual([]);
+    expect(kindOfDay(1, 2, [1], full)).toBe('lived');
   });
 });

@@ -9,7 +9,7 @@ export type ReflectFrequency = 'every_day' | 'few_times_a_week' | 'when_i_need_i
 export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 export function isValidEmail(value: string | null | undefined): boolean {
-  return Boolean(value && EMAIL_REGEX.test(value.trim()));
+  return Boolean(value?.trim() && describeEmailProblem(value) === null);
 }
 
 /**
@@ -23,6 +23,7 @@ export function describeEmailProblem(raw: string | null | undefined): string | n
   const value = (raw ?? '').trim();
 
   if (!value) return 'Please enter your email address.';
+  if (value.length > 254) return 'Email addresses can be up to 254 characters.';
   if (/\s/.test(value)) return 'Email addresses cannot contain spaces.';
 
   const atCount = (value.match(/@/g) || []).length;
@@ -89,6 +90,8 @@ export type OnboardingDraft = {
   firstMood: number;
   firstEnergy: number;
   firstStress: number;
+  firstSleep: number;
+  firstConfidence: number;
   firstIntention: string;
 };
 
@@ -118,6 +121,8 @@ export function emptyDraft(): OnboardingDraft {
     firstMood: 3,
     firstEnergy: 50,
     firstStress: 50,
+    firstSleep: 3,
+    firstConfidence: 50,
     firstIntention: '',
   };
 }
@@ -158,8 +163,7 @@ export function parseRecord(raw: string | null): OnboardingRecord | null {
       draft,
       step: typeof parsed.step === 'number' ? parsed.step : 0,
       completed: Boolean(parsed.completed),
-      pendingSync:
-        typeof parsed.pendingSync === 'boolean' ? parsed.pendingSync : !parsed.syncedAt,
+      pendingSync: typeof parsed.pendingSync === 'boolean' ? parsed.pendingSync : !parsed.syncedAt,
       syncedAt: typeof parsed.syncedAt === 'string' ? parsed.syncedAt : null,
       updatedAt: typeof parsed.updatedAt === 'string' ? parsed.updatedAt : new Date().toISOString(),
     };

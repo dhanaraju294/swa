@@ -1,17 +1,16 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { useIsFocused } from '@react-navigation/native';
 import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, radius } from '../../design-system/tokens';
+
 import { Card } from '../../design-system/Card';
 import { EyebrowLabel } from '../../design-system/EyebrowLabel';
-import { useCheckins } from '../../hooks/useCheckins';
-import { useReflections, useOnTheSpot } from '../../hooks/useJournal';
+import { colors, spacing, radius } from '../../design-system/tokens';
 import { useAwarenessSnapshot, useStreak } from '../../hooks/useAwareness';
+import { useCheckins } from '../../hooks/useCheckins';
 import { useDailyCatalog } from '../../hooks/useDailyJourney';
+import { useReflections, useOnTheSpot } from '../../hooks/useJournal';
 import { useLatestSpotCheckin } from '../../hooks/useSpotCheckins';
-import { useOnboardingProfile } from '../../onboarding/useOnboardingProfile';
-import { partsCompleteCount } from '../../journey/calendar';
 import {
   computeInsightCards,
   dimensionLabel,
@@ -32,6 +31,7 @@ import {
   weekCompare,
 } from '../../insights/story';
 import type { Checkin } from '../../native/InwardEngine';
+import { useOnboardingProfile } from '../../onboarding/useOnboardingProfile';
 
 function prettyReflection(prompt: string, response: string): { title: string; body: string } {
   if (prompt !== 'session') {
@@ -85,10 +85,10 @@ export default function InsightsScreen() {
   const {
     completedDays,
     statusByDay,
-    unlockedDay,
+    exerciseDay,
+    reflectionDay,
+    reflections: journeyReflections,
     total,
-    startedOn,
-    notDoneDays,
     refresh: refreshPath,
   } = useDailyCatalog();
   const [showMoreReflections, setShowMoreReflections] = useState(false);
@@ -118,24 +118,18 @@ export default function InsightsScreen() {
     refreshStreak,
   ]);
 
-  const todayStatus = statusByDay[unlockedDay];
-  const todayParts = partsCompleteCount(todayStatus);
-  const stats = useMemo(
-    () => pathStats(unlockedDay, total, completedDays, statusByDay),
-    [unlockedDay, total, completedDays, statusByDay],
-  );
+  const reflectionStatus = statusByDay[reflectionDay];
+  const exerciseStatus = statusByDay[exerciseDay];
+  const reflectionPartsDone = Number(Boolean(reflectionStatus?.morning)) + Number(Boolean(reflectionStatus?.evening));
+  const stats = useMemo(() => pathStats(total, completedDays, statusByDay), [total, completedDays, statusByDay]);
   const week = useMemo(
     () =>
       weekLoop({
-        startedOn,
-        statusByDay,
-        completedDays,
-        unlockedDay,
-        total,
+        reflections: journeyReflections,
         checkins,
         onTheSpot,
       }),
-    [startedOn, statusByDay, completedDays, unlockedDay, total, checkins, onTheSpot],
+    [journeyReflections, checkins, onTheSpot],
   );
   const weather = useMemo(() => innerWeather(checkins), [checkins]);
   const compare = useMemo(() => weekCompare(checkins), [checkins]);
@@ -153,27 +147,26 @@ export default function InsightsScreen() {
         onTheSpot,
         reflections,
         statusByDay,
-        unlockedDay,
-        completedDays,
+        exerciseDay,
+        reflectionDay,
         streak,
         spot,
         draft,
       }),
-    [checkins, onTheSpot, reflections, statusByDay, unlockedDay, completedDays, streak, spot, draft],
+    [checkins, onTheSpot, reflections, statusByDay, exerciseDay, reflectionDay, streak, spot, draft],
   );
   const headline = useMemo(
     () =>
       buildHeadline({
         checkinCount: checkins.length,
         lived: stats.lived,
-        notDone: stats.notDone,
         compare,
         days: weather.days,
         named: feelings,
         draft,
         onTheSpot,
       }),
-    [checkins.length, stats.lived, stats.notDone, compare, weather.days, feelings, draft, onTheSpot],
+    [checkins.length, stats.lived, compare, weather.days, feelings, draft, onTheSpot],
   );
 
   const overall = awareness.find((d) => d.dimension === 'overall');
@@ -224,7 +217,7 @@ export default function InsightsScreen() {
           <View style={styles.weatherGrid}>
             <MetricTile
               label="Mood"
-              value={thisWeek.avgMood != null ? `${moodFace(thisWeek.avgMood)} ${thisWeek.avgMood.toFixed(1)}` : '—'}
+              value={thisWeek.avgMood != null ? `${moodFace(thisWeek.avgMood)} ${thisWeek.avgMood.toFixed(1)}/5` : '—'}
               delta={formatDelta(compare.dMood)}
               invert={false}
               series={weather.days.map((d) => d.mood)}
@@ -233,8 +226,8 @@ export default function InsightsScreen() {
             />
             <MetricTile
               label="Energy"
-              value={thisWeek.avgEnergy != null ? `${Math.round(thisWeek.avgEnergy)}` : '—'}
-              delta={formatDelta(compare.dEnergy, 0)}
+              value={thisWeek.avgEnergy != null ? `${Math.round(thisWeek.avgEnergy)}/100` : '—'}
+              delta={compare.dEnergy != null ? `${formatDelta(compare.dEnergy, 0)} pts` : null}
               invert={false}
               series={weather.days.map((d) => d.energy)}
               max={100}
@@ -242,8 +235,8 @@ export default function InsightsScreen() {
             />
             <MetricTile
               label="Stress"
-              value={thisWeek.avgStress != null ? `${Math.round(thisWeek.avgStress)}` : '—'}
-              delta={formatDelta(compare.dStress, 0)}
+              value={thisWeek.avgStress != null ? `${Math.round(thisWeek.avgStress)}/100` : '—'}
+              delta={compare.dStress != null ? `${formatDelta(compare.dStress, 0)} pts` : null}
               invert
               series={weather.days.map((d) => d.stress)}
               max={100}
@@ -252,11 +245,20 @@ export default function InsightsScreen() {
             <MetricTile
               label="Sleep"
               value={thisWeek.avgSleepHours != null ? `${thisWeek.avgSleepHours.toFixed(1)}h` : '—'}
-              delta={formatDelta(compare.dSleep)}
+              delta={compare.dSleep != null ? `${formatDelta(compare.dSleep)}h` : null}
               invert={false}
               series={weather.days.map((d) => (d.sleep != null ? d.sleep + 3 : undefined))}
               max={8}
               color="#8D7FAE"
+            />
+            <MetricTile
+              label="Confidence"
+              value={thisWeek.avgConfidence != null ? `${Math.round(thisWeek.avgConfidence)}/100` : '—'}
+              delta={compare.dConfidence != null ? `${formatDelta(compare.dConfidence, 0)} pts` : null}
+              invert={false}
+              series={weather.days.map((day) => day.confidence)}
+              max={100}
+              color={colors.sage}
             />
           </View>
           <MoodWeek days={weather.days} />
@@ -271,56 +273,72 @@ export default function InsightsScreen() {
           )}
         </Card>
 
-        {/* Today's loop */}
+        {/* Independent reflection and exercise progression */}
         <Card style={styles.card}>
-          <EyebrowLabel label="TODAY'S LOOP" />
+          <EyebrowLabel label="YOUR TWO FLOWS" />
           <Text style={styles.cardHead}>
-            Day {unlockedDay} of {total}
-            {todayParts === 3 ? ' · lived' : todayParts === 0 ? ' · not done yet' : ` · ${todayParts}/3`}
+            Reflections · Day {reflectionDay} of {total} · {reflectionPartsDone}/2 complete
           </Text>
           <View style={styles.loopRow}>
-            {(['morning', 'exercise', 'evening'] as const).map((part) => {
-              const done = Boolean(todayStatus?.[part]);
+            {(['morning', 'evening'] as const).map((part) => {
+              const done = Boolean(reflectionStatus?.[part]);
               const meta = PART_MARK[part];
               return (
                 <View key={part} style={[styles.loopChip, done ? styles.loopChipDone : styles.loopChipOpen]}>
                   <Ionicons name={meta.icon} size={14} color={done ? colors.leaf : colors.inkSoft} />
                   <Text style={[styles.loopChipText, done && styles.loopChipTextDone]}>{meta.label}</Text>
-                  <Text style={[styles.loopChipState, done ? styles.loopDone : styles.loopNot]}>
-                    {done ? 'done' : 'not done'}
+                  <Text style={[styles.loopChipState, done ? styles.loopDone : styles.loopOpen]}>
+                    {done ? 'complete' : 'open'}
                   </Text>
                 </View>
               );
             })}
           </View>
+          <Text style={[styles.cardHead, styles.secondFlowTitle]}>
+            Practice · Day {exerciseDay} of {total} · {exerciseStatus?.exercise ? 'complete' : 'open'}
+          </Text>
+          <View style={styles.loopRow}>
+            <View style={[styles.loopChip, exerciseStatus?.exercise ? styles.loopChipDone : styles.loopChipOpen]}>
+              <Ionicons
+                name={PART_MARK.exercise.icon}
+                size={14}
+                color={exerciseStatus?.exercise ? colors.leaf : colors.inkSoft}
+              />
+              <Text style={[styles.loopChipText, exerciseStatus?.exercise && styles.loopChipTextDone]}>Exercise</Text>
+              <Text style={[styles.loopChipState, exerciseStatus?.exercise ? styles.loopDone : styles.loopOpen]}>
+                {exerciseStatus?.exercise ? 'complete' : 'open'}
+              </Text>
+            </View>
+          </View>
+          <Text style={styles.hint}>
+            Each flow advances only after its current day is complete. An unfinished step stays here for next time.
+          </Text>
         </Card>
 
-        {/* This week — three marks per day */}
+        {/* This week — activity by calendar date, independent of sequence day */}
         <Card style={styles.card}>
           <EyebrowLabel label="SEVEN DAYS" />
           <Text style={styles.cardHead}>Sun, leaf, moon — the three marks of a day.</Text>
           <View style={styles.week}>
             {week.map((d) => {
-              const isToday = d.kind === 'today';
-              const missed = d.kind === 'missed';
+              const partsToday = Number(d.morning) + Number(d.exercise) + Number(d.evening);
               return (
-                <View key={d.iso} style={styles.weekCol}>
-                  <Text style={[styles.weekLabel, isToday && styles.weekLabelToday]}>{d.label}</Text>
-                  <View
-                    style={[styles.petalStack, isToday && styles.petalStackToday, missed && styles.petalStackMissed]}
-                  >
+                <View
+                  key={d.iso}
+                  style={styles.weekCol}
+                  accessible
+                  accessibilityLabel={`${d.weekday}: morning ${d.morning ? 'complete' : 'open'}, practice ${d.exercise ? 'complete' : 'open'}, evening ${d.evening ? 'complete' : 'open'}. ${d.checkins} check-in${d.checkins === 1 ? '' : 's'}.`}
+                >
+                  <Text style={[styles.weekLabel, d.isToday && styles.weekLabelToday]} accessible={false}>
+                    {d.weekday.slice(0, 3)}
+                  </Text>
+                  <View style={[styles.petalStack, d.isToday && styles.petalStackToday]}>
                     <PetalDot filled={d.morning} tone="sun" />
                     <PetalDot filled={d.exercise} tone="leaf" />
                     <PetalDot filled={d.evening} tone="moon" />
                   </View>
-                  <Text style={[styles.weekFoot, missed && styles.weekFootMissed]}>
-                    {d.journeyDay == null
-                      ? '—'
-                      : missed
-                        ? 'not done'
-                        : d.kind === 'lived'
-                          ? 'lived'
-                          : `${Number(d.morning) + Number(d.exercise) + Number(d.evening)}/3`}
+                  <Text style={styles.weekFoot}>
+                    {d.kind === 'lived' ? '3/3' : partsToday ? `${partsToday}/3` : '—'}
                   </Text>
                 </View>
               );
@@ -389,34 +407,18 @@ export default function InsightsScreen() {
         <Card style={styles.card}>
           <EyebrowLabel label="THE PATH" />
           <View style={styles.statRow}>
-            <Stat n={stats.lived} label="lived" />
-            <Stat n={stats.notDone} label="not done" warn={stats.notDone > 0} />
-            <Stat n={stats.remaining} label="ahead" />
+            <Stat n={stats.reflectionDaysDone} label="reflection days" />
+            <Stat n={stats.exerciseDaysDone} label="exercise days" />
+            <Stat n={stats.lived} label="full loops" />
           </View>
           <View style={styles.barTrack}>
-            <View style={[styles.barLived, { flex: Math.max(stats.lived, 0.01) }]} />
-            <View style={[styles.barMissed, { flex: Math.max(stats.notDone, 0.01) }]} />
-            <View style={[styles.barRest, { flex: Math.max(stats.remaining + (todayParts < 3 ? 1 : 0), 0.01) }]} />
+            <View style={[styles.barLived, { flex: Math.max(stats.partsDone, 0.01) }]} />
+            <View style={[styles.barRest, { flex: Math.max(stats.partsPossible - stats.partsDone, 0.01) }]} />
           </View>
           <Text style={styles.hint}>
-            {stats.partsDone} of {stats.partsPossible} parts so far · {stats.loopRate}% of the loop you have met.
+            {stats.partsDone} of {stats.partsPossible} activities saved · {stats.loopRate}% of the authored path
+            completed. Incomplete flows stay open; they are not missed.
           </Text>
-          {notDoneDays.length > 0 ? (
-            <View style={styles.missedWrap}>
-              {notDoneDays.map((d) => {
-                const n = partsCompleteCount(statusByDay[d]);
-                return (
-                  <View key={d} style={styles.missedChip}>
-                    <Text style={styles.missedChipText}>
-                      Day {d} · {n === 0 ? 'not done' : `${n}/3 · not done`}
-                    </Text>
-                  </View>
-                );
-              })}
-            </View>
-          ) : (
-            <Text style={styles.hint}>No missed days on the path behind you.</Text>
-          )}
         </Card>
 
         {/* Awareness */}
@@ -466,7 +468,14 @@ export default function InsightsScreen() {
           </View>
         </Card>
 
-        <TouchableOpacity onPress={() => setShowLogs((s) => !s)} style={styles.logToggle} activeOpacity={0.8}>
+        <TouchableOpacity
+          onPress={() => setShowLogs((visible) => !visible)}
+          style={styles.logToggle}
+          activeOpacity={0.8}
+          accessibilityRole="button"
+          accessibilityLabel={showLogs ? 'Hide the log behind this' : 'See the log behind this'}
+          accessibilityState={{ expanded: showLogs }}
+        >
           <Text style={styles.moreText}>{showLogs ? 'Hide the log' : 'See the log behind this'}</Text>
           <Ionicons name={showLogs ? 'chevron-up' : 'chevron-down'} size={16} color={colors.ink} />
         </TouchableOpacity>
@@ -492,7 +501,12 @@ export default function InsightsScreen() {
                 })
               )}
               {reflections.length > 6 ? (
-                <TouchableOpacity onPress={() => setShowMoreReflections((s) => !s)} style={styles.moreBtn}>
+                <TouchableOpacity
+                  onPress={() => setShowMoreReflections((visible) => !visible)}
+                  style={styles.moreBtn}
+                  accessibilityRole="button"
+                  accessibilityState={{ expanded: showMoreReflections }}
+                >
                   <Text style={styles.moreText}>{showMoreReflections ? 'Show less' : 'More reflections'}</Text>
                 </TouchableOpacity>
               ) : null}
@@ -504,9 +518,14 @@ export default function InsightsScreen() {
                 <Text style={styles.emptyText}>No check-ins yet. Start your first one from the Check-In tab.</Text>
               ) : (
                 lastCheckins.map((c: Checkin) => (
-                  <View key={c.id} style={styles.checkinRow}>
-                    <Text style={styles.checkinDate}>
-                      {new Date(c.createdAt).toLocaleDateString('en-US', {
+                  <View
+                    key={c.id}
+                    style={styles.checkinRow}
+                    accessible
+                    accessibilityLabel={`Check-in on ${new Date(c.createdAt).toLocaleDateString()}. Mood ${c.mood} of 5. ${c.oneWord || 'No word added'}. Energy ${c.energy} of 100, stress ${c.stress} of 100, confidence ${c.confidence} of 100, sleep ${c.sleep + 3} hours.`}
+                  >
+                    <Text style={styles.checkinDate} accessible={false}>
+                      {new Date(c.createdAt).toLocaleDateString(undefined, {
                         weekday: 'short',
                         month: 'short',
                         day: 'numeric',
@@ -523,7 +542,12 @@ export default function InsightsScreen() {
                 ))
               )}
               {checkins.length > 5 ? (
-                <TouchableOpacity onPress={() => setShowMoreCheckins((s) => !s)} style={styles.moreBtn}>
+                <TouchableOpacity
+                  onPress={() => setShowMoreCheckins((visible) => !visible)}
+                  style={styles.moreBtn}
+                  accessibilityRole="button"
+                  accessibilityState={{ expanded: showMoreCheckins }}
+                >
                   <Text style={styles.moreText}>{showMoreCheckins ? 'Show less' : 'More check-ins'}</Text>
                 </TouchableOpacity>
               ) : null}
@@ -537,19 +561,19 @@ export default function InsightsScreen() {
   );
 }
 
-function MoodWeek({ days }: { days: Array<{ iso: string; label: string; mood?: number }> }) {
+function MoodWeek({ days }: { days: { iso: string; label: string; mood?: number }[] }) {
+  const summary = days
+    .map((day) => `${day.label}: ${day.mood == null ? 'no check-in' : `${day.mood.toFixed(1)} out of 5`}`)
+    .join('. ');
   return (
-    <View style={styles.moodWeek}>
+    <View style={styles.moodWeek} accessible accessibilityLabel={`Mood over the last seven days. ${summary}`}>
       {days.map((d) => {
         const h = d.mood == null ? 4 : Math.max(6, Math.round((d.mood / 5) * 36));
         return (
           <View key={d.iso} style={styles.moodWeekCol}>
             <View style={styles.moodWeekTrack}>
               <View
-                style={[
-                  styles.moodWeekFill,
-                  { height: h, backgroundColor: d.mood == null ? '#EFE9DC' : colors.gold },
-                ]}
+                style={[styles.moodWeekFill, { height: h, backgroundColor: d.mood == null ? '#EFE9DC' : colors.gold }]}
               />
             </View>
             <Text style={styles.moodWeekFace}>{d.mood == null ? '·' : moodFace(d.mood)}</Text>
@@ -574,7 +598,7 @@ function MetricTile({
   value: string;
   delta: string | null;
   invert: boolean;
-  series: Array<number | undefined>;
+  series: (number | undefined)[];
   max: number;
   color: string;
 }) {
@@ -582,24 +606,25 @@ function MetricTile({
   const down = delta != null && delta.startsWith('−');
   const good = invert ? down : up;
   const bad = invert ? up : down;
-  const deltaColor = good ? colors.leaf : bad ? '#C46A52' : colors.inkSoft;
+  const deltaColor = good ? colors.leafInk : bad ? '#8A3B24' : colors.inkSoft;
   return (
-    <View style={styles.weatherCell}>
-      <Text style={styles.weatherLabel}>{label}</Text>
+    <View
+      style={styles.weatherCell}
+      accessible
+      accessibilityLabel={`${label}: ${value === '—' ? 'no data yet' : value}. ${delta ? `Change of ${delta} compared with last week.` : 'No week-to-week comparison yet.'}`}
+    >
+      <Text style={styles.weatherLabel} accessible={false}>
+        {label}
+      </Text>
       <View style={styles.metricRow}>
         <Text style={styles.weatherValue}>{value}</Text>
-        {delta && delta !== '0' ? (
-          <Text style={[styles.delta, { color: deltaColor }]}>{delta}</Text>
-        ) : null}
+        {delta && delta !== '0' ? <Text style={[styles.delta, { color: deltaColor }]}>{delta}</Text> : null}
       </View>
       <View style={styles.spark}>
         {series.map((v, i) => {
           const h = v == null ? 3 : Math.max(4, Math.round((v / max) * 22));
           return (
-            <View
-              key={i}
-              style={[styles.sparkBar, { height: h, backgroundColor: v == null ? '#EFE9DC' : color }]}
-            />
+            <View key={i} style={[styles.sparkBar, { height: h, backgroundColor: v == null ? '#EFE9DC' : color }]} />
           );
         })}
       </View>
@@ -614,9 +639,13 @@ function PetalDot({ filled, tone }: { filled: boolean; tone: 'sun' | 'leaf' | 'm
 
 function Stat({ n, label, warn }: { n: number; label: string; warn?: boolean }) {
   return (
-    <View style={styles.stat}>
-      <Text style={[styles.statN, warn && { color: '#C46A52' }]}>{n}</Text>
-      <Text style={styles.statL}>{label}</Text>
+    <View style={styles.stat} accessible accessibilityLabel={`${n} ${label}`}>
+      <Text style={[styles.statN, warn && { color: '#C46A52' }]} accessible={false}>
+        {n}
+      </Text>
+      <Text style={styles.statL} accessible={false}>
+        {label}
+      </Text>
     </View>
   );
 }
@@ -643,7 +672,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     flex: 1,
-    fontFamily: 'Fraunces',
+    fontFamily: 'Fraunces_600SemiBold',
     fontSize: 20,
     fontWeight: '600',
     color: colors.ink,
@@ -655,7 +684,7 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   lead: {
-    fontFamily: 'Fraunces',
+    fontFamily: 'Fraunces_600SemiBold',
     fontSize: 24,
     fontWeight: '600',
     color: colors.ink,
@@ -663,7 +692,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   leadBody: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_400Regular',
     fontSize: 14,
     color: colors.inkSoft,
     lineHeight: 21,
@@ -673,7 +702,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   lensKicker: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_800ExtraBold',
     fontSize: 10.5,
     fontWeight: '800',
     color: colors.inkSoft,
@@ -691,13 +720,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#FBEFEC',
   },
   lensChipText: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_800ExtraBold',
     fontSize: 12,
     fontWeight: '800',
     color: colors.ink,
   },
   intention: {
-    fontFamily: 'Fraunces',
+    fontFamily: 'Fraunces_600SemiBold',
     fontSize: 15,
     fontWeight: '600',
     color: colors.ink,
@@ -709,7 +738,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   cardHead: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_700Bold',
     fontSize: 13.5,
     fontWeight: '700',
     color: colors.ink,
@@ -717,7 +746,7 @@ const styles = StyleSheet.create({
     lineHeight: 19,
   },
   hint: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_400Regular',
     fontSize: 12,
     color: colors.inkSoft,
     lineHeight: 17,
@@ -742,7 +771,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F4EFE6',
   },
   loopChipText: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_800ExtraBold',
     fontSize: 11,
     fontWeight: '800',
     color: colors.ink,
@@ -750,14 +779,17 @@ const styles = StyleSheet.create({
   loopChipTextDone: {
     color: colors.ink,
   },
+  secondFlowTitle: {
+    marginTop: spacing.lg,
+  },
   loopChipState: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_700Bold',
     fontSize: 10,
     fontWeight: '700',
     textTransform: 'lowercase',
   },
   loopDone: { color: colors.leaf },
-  loopNot: { color: '#C46A52' },
+  loopOpen: { color: colors.inkSoft },
   week: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -769,7 +801,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   weekLabel: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_800ExtraBold',
     fontSize: 10,
     fontWeight: '800',
     color: colors.inkSoft,
@@ -788,23 +820,17 @@ const styles = StyleSheet.create({
   petalStackToday: {
     backgroundColor: '#FBF1DE',
   },
-  petalStackMissed: {
-    backgroundColor: '#FBEFEC',
-  },
   petal: {
     width: 10,
     height: 10,
     borderRadius: 5,
   },
   weekFoot: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_700Bold',
     fontSize: 8.5,
     fontWeight: '700',
     color: colors.ghost,
     textAlign: 'center',
-  },
-  weekFootMissed: {
-    color: '#C46A52',
   },
   statRow: {
     flexDirection: 'row',
@@ -813,13 +839,13 @@ const styles = StyleSheet.create({
   },
   stat: { flex: 1, alignItems: 'center' },
   statN: {
-    fontFamily: 'Fraunces',
+    fontFamily: 'Fraunces_700Bold',
     fontSize: 28,
     fontWeight: '700',
     color: colors.ink,
   },
   statL: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_700Bold',
     fontSize: 10.5,
     fontWeight: '700',
     color: colors.inkSoft,
@@ -836,26 +862,7 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   barLived: { backgroundColor: colors.leaf, borderRadius: 4 },
-  barMissed: { backgroundColor: colors.peach, borderRadius: 4 },
   barRest: { backgroundColor: '#EDE8DD', borderRadius: 4 },
-  missedWrap: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 6,
-    marginTop: spacing.md,
-  },
-  missedChip: {
-    backgroundColor: '#FBEFEC',
-    borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-  },
-  missedChipText: {
-    fontFamily: 'Nunito',
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#8A3B24',
-  },
   weatherGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -868,7 +875,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
   },
   weatherLabel: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_800ExtraBold',
     fontSize: 10.5,
     fontWeight: '800',
     color: colors.inkSoft,
@@ -876,7 +883,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.8,
   },
   weatherValue: {
-    fontFamily: 'Fraunces',
+    fontFamily: 'Fraunces_600SemiBold',
     fontSize: 20,
     fontWeight: '600',
     color: colors.ink,
@@ -889,7 +896,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   delta: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_800ExtraBold',
     fontSize: 11,
     fontWeight: '800',
   },
@@ -943,13 +950,13 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   feelWord: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_700Bold',
     fontSize: 12.5,
     fontWeight: '700',
     color: colors.ink,
   },
   feelCount: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_800ExtraBold',
     fontSize: 11,
     fontWeight: '800',
     color: '#8D7FAE',
@@ -961,7 +968,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   dimName: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_600SemiBold',
     fontSize: 11,
     fontWeight: '600',
     color: colors.ink,
@@ -979,7 +986,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.sage,
   },
   dimScore: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_700Bold',
     fontSize: 11,
     fontWeight: '700',
     color: colors.inkSoft,
@@ -1008,18 +1015,18 @@ const styles = StyleSheet.create({
   },
   insightTitle: {
     flex: 1,
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_800ExtraBold',
     fontSize: 14.5,
     fontWeight: '800',
     color: colors.ink,
   },
   insightTag: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_800ExtraBold',
     fontSize: 11,
     fontWeight: '800',
   },
   insightBody: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_400Regular',
     fontSize: 12.5,
     color: colors.inkSoft,
     marginTop: 3,
@@ -1031,7 +1038,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#EDE8DD',
   },
   spotLabel: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_800ExtraBold',
     fontSize: 10.5,
     fontWeight: '800',
     color: colors.inkSoft,
@@ -1039,7 +1046,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.8,
   },
   spotValue: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_700Bold',
     fontSize: 13.5,
     fontWeight: '700',
     color: colors.ink,
@@ -1047,7 +1054,7 @@ const styles = StyleSheet.create({
     lineHeight: 19,
   },
   emptyText: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_400Regular',
     fontSize: 13,
     color: colors.inkSoft,
     lineHeight: 19,
@@ -1061,7 +1068,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#EDE8DD',
   },
   checkinDate: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_400Regular',
     fontSize: 11.5,
     color: colors.inkSoft,
     width: 84,
@@ -1077,13 +1084,13 @@ const styles = StyleSheet.create({
   moodEmoji: { fontSize: 15 },
   checkinWord: {
     flex: 1,
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_600SemiBold',
     fontSize: 12,
     color: colors.ink,
     fontWeight: '600',
   },
   checkinMeta: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_400Regular',
     fontSize: 10.5,
     color: colors.ghost,
   },
@@ -1093,20 +1100,20 @@ const styles = StyleSheet.create({
     borderBottomColor: '#EDE8DD',
   },
   reflectionPrompt: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_700Bold',
     fontSize: 12,
     fontWeight: '700',
     color: colors.ink,
     marginBottom: 4,
   },
   reflectionResponse: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_400Regular',
     fontSize: 12,
     color: colors.inkSoft,
     lineHeight: 17,
   },
   reflectionDate: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_400Regular',
     fontSize: 10,
     color: colors.ghost,
     marginTop: 4,
@@ -1116,7 +1123,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   moreText: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_800ExtraBold',
     fontSize: 13,
     fontWeight: '800',
     color: colors.ink,

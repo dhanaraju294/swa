@@ -31,6 +31,8 @@ describe('describeEmailProblem', () => {
     expect(describeEmailProblem('student@gmail..com')).toMatch(/two dots/i);
     expect(describeEmailProblem('student@gmail.c')).toMatch(/incomplete/i);
     expect(describeEmailProblem('my name@gmail.com')).toMatch(/spaces/i);
+    expect(describeEmailProblem('student@gmail..com')).toMatch(/two dots/i);
+    expect(describeEmailProblem(`a${'x'.repeat(252)}@b.com`)).toMatch(/254 characters/i);
   });
 
   it('stays consistent with isValidEmail and the database regex', () => {
@@ -39,6 +41,8 @@ describe('describeEmailProblem', () => {
       'nope',
       'a@b',
       'a b@c.com',
+      'student@gmail..com',
+      `a${'x'.repeat(252)}@b.com`,
       'x@y.io',
       '',
     ]) {

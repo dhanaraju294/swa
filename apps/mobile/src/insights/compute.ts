@@ -1,14 +1,5 @@
-import {
-  journeyDayForDate,
-  kindOfDay,
-  localIsoDate,
-  nonePartsComplete,
-  notDoneDays,
-  partsCompleteCount,
-} from '../journey/calendar';
+import { localIsoDate, partsCompleteCount } from '../journey/calendar';
 import { allPartsComplete, type PartStatus } from '../journey/types';
-import type { OnboardingDraft } from '../onboarding/types';
-import { CHALLENGES, GOALS } from '../onboarding/options';
 import type {
   AwarenessDimensionScore,
   Checkin,
@@ -17,6 +8,8 @@ import type {
   SpotCheckin,
   Streak,
 } from '../native/InwardEngine';
+import { CHALLENGES, GOALS } from '../onboarding/options';
+import type { OnboardingDraft } from '../onboarding/types';
 
 const MOOD_FACES = ['😔', '😟', '😐', '🙂', '😊'];
 
@@ -43,8 +36,8 @@ export type WeekLoopDay = {
   iso: string;
   label: string;
   weekday: string;
-  journeyDay: number | null;
-  kind: ReturnType<typeof kindOfDay> | 'empty';
+  isToday: boolean;
+  kind: 'lived' | 'incomplete' | 'empty';
   morning: boolean;
   exercise: boolean;
   evening: boolean;
@@ -52,12 +45,9 @@ export type WeekLoopDay = {
   spots: number;
 };
 
+/** Calendar activity is based on save timestamps, not sequence-day numbers. */
 export function weekLoop(args: {
-  startedOn: string | null;
-  statusByDay: Record<number, PartStatus>;
-  completedDays: number[];
-  unlockedDay: number;
-  total: number;
+  reflections: Reflection[];
   checkins: Checkin[];
   onTheSpot: OnTheSpotEntry[];
   now?: Date;
@@ -67,21 +57,22 @@ export function weekLoop(args: {
     const d = new Date(now);
     d.setDate(now.getDate() - (6 - i));
     const iso = localIsoDate(d);
-    const journeyDay = args.startedOn ? journeyDayForDate(args.startedOn, iso, args.total) : null;
-    const status = journeyDay ? args.statusByDay[journeyDay] : undefined;
-    const kind =
-      journeyDay == null
-        ? 'empty'
-        : kindOfDay(journeyDay, args.unlockedDay, args.completedDays, status);
+    const rows = args.reflections.filter((r) => r.prompt === 'session' && isoDateOf(r.createdAt) === iso);
+    const status: PartStatus = {
+      morning: rows.some((r) => r.journalId === 'morning'),
+      exercise: rows.some((r) => r.journalId === 'exercise'),
+      evening: rows.some((r) => r.journalId === 'evening'),
+    };
+    const partsDone = partsCompleteCount(status);
     return {
       iso,
       label: d.toLocaleDateString('en-US', { weekday: 'short' }).charAt(0),
-      weekday: d.toLocaleDateString('en-US', { weekday: 'short' }),
-      journeyDay,
-      kind,
-      morning: Boolean(status?.morning),
-      exercise: Boolean(status?.exercise),
-      evening: Boolean(status?.evening),
+      weekday: d.toLocaleDateString(undefined, { weekday: 'short' }),
+      isToday: iso === localIsoDate(now),
+      kind: allPartsComplete(status) ? 'lived' : partsDone > 0 ? 'incomplete' : 'empty',
+      morning: status.morning,
+      exercise: status.exercise,
+      evening: status.evening,
       checkins: args.checkins.filter((c) => isoDateOf(c.createdAt) === iso).length,
       spots: args.onTheSpot.filter((s) => isoDateOf(s.createdAt) === iso).length,
     };
@@ -90,37 +81,33 @@ export function weekLoop(args: {
 
 export type PathStats = {
   lived: number;
-  notDone: number;
-  remaining: number;
+  reflectionDaysDone: number;
+  exerciseDaysDone: number;
   partsDone: number;
   partsPossible: number;
   loopRate: number;
-  missed: number[];
 };
 
-export function pathStats(
-  unlockedDay: number,
-  total: number,
-  completedDays: number[],
-  statusByDay: Record<number, PartStatus>,
-): PathStats {
-  const missed = notDoneDays(unlockedDay, completedDays, statusByDay);
+export function pathStats(total: number, completedDays: number[], statusByDay: Record<number, PartStatus>): PathStats {
   let partsDone = 0;
   let lived = 0;
-  for (let d = 1; d <= unlockedDay; d += 1) {
-    const status = statusByDay[d];
+  let reflectionDaysDone = 0;
+  let exerciseDaysDone = 0;
+  for (let day = 1; day <= total; day += 1) {
+    const status = statusByDay[day];
     partsDone += partsCompleteCount(status);
-    if (completedDays.includes(d) || allPartsComplete(status)) lived += 1;
+    if (completedDays.includes(day) || allPartsComplete(status)) lived += 1;
+    if (status?.morning && status.evening) reflectionDaysDone += 1;
+    if (status?.exercise) exerciseDaysDone += 1;
   }
-  const partsPossible = unlockedDay * 3;
+  const partsPossible = total * 3;
   return {
     lived,
-    notDone: missed.length,
-    remaining: Math.max(0, total - unlockedDay),
+    reflectionDaysDone,
+    exerciseDaysDone,
     partsDone,
     partsPossible,
     loopRate: partsPossible ? Math.round((partsDone / partsPossible) * 100) : 0,
-    missed,
   };
 }
 
@@ -153,7 +140,7 @@ export function innerWeather(checkins: Checkin[], now = new Date()): InnerWeathe
     const pick = ofDay[0];
     return {
       iso,
-      label: d.toLocaleDateString('en-US', { weekday: 'short' }).charAt(0),
+      label: d.toLocaleDateString(undefined, { weekday: 'short' }),
       mood: pick ? avg(ofDay.map((c) => c.mood)) : undefined,
       energy: pick ? avg(ofDay.map((c) => c.energy)) : undefined,
       stress: pick ? avg(ofDay.map((c) => c.stress)) : undefined,
@@ -176,7 +163,10 @@ export function innerWeather(checkins: Checkin[], now = new Date()): InnerWeathe
 export type NamedFeeling = { word: string; count: number };
 
 function cleanWord(raw: string): string {
-  return raw.replace(/^other:/i, '').replace(/^\[|\]$/g, '').trim();
+  return raw
+    .replace(/^other:/i, '')
+    .replace(/^\[|\]$/g, '')
+    .trim();
 }
 
 export function namedFeelings(checkins: Checkin[], onTheSpot: OnTheSpotEntry[]): NamedFeeling[] {
@@ -232,7 +222,7 @@ function card(
   return { id, icon, title, body, tag, kind, ...t };
 }
 
-function labelOf(id: string, table: Array<{ id: string; label: string }>): string | undefined {
+function labelOf(id: string, table: { id: string; label: string }[]): string | undefined {
   return table.find((x) => x.id === id)?.label;
 }
 
@@ -241,29 +231,19 @@ export function computeInsightCards(args: {
   onTheSpot: OnTheSpotEntry[];
   reflections: Reflection[];
   statusByDay: Record<number, PartStatus>;
-  unlockedDay: number;
-  completedDays: number[];
+  exerciseDay: number;
+  reflectionDay: number;
   streak: Streak | null;
   spot: SpotCheckin | null;
   draft?: OnboardingDraft | null;
   now?: Date;
 }): InsightCard[] {
-  const {
-    checkins,
-    onTheSpot,
-    reflections,
-    statusByDay,
-    unlockedDay,
-    completedDays,
-    streak,
-    spot,
-    draft,
-  } = args;
+  const { checkins, onTheSpot, reflections, statusByDay, exerciseDay, reflectionDay, streak, spot, draft } = args;
   const cards: InsightCard[] = [];
-  const todayStatus = statusByDay[unlockedDay];
-  const todayParts = partsCompleteCount(todayStatus);
-  const missed = notDoneDays(unlockedDay, completedDays, statusByDay);
-  const fullyMissed = missed.filter((d) => nonePartsComplete(statusByDay[d]));
+  const reflectionStatus = statusByDay[reflectionDay];
+  const exerciseStatus = statusByDay[exerciseDay];
+  const reflectionPartsDone = Number(Boolean(reflectionStatus?.morning)) + Number(Boolean(reflectionStatus?.evening));
+  const exerciseDone = Boolean(exerciseStatus?.exercise);
   const named = namedFeelings(checkins, onTheSpot);
   const morning = checkins.filter((c) => new Date(c.createdAt).getHours() < 12);
   const afternoon = checkins.filter((c) => new Date(c.createdAt).getHours() >= 12);
@@ -272,75 +252,16 @@ export function computeInsightCards(args: {
   const goals = draft?.goals || [];
   const challenges = draft?.challenges || [];
 
-  if (todayParts === 3) {
-    cards.push(
-      card(
-        'loop-today',
-        'sunny',
-        "Today's loop",
-        'Morning, practice, and evening are all in. Tomorrow opens a new set.',
-        'Lived',
-        'evidence',
-      ),
-    );
-  } else if (todayParts === 0) {
-    cards.push(
-      card(
-        'loop-today',
-        'sunny',
-        "Today's loop",
-        'Morning, practice, and evening are still open. Nothing carries over — this is a fresh set.',
-        'Open',
-        'nudge',
-      ),
-    );
-  } else {
-    cards.push(
-      card(
-        'loop-today',
-        'sunny',
-        "Today's loop",
-        `${todayParts} of 3 parts done. The rest stay open until you finish them — or until tomorrow notes them as not done.`,
-        `${todayParts}/3`,
-        'evidence',
-      ),
-    );
-  }
-
-  if (fullyMissed.length === 1) {
-    cards.push(
-      card(
-        'missed',
-        'moon',
-        'Noted, not carried',
-        `Day ${fullyMissed[0]} had no morning, practice, or evening. It is marked not done. Today's loop is new.`,
-        'Not done',
-        'evidence',
-      ),
-    );
-  } else if (fullyMissed.length > 1) {
-    cards.push(
-      card(
-        'missed',
-        'moon',
-        'Noted, not carried',
-        `${fullyMissed.length} days had none of the three parts. They stay on your path as not done. You can revisit them anytime.`,
-        'Not done',
-        'evidence',
-      ),
-    );
-  } else if (missed.length > 0) {
-    cards.push(
-      card(
-        'missed',
-        'moon',
-        'An unfinished loop',
-        `Day${missed.length === 1 ? '' : 's'} ${missed.join(', ')} still have open parts. Marked not done — not lost.`,
-        'Open parts',
-        'evidence',
-      ),
-    );
-  }
+  cards.push(
+    card(
+      'loop-today',
+      'sunny',
+      'Your two flows',
+      `Reflections · Day ${reflectionDay}: ${reflectionPartsDone}/2 complete. Practice · Day ${exerciseDay}: ${exerciseDone ? 'complete' : 'open'}. Each flow stays on its current day until its required step is finished.`,
+      'At your pace',
+      'evidence',
+    ),
+  );
 
   if (named.length >= 2) {
     const words = named
@@ -477,14 +398,7 @@ export function computeInsightCards(args: {
     );
   } else if (spot?.tinyExperiment) {
     cards.push(
-      card(
-        'need',
-        'eye',
-        'Tiny experiment',
-        `You chose to try: ${spot.tinyExperiment}.`,
-        'Remember',
-        'evidence',
-      ),
+      card('need', 'eye', 'Tiny experiment', `You chose to try: ${spot.tinyExperiment}.`, 'Remember', 'evidence'),
     );
   }
 
@@ -535,7 +449,7 @@ export function computeInsightCards(args: {
     }
   }
 
-  if (draft?.firstIntention?.trim() && checkins.length === 0 && todayParts === 0) {
+  if (draft?.firstIntention?.trim() && checkins.length === 0 && reflectionPartsDone === 0 && !exerciseDone) {
     cards.push(
       card(
         'intention',
@@ -641,5 +555,3 @@ export function resolveAwareness(
     weekOf: localIsoDate(now),
   });
 }
-
-

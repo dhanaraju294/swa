@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import Svg, { Line, Circle, Text as SvgText } from 'react-native-svg';
-import { colors, spacing } from './tokens';
+
 import { WritingLineInput } from './WritingLineInput';
+import { colors, spacing } from './tokens';
 
 type Props = {
   values: Record<string, string>;
@@ -20,17 +21,63 @@ const senses = [
 export function SensesWheel({ values, onChange }: Props) {
   return (
     <View style={styles.container}>
-      <Svg width="220" height="220" viewBox="0 0 220 220" style={styles.wheel}>
+      <Svg
+        width="220"
+        height="220"
+        viewBox="0 0 220 220"
+        style={styles.wheel}
+        accessible
+        accessibilityRole="image"
+        accessibilityLabel="Five-senses grounding wheel: sight, sound, touch, scent, and flavor surround the present moment."
+      >
         {senses.map((s, i) => (
-            <Line key={`l${i}`} x1="110" y1="110" x2={String(s.cx)} y2={String(s.cy)} stroke="#e3dccb" strokeWidth="1.4" />
-          ))}
+          <Line
+            key={`l${i}`}
+            x1="110"
+            y1="110"
+            x2={String(s.cx)}
+            y2={String(s.cy)}
+            stroke="#e3dccb"
+            strokeWidth="1.4"
+          />
+        ))}
         <Circle cx="110" cy="110" r="26" fill="#fff" stroke="#e3dccb" strokeWidth="1.4" />
-        <SvgText x="110" y="114" textAnchor="middle" fontFamily="Fraunces" fontSize="12" fontWeight="600" fill={colors.ink}>NOW</SvgText>
+        <SvgText
+          x="110"
+          y="114"
+          textAnchor="middle"
+          fontFamily="Fraunces_600SemiBold"
+          fontSize="12"
+          fontWeight="600"
+          fill={colors.ink}
+        >
+          NOW
+        </SvgText>
         {senses.map((s) => (
           <React.Fragment key={s.key}>
             <Circle cx={String(s.cx)} cy={String(s.cy)} r="27" fill={s.color} opacity={0.85} />
-            <SvgText x={String(s.cx)} y={String(s.cy - 4)} textAnchor="middle" fontFamily="Nunito" fontSize="9" fontWeight="800" fill={s.text}>{s.label}</SvgText>
-            <SvgText x={String(s.cx)} y={String(s.cy + 6)} textAnchor="middle" fontFamily="Nunito" fontSize="7" fill={s.text}>{s.sub}</SvgText>
+            <SvgText
+              x={String(s.cx)}
+              y={String(s.cy - 4)}
+              textAnchor="middle"
+              fontFamily="Nunito_800ExtraBold"
+              fontSize="9"
+              fontWeight="800"
+              fill={s.text}
+            >
+              {s.label}
+            </SvgText>
+            <SvgText
+              x={String(s.cx)}
+              y={String(s.cy + 7)}
+              textAnchor="middle"
+              fontFamily="Nunito_600SemiBold"
+              fontSize="8"
+              fontWeight="600"
+              fill={s.text}
+            >
+              {s.sub}
+            </SvgText>
           </React.Fragment>
         ))}
       </Svg>
@@ -38,11 +85,15 @@ export function SensesWheel({ values, onChange }: Props) {
       <View style={styles.inputs}>
         {senses.map((s) => (
           <View key={s.key} style={styles.inputRow}>
-            <Text style={styles.inputLabel}>{s.emoji} I {s.sub}</Text>
+            <Text style={styles.inputLabel}>
+              {s.emoji} I {s.sub}
+            </Text>
             <WritingLineInput
               value={values[s.key] || ''}
-              onChangeText={(t) => onChange(s.key, t)}
-              placeholder="__________"
+              onChangeText={(text) => onChange(s.key, text)}
+              placeholder="One thing…"
+              multiline={false}
+              accessibilityLabel={`What do you notice with your ${s.sub}?`}
               style={styles.input}
             />
           </View>
@@ -72,8 +123,9 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   inputLabel: {
-    fontFamily: 'Nunito',
-    fontSize: 10.5,
+    fontFamily: 'Nunito_600SemiBold',
+    fontSize: 12,
+    fontWeight: '600',
     color: colors.ink,
   },
   input: {

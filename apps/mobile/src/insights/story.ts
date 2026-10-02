@@ -1,8 +1,8 @@
-import { CHALLENGES, GOALS } from '../onboarding/options';
-import type { OnboardingDraft } from '../onboarding/types';
+import { avg, isoDateOf, namedFeelings, sleepHours, type WeatherDay } from './compute';
 import { localIsoDate } from '../journey/calendar';
 import type { Checkin, OnTheSpotEntry } from '../native/InwardEngine';
-import { avg, isoDateOf, namedFeelings, sleepHours, type WeatherDay } from './compute';
+import { CHALLENGES, GOALS } from '../onboarding/options';
+import type { OnboardingDraft } from '../onboarding/types';
 
 export type WeekSlice = {
   from: string;
@@ -127,19 +127,18 @@ export type Headline = { title: string; body: string };
 export function buildHeadline(args: {
   checkinCount: number;
   lived: number;
-  notDone: number;
   compare: WeekCompare;
   days: WeatherDay[];
   named: ReturnType<typeof namedFeelings>;
   draft: OnboardingDraft | null | undefined;
   onTheSpot: OnTheSpotEntry[];
 }): Headline {
-  const { checkinCount, lived, notDone, compare, days, named, draft } = args;
+  const { checkinCount, lived, compare, days, named, draft } = args;
   const goal = draft?.goals?.[0];
   const goalLabel = goal ? GOALS.find((g) => g.id === goal)?.label : undefined;
   const poles = bestAndHardest(days);
 
-  if (checkinCount === 0 && lived + notDone === 0) {
+  if (checkinCount === 0 && lived === 0) {
     return {
       title: 'A mirror, once you live a day',
       body: 'Loops and check-ins will plot here. Nothing is invented until you show up.',
@@ -170,13 +169,6 @@ export function buildHeadline(args: {
     };
   }
 
-  if (notDone > 0) {
-    return {
-      title: 'Some days were not done',
-      body: `${notDone} day${notDone === 1 ? '' : 's'} on the path behind you stayed open. Today is still a new loop.`,
-    };
-  }
-
   if (goalLabel) {
     return {
       title: `Looking through ${goalLabel.toLowerCase()}`,
@@ -195,7 +187,7 @@ export function buildHeadline(args: {
 function weekdayLong(iso: string): string {
   const [y, m, d] = iso.split('-').map((n) => parseInt(n, 10));
   if (!y || !m || !d) return iso;
-  return new Date(y, m - 1, d).toLocaleDateString('en-US', { weekday: 'long' });
+  return new Date(y, m - 1, d).toLocaleDateString(undefined, { weekday: 'long' });
 }
 
 export function awarenessLine(overall: number | undefined): string {

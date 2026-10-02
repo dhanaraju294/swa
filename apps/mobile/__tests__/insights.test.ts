@@ -1,8 +1,8 @@
-import { computeInsightCards, namedFeelings, pathStats } from '../src/insights/compute';
+import { computeInsightCards, namedFeelings, pathStats, weekLoop } from '../src/insights/compute';
 import { bestAndHardest, buildHeadline, formatDelta, weekCompare } from '../src/insights/story';
-import { emptyDraft } from '../src/onboarding/types';
 import type { PartStatus } from '../src/journey/types';
-import type { Checkin, OnTheSpotEntry } from '../src/native/InwardEngine';
+import type { Checkin, OnTheSpotEntry, Reflection } from '../src/native/InwardEngine';
+import { emptyDraft } from '../src/onboarding/types';
 
 const empty: PartStatus = { morning: false, exercise: false, evening: false };
 const full: PartStatus = { morning: true, exercise: true, evening: true };
@@ -22,21 +22,49 @@ function checkin(over: Partial<Checkin> = {}): Checkin {
 }
 
 describe('pathStats', () => {
-  it('counts a skipped past day as not done and does not invent lived days', () => {
-    const status: Record<number, PartStatus> = { 1: empty, 2: empty };
-    const stats = pathStats(2, 28, [], status);
+  it('tracks reflection and exercise progress separately without treating open work as missed', () => {
+    const status: Record<number, PartStatus> = {
+      1: { morning: true, exercise: false, evening: true },
+      2: { morning: true, exercise: false, evening: false },
+    };
+    const stats = pathStats(28, [], status);
     expect(stats.lived).toBe(0);
-    expect(stats.notDone).toBe(1);
-    expect(stats.missed).toEqual([1]);
-    expect(stats.partsDone).toBe(0);
+    expect(stats.reflectionDaysDone).toBe(1);
+    expect(stats.exerciseDaysDone).toBe(0);
+    expect(stats.partsDone).toBe(3);
+    expect(stats.loopRate).toBe(4);
   });
 
   it('counts a fully lived day', () => {
     const status: Record<number, PartStatus> = { 1: full, 2: empty };
-    const stats = pathStats(2, 28, [1], status);
+    const stats = pathStats(28, [1], status);
     expect(stats.lived).toBe(1);
-    expect(stats.notDone).toBe(0);
+    expect(stats.reflectionDaysDone).toBe(1);
+    expect(stats.exerciseDaysDone).toBe(1);
     expect(stats.partsDone).toBe(3);
+  });
+});
+
+describe('weekLoop activity', () => {
+  it('uses save dates and leaves unfinished calendar days neutral', () => {
+    const now = new Date(2026, 7, 31, 12, 0, 0);
+    const savedAt = new Date(now);
+    savedAt.setHours(8, 0, 0, 0);
+    const createdAt = savedAt.toISOString();
+    const reflections: Reflection[] = ['morning', 'exercise'].map((journalId, index) => ({
+      id: `r${index}`,
+      journalId,
+      dayNumber: 1,
+      prompt: 'session',
+      response: '{}',
+      createdAt,
+    }));
+
+    const today = weekLoop({ reflections, checkins: [], onTheSpot: [], now }).find((d) => d.isToday);
+    expect(today?.kind).toBe('incomplete');
+    expect(today?.morning).toBe(true);
+    expect(today?.exercise).toBe(true);
+    expect(today?.evening).toBe(false);
   });
 });
 
@@ -46,8 +74,8 @@ describe('computeInsightCards', () => {
     onTheSpot: [] as OnTheSpotEntry[],
     reflections: [],
     statusByDay: { 1: empty } as Record<number, PartStatus>,
-    unlockedDay: 1,
-    completedDays: [] as number[],
+    exerciseDay: 1,
+    reflectionDay: 1,
     streak: null,
     spot: null,
   };
@@ -60,17 +88,22 @@ describe('computeInsightCards', () => {
     expect(feelings?.body).not.toMatch(/better at naming/);
   });
 
-  it('notes a fully skipped past day as not done', () => {
+  it('keeps unfinished flows open without reporting a missed day', () => {
     const cards = computeInsightCards({
       ...base,
-      unlockedDay: 2,
-      statusByDay: { 1: empty, 2: empty },
+      exerciseDay: 1,
+      reflectionDay: 2,
+      statusByDay: {
+        1: { morning: true, exercise: false, evening: true },
+        2: { morning: false, exercise: false, evening: false },
+      },
     });
-    const missed = cards.find((c) => c.id === 'missed');
-    expect(missed).toBeDefined();
-    expect(missed?.body).toMatch(/Day 1/);
-    expect(missed?.body).toMatch(/not done/i);
-    expect(missed?.tag).toBe('Not done');
+    expect(cards.find((c) => c.id === 'missed')).toBeUndefined();
+    const flow = cards.find((c) => c.id === 'loop-today');
+    expect(flow?.title).toBe('Your two flows');
+    expect(flow?.body).toMatch(/Reflections · Day 2/);
+    expect(flow?.body).toMatch(/Practice · Day 1: open/);
+    expect(flow?.body).toMatch(/stays on its current day/);
   });
 
   it('names feelings only from words the user actually logged', () => {
@@ -151,7 +184,6 @@ describe('headline and poles', () => {
     const h = buildHeadline({
       checkinCount: 0,
       lived: 0,
-      notDone: 0,
       compare: weekCompare([], new Date(2026, 7, 31)),
       days: [],
       named: [],

@@ -1,27 +1,53 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Stack, router } from 'expo-router';
+import { Caveat_600SemiBold } from '@expo-google-fonts/caveat/600SemiBold';
+import { Fraunces_400Regular } from '@expo-google-fonts/fraunces/400Regular';
+import { Fraunces_600SemiBold } from '@expo-google-fonts/fraunces/600SemiBold';
+import { Fraunces_700Bold } from '@expo-google-fonts/fraunces/700Bold';
+import { Nunito_400Regular } from '@expo-google-fonts/nunito/400Regular';
+import { Nunito_600SemiBold } from '@expo-google-fonts/nunito/600SemiBold';
+import { Nunito_700Bold } from '@expo-google-fonts/nunito/700Bold';
+import { Nunito_800ExtraBold } from '@expo-google-fonts/nunito/800ExtraBold';
 import * as FileSystem from 'expo-file-system';
-import { getInwardEngine } from '../src/native/InwardEngineProvider';
-import { colors, spacing } from '../src/design-system/tokens';
-import { Button } from '../src/design-system/Button';
-import { AppLockProvider } from '../src/navigation/AppLockContext';
+import { useFonts } from 'expo-font';
+import { Stack, router } from 'expo-router';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+
 import AppLockGate from '../src/components/AppLockGate';
 import ErrorBoundary from '../src/components/ErrorBoundary';
-import { parseReminders } from '../src/state/appStore';
+import { Button } from '../src/design-system/Button';
+import { colors, spacing } from '../src/design-system/tokens';
+import { useDynamicAppIcon } from '../src/hooks/useDynamicAppIcon';
+import { getInwardEngine } from '../src/native/InwardEngineProvider';
+import { AppLockProvider } from '../src/navigation/AppLockContext';
 import {
   configureNotificationHandler,
   subscribeToReminderTaps,
   syncReflectionReminders,
 } from '../src/notifications/reminders';
-import { useDynamicAppIcon } from '../src/hooks/useDynamicAppIcon';
 import { startOnboardingSyncListener } from '../src/onboarding/sync';
+import { parseReminders } from '../src/state/appStore';
 
 export default function RootLayout() {
   const [ready, setReady] = useState(false);
   const [initError, setInitError] = useState<string | null>(null);
   const initRun = useRef(0);
   useDynamicAppIcon();
+  const [fontsLoaded, fontError] = useFonts({
+    Fraunces_400Regular,
+    Fraunces_600SemiBold,
+    Fraunces_700Bold,
+    Nunito_400Regular,
+    Nunito_600SemiBold,
+    Nunito_700Bold,
+    Nunito_800ExtraBold,
+    Caveat_600SemiBold,
+  });
+
+  useEffect(() => {
+    if (fontError) {
+      console.warn('Brand fonts could not be loaded; platform fallback fonts will be used.', fontError);
+    }
+  }, [fontError]);
 
   const initDatabase = useCallback(async () => {
     const runId = ++initRun.current;
@@ -68,36 +94,48 @@ export default function RootLayout() {
     return (
       <View style={styles.errorWrap}>
         <Text style={styles.errorTitle}>Something went wrong while starting up.</Text>
-        <Text style={styles.errorBody}>{initError}</Text>
-        <Button title="Try again" color={colors.gold} onPress={() => initDatabase()} style={{ marginTop: spacing.xl }} />
+        <Text style={styles.errorBody}>Your saved work has not been changed. Please try again.</Text>
+        <Button
+          title="Try again"
+          color={colors.gold}
+          onPress={() => initDatabase()}
+          style={{ marginTop: spacing.xl }}
+        />
       </View>
     );
   }
 
-  if (!ready) return null;
+  if (!ready || (!fontsLoaded && !fontError)) {
+    return (
+      <View style={styles.loadingWrap}>
+        <ActivityIndicator color={colors.leafInk} />
+        <Text style={styles.loadingText}>Opening your space…</Text>
+      </View>
+    );
+  }
 
   return (
     <ErrorBoundary>
       <AppLockProvider>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          contentStyle: { backgroundColor: colors.cream },
-        }}
-      >
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="onboarding" />
-        <Stack.Screen name="spot-checkin" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen
-          name="session"
-          options={{
+        <Stack
+          screenOptions={{
             headerShown: false,
-            presentation: 'card',
-            animation: 'slide_from_bottom',
+            contentStyle: { backgroundColor: colors.cream },
           }}
-        />
-      </Stack>
+        >
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="onboarding" />
+          <Stack.Screen name="spot-checkin" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen
+            name="session"
+            options={{
+              headerShown: false,
+              presentation: 'card',
+              animation: 'slide_from_bottom',
+            }}
+          />
+        </Stack>
         <AppLockGate />
       </AppLockProvider>
     </ErrorBoundary>
@@ -105,6 +143,18 @@ export default function RootLayout() {
 }
 
 const styles = StyleSheet.create({
+  loadingWrap: {
+    flex: 1,
+    gap: spacing.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.cream,
+  },
+  loadingText: {
+    fontFamily: 'Nunito_400Regular',
+    fontSize: 14,
+    color: colors.inkSoft,
+  },
   errorWrap: {
     flex: 1,
     backgroundColor: colors.cream,
@@ -113,14 +163,14 @@ const styles = StyleSheet.create({
     padding: spacing.xxl,
   },
   errorTitle: {
-    fontFamily: 'Fraunces',
+    fontFamily: 'Fraunces_600SemiBold',
     fontSize: 24,
     fontWeight: '600',
     color: colors.ink,
     textAlign: 'center',
   },
   errorBody: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_400Regular',
     fontSize: 13,
     color: colors.inkSoft,
     marginTop: spacing.md,

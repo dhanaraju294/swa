@@ -6,6 +6,7 @@
 // The generated entry module (`index.tsx`) installs the Rust crate into
 // Hermes; it is required lazily, only when the native bridge is known to
 // exist, so it is never evaluated in Expo Go / web.
+import type { InwardEngine } from './InwardEngine';
 import type {
   AppSettings,
   AppSettingsInput,
@@ -24,12 +25,10 @@ import type {
   SpotCheckinInput,
   Streak,
 } from './generated/inward_core';
-import type { InwardEngine } from './InwardEngine';
 
 type NativeBindings = typeof import('./generated/inward_core');
 
 function loadBindings(): NativeBindings {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   return require('../native/generated') as NativeBindings;
 }
 
@@ -142,16 +141,9 @@ export class NativeInwardEngine implements InwardEngine {
     return offload(() => loadBindings().completeJournalDay(journalId, day));
   }
 
-  async saveReflection(
-    journalId: string,
-    day: number,
-    prompt: string,
-    response: string,
-  ): Promise<Reflection> {
+  async saveReflection(journalId: string, day: number, prompt: string, response: string): Promise<Reflection> {
     await this.ready();
-    return offload(() =>
-      loadBindings().saveReflection(journalId, day, prompt, response),
-    );
+    return offload(() => loadBindings().saveReflection(journalId, day, prompt, response));
   }
 
   async listReflections(journalId?: string): Promise<Reflection[]> {

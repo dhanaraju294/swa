@@ -54,6 +54,7 @@
         }
       ],
       "./plugins/withRustCore.js",
+      "./plugins/withStreakWidget.js",
       [
         "@variant-systems/expo-dynamic-app-icon",
         {

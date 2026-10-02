@@ -24,17 +24,11 @@ export function isStreakMaintained(streak: Streak | null | undefined, now = new 
 }
 
 // Saving a single reflection does not itself record streak activity in the
-// core, so "something saved today for the current day" also counts as showing
-// up — the icon should not call the user irregular on a day they practised.
-export function showedUpToday(
-  reflections: Reflection[],
-  unlockedDay: number,
-  now = new Date(),
-): boolean {
+// core, so any saved flow step today also counts as showing up — regardless
+// of which independent sequence day that step belongs to.
+export function showedUpToday(reflections: Reflection[], now = new Date()): boolean {
   const today = isoDay(now);
-  return reflections.some(
-    (r) => r.dayNumber === unlockedDay && r.createdAt.slice(0, 10) === today,
-  );
+  return reflections.some((r) => r.createdAt.slice(0, 10) === today);
 }
 
 // Irregular wins over the time of day: a broken rhythm shows the outline mark
