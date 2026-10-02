@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+
 import { colors } from './tokens';
 
 const stepColors = [colors.sky, colors.sage, colors.gold, colors.peach];
@@ -37,13 +38,13 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   number: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_800ExtraBold',
     fontSize: 12,
     fontWeight: '800',
     color: '#fff',
   },
   text: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_400Regular',
     fontSize: 13,
     color: colors.ink,
     flex: 1,

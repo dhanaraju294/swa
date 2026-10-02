@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { colors, spacing } from '../design-system/tokens';
+
 import { Button } from '../design-system/Button';
+import { colors, spacing } from '../design-system/tokens';
 
 type Props = { children: React.ReactNode };
 type State = { error: Error | null };
@@ -40,6 +41,6 @@ export default class ErrorBoundary extends React.Component<Props, State> {
 
 const styles = StyleSheet.create({
   wrap: { flex: 1, backgroundColor: colors.cream, justifyContent: 'center', padding: spacing.xxl },
-  title: { fontFamily: 'Fraunces', fontSize: 26, fontWeight: '600', color: colors.ink },
-  body: { fontFamily: 'Nunito', fontSize: 14, color: colors.inkSoft, marginTop: spacing.md, lineHeight: 20 },
+  title: { fontFamily: 'Fraunces_600SemiBold', fontSize: 26, fontWeight: '600', color: colors.ink },
+  body: { fontFamily: 'Nunito_400Regular', fontSize: 14, color: colors.inkSoft, marginTop: spacing.md, lineHeight: 20 },
 });

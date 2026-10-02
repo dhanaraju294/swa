@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { inferStartedOn, isIsoDay, localIsoDate, unlockedDayOf } from './calendar';
 
 export const JOURNEY_STARTED_ON_KEY = 'inward-journey-started-on';
@@ -30,12 +31,9 @@ export async function clearJourneyStartedOn(): Promise<void> {
 }
 
 /**
- * Resolve (and persist) the journey's calendar origin.
- *
- * First run: seed from the legacy completion-based unlock so we don't jump
- * existing users forward or rewind them. After that the stored date is the
- * source of truth — a new calendar day always opens a new loop, even if
- * yesterday's morning / practice / evening were left undone.
+ * Resolve a legacy calendar origin for old persisted installs. Active flow
+ * progression no longer reads this value; exercise and reflection sequence
+ * days are derived from their own saved completions in journey/progress.ts.
  */
 export async function ensureJourneyStartedOn(
   completedDays: number[],

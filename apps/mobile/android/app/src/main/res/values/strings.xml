@@ -2,4 +2,5 @@
   <string name="app_name">swa</string>
   <string name="expo_splash_screen_resize_mode" translatable="false">contain</string>
   <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
+  <string name="streak_widget_description">Blossom shows your current streak and its mood</string>
 </resources>

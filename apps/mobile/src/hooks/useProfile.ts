@@ -1,13 +1,15 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
+import { useCallback, useEffect, useState } from 'react';
+import { Platform } from 'react-native';
+
 import { emitJourneyChanged } from './useDailyJourney';
+import { useUI } from './useUI';
 import { clearJourneyStartedOn } from '../journey/startDate';
-import { clearOnboardingLocal, ONBOARDING_FLAG_KEY } from '../onboarding/store';
-import { deleteSecureFlag } from '../native/secureFlag';
+import type { AppSettingsInput, Profile, ProfileInput } from '../native/InwardEngine';
 import { getInwardEngine } from '../native/InwardEngineProvider';
-import type { AppSettings, AppSettingsInput, Profile, ProfileInput } from '../native/InwardEngine';
+import { deleteSecureFlag } from '../native/secureFlag';
+import { clearOnboardingLocal, ONBOARDING_FLAG_KEY } from '../onboarding/store';
 import { normalizeProfile, useAppStore } from '../state/appStore';
 
 const NAME_BACKUP_KEY = 'inward-display-name-v1';
@@ -20,6 +22,7 @@ const PASSCODE_KEY = 'inward-applock-passcode';
 
 async function removeStoredItem(key: string): Promise<void> {
   try {
+    await AsyncStorage.removeItem(key).catch(() => undefined);
     if (Platform.OS === 'web') {
       if (typeof localStorage !== 'undefined') localStorage.removeItem(key);
       return;
@@ -92,8 +95,7 @@ export function useProfile() {
       const engine = await getInwardEngine();
       const current = useAppStore.getState().profile;
       const merged: ProfileInput = {
-        displayName:
-          input.displayName !== undefined ? input.displayName : current?.displayName,
+        displayName: input.displayName !== undefined ? input.displayName : current?.displayName,
         appLockEnabled: input.appLockEnabled,
       };
       const result = normalizeProfile(await engine.updateProfile(merged));
@@ -164,6 +166,7 @@ export function useDeleteAllData() {
       await clearJourneyStartedOn();
       await clearOnboardingLocal();
       await deleteSecureFlag(ONBOARDING_FLAG_KEY);
+      useUI.getState().clearUserData();
       emitJourneyChanged();
 
       // 2) Reset the in-memory mirrors of that data.

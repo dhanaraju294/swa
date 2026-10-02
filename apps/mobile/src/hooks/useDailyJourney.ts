@@ -1,16 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { getInwardEngine } from '../native/InwardEngineProvider';
-import { seededJournalDay } from '../native/seedContent';
-import type { InwardEngine, JournalDay, JournalProgress, Reflection } from '../native/InwardEngine';
+
 import {
-  calendarUnlockedDay,
-  kindOfDay,
-  localIsoDate,
-  missedDays as missedDaysOf,
-  notDoneDays,
-  type DayKind,
-} from '../journey/calendar';
-import { ensureJourneyStartedOn } from '../journey/startDate';
+  completedExerciseDays,
+  completedReflectionDays,
+  nextExerciseDay,
+  nextReflectionDay,
+} from '../journey/progress';
 import {
   allPartsComplete,
   JOURNEY_ID,
@@ -24,14 +19,16 @@ import {
   type PartStatus,
   type StoredPart,
 } from '../journey/types';
+import type { InwardEngine, JournalDay, JournalProgress, Reflection } from '../native/InwardEngine';
+import { getInwardEngine } from '../native/InwardEngineProvider';
+import { seededJournalDay } from '../native/seedContent';
 
 const SESSION_PROMPT = 'session';
 
 /**
- * Minimal module-level pub/sub: the moment a part is saved (which can also
- * flip a day to completed and unlock the next one), every screen showing
- * journey state — the home rhythm card, the path map — refreshes. Relying on
- * tab refocus alone left the map stale after a submission on some routes.
+ * Minimal module-level pub/sub: when a flow step is saved, every screen
+ * showing journey state refreshes its independent reflection/exercise
+ * counters. Relying on tab refocus alone left the map stale after a save.
  */
 type JourneyListener = () => void;
 const journeyListeners = new Set<JourneyListener>();
@@ -56,11 +53,7 @@ function useJourneyChangeRefresh(refresh: () => void | Promise<unknown>): void {
 // `getJournalDay` throws NotFound for every row. Day copy is static and
 // authored in the bundled seed, so fall back to it whenever the engine cannot
 // serve the row — content must never gate the app behind a database row.
-async function loadJournalDay(
-  engine: InwardEngine,
-  journalId: string,
-  day: number,
-): Promise<JournalDay> {
+async function loadJournalDay(engine: InwardEngine, journalId: string, day: number): Promise<JournalDay> {
   try {
     return await engine.getJournalDay(journalId, day);
   } catch {
@@ -70,7 +63,7 @@ async function loadJournalDay(
 
 function statusFromReflections(reflections: Reflection[], day: number): PartStatus {
   const has = (journalId: string) =>
-    reflections.some((r) => r.journalId === journalId && r.dayNumber === day);
+    reflections.some((r) => r.journalId === journalId && r.dayNumber === day && r.prompt === SESSION_PROMPT);
   return {
     morning: has(PART_JOURNALS.morning),
     exercise: has(PART_JOURNALS.exercise),
@@ -82,7 +75,6 @@ export function useDailyCatalog() {
   const [catalog, setCatalog] = useState<JourneyCatalog | null>(null);
   const [progress, setProgress] = useState<JournalProgress | null>(null);
   const [reflections, setReflections] = useState<Reflection[]>([]);
-  const [startedOn, setStartedOn] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -106,9 +98,6 @@ export function useDailyCatalog() {
       }
       setProgress(prog);
       setReflections([...morning, ...exercise, ...evening]);
-      const totalDays = parsed?.totalDays ?? 28;
-      const origin = await ensureJourneyStartedOn(prog.completedDays || [], prog.updatedAt, totalDays);
-      setStartedOn(origin);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not load journey.');
     } finally {
@@ -125,8 +114,6 @@ export function useDailyCatalog() {
 
   const total = catalog?.totalDays ?? 28;
   const completedDays = progress?.completedDays ?? [];
-  const today = localIsoDate();
-  const unlockedDay = startedOn ? calendarUnlockedDay(startedOn, today, total) : 1;
 
   const statusByDay = useMemo(() => {
     const map: Record<number, PartStatus> = {};
@@ -136,22 +123,10 @@ export function useDailyCatalog() {
     return map;
   }, [reflections, total]);
 
-  const kindByDay = useMemo(() => {
-    const map: Record<number, DayKind> = {};
-    for (let d = 1; d <= total; d += 1) {
-      map[d] = kindOfDay(d, unlockedDay, completedDays, statusByDay[d]);
-    }
-    return map;
-  }, [completedDays, statusByDay, total, unlockedDay]);
-
-  const missed = useMemo(
-    () => missedDaysOf(unlockedDay, completedDays, statusByDay),
-    [completedDays, statusByDay, unlockedDay],
-  );
-  const notDone = useMemo(
-    () => notDoneDays(unlockedDay, completedDays, statusByDay),
-    [completedDays, statusByDay, unlockedDay],
-  );
+  const exerciseDay = nextExerciseDay(total, statusByDay);
+  const reflectionDay = nextReflectionDay(total, statusByDay);
+  const exerciseCompletedDays = completedExerciseDays(total, statusByDay);
+  const reflectionCompletedDays = completedReflectionDays(total, statusByDay);
 
   return {
     catalog,
@@ -162,12 +137,11 @@ export function useDailyCatalog() {
     refresh,
     total,
     completedDays,
-    unlockedDay,
+    exerciseDay,
+    reflectionDay,
+    exerciseCompletedDays,
+    reflectionCompletedDays,
     statusByDay,
-    kindByDay,
-    startedOn,
-    missedDays: missed,
-    notDoneDays: notDone,
   };
 }
 
@@ -250,7 +224,11 @@ export function useSaveJourneyPart() {
   const [error, setError] = useState<string | null>(null);
 
   const savePart = useCallback(
-    async (day: number, part: JourneyPart, answers: Record<string, string>): Promise<{ status: PartStatus | null; error: string | null }> => {
+    async (
+      day: number,
+      part: JourneyPart,
+      answers: Record<string, string>,
+    ): Promise<{ status: PartStatus | null; error: string | null }> => {
       setSaving(true);
       setError(null);
       try {

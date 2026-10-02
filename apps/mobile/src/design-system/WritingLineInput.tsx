@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { TextInput, View, StyleSheet, TextInputProps } from 'react-native';
+import { TextInput, View, StyleSheet, TextInputProps, TextStyle, StyleProp } from 'react-native';
+
 import { colors, spacing } from './tokens';
 
 type Props = {
@@ -18,50 +19,39 @@ export function WritingLineInput({
   numberOfLines = 2,
   onFocus,
   onBlur,
+  accessibilityLabel,
+  accessibilityHint,
+  style: inputStyle,
   ...props
 }: Props) {
   const [focused, setFocused] = useState(false);
 
-  // Compose rather than let a caller's handler replace ours: spreading
-  // {...props} after onFocus/onBlur would silently disable the focus underline
-  // for any caller that passes its own handler.
-  const handleFocus: TextInputProps['onFocus'] = (e) => {
+  const handleFocus: TextInputProps['onFocus'] = (event) => {
     setFocused(true);
-    onFocus?.(e);
+    onFocus?.(event);
   };
-  const handleBlur: TextInputProps['onBlur'] = (e) => {
+  const handleBlur: TextInputProps['onBlur'] = (event) => {
     setFocused(false);
-    onBlur?.(e);
+    onBlur?.(event);
   };
+
   return (
-    <View style={styles.container}>
-      {placeholder ? (
-        <TextInput
-          style={[styles.input, focused && styles.focused]}
-          placeholder={placeholder}
-          placeholderTextColor={colors.ghost}
-          value={value}
-          onChangeText={onChangeText}
-          multiline={multiline}
-          numberOfLines={numberOfLines}
-          textAlignVertical="top"
-          {...props}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-        />
-      ) : (
-        <TextInput
-          style={[styles.input, focused && styles.focused]}
-          value={value}
-          onChangeText={onChangeText}
-          multiline={multiline}
-          numberOfLines={numberOfLines}
-          textAlignVertical="top"
-          {...props}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-        />
-      )}
+    <View style={[styles.container, focused && styles.containerFocused]}>
+      <TextInput
+        style={[styles.input, inputStyle as StyleProp<TextStyle>]}
+        placeholder={placeholder}
+        placeholderTextColor={colors.ghost}
+        value={value}
+        onChangeText={onChangeText}
+        multiline={multiline}
+        numberOfLines={numberOfLines}
+        textAlignVertical={multiline ? 'top' : 'center'}
+        accessibilityLabel={accessibilityLabel || placeholder || 'Text input'}
+        accessibilityHint={accessibilityHint}
+        {...props}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+      />
     </View>
   );
 }
@@ -72,16 +62,16 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.writingLine,
     paddingVertical: spacing.xs,
   },
+  containerFocused: {
+    borderBottomColor: colors.leafInk,
+  },
   input: {
-    fontFamily: 'Nunito',
-    fontSize: 14,
+    fontFamily: 'Nunito_400Regular',
+    fontSize: 15,
     color: colors.ink,
     padding: 0,
     margin: 0,
-    lineHeight: 21,
+    lineHeight: 22,
     minHeight: 42,
-  },
-  focused: {
-    borderBottomColor: colors.gold,
   },
 });

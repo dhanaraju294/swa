@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+
 import type { ReminderPrefs } from '../state/appStore';
 import { splitTime } from '../state/appStore';
 
@@ -14,7 +15,6 @@ function loadNotifications(): NotificationsModule | null {
   if (notifications !== undefined) return notifications;
   try {
     // Optional at runtime so web / Expo Go without the native module still load.
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     notifications = require('expo-notifications') as NotificationsModule;
     return notifications;
   } catch {
@@ -59,9 +59,7 @@ export async function requestReminderPermission(): Promise<boolean> {
     return true;
   }
   const asked = await Notifications.requestPermissionsAsync();
-  return Boolean(
-    asked.granted || asked.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL,
-  );
+  return Boolean(asked.granted || asked.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL);
 }
 
 function dailyTrigger(Notifications: NotificationsModule, hour: number, minute: number): object {
@@ -121,9 +119,7 @@ export async function syncReflectionReminders(prefs: ReminderPrefs): Promise<voi
   );
 }
 
-export function subscribeToReminderTaps(
-  onOpen: (part: 'morning' | 'evening') => void,
-): () => void {
+export function subscribeToReminderTaps(onOpen: (part: 'morning' | 'evening') => void): () => void {
   const Notifications = loadNotifications();
   if (!Notifications) return () => undefined;
 

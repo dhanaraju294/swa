@@ -1,5 +1,8 @@
-import { useEffect, useState } from 'react';
 import { Redirect } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+
+import { colors, spacing } from '../src/design-system/tokens';
 import { getSecureFlag } from '../src/native/secureFlag';
 import { ONBOARDING_FLAG_KEY, readOnboardingRecord } from '../src/onboarding/store';
 import { flushPendingOnboarding } from '../src/onboarding/sync';
@@ -30,7 +33,29 @@ export default function Index() {
     return () => clearTimeout(timeout);
   }, []);
 
-  if (!target) return null;
+  if (!target) {
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator color={colors.leafInk} accessibilityLabel="Opening your saved space" />
+        <Text style={styles.loadingText}>Finding your place…</Text>
+      </View>
+    );
+  }
 
   return <Redirect href={target} />;
 }
+
+const styles = StyleSheet.create({
+  loading: {
+    flex: 1,
+    gap: spacing.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.cream,
+  },
+  loadingText: {
+    fontFamily: 'Nunito_400Regular',
+    fontSize: 14,
+    color: colors.inkSoft,
+  },
+});

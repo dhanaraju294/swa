@@ -1,16 +1,12 @@
-import { AppState, type AppStateStatus } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AppState, type AppStateStatus } from 'react-native';
+
+import { markOnboardingPending, markOnboardingSynced, readOnboardingRecord, upsertOnboardingDraft } from './store';
+import { toRpcProfile, type OnboardingDraft } from './types';
 import { supabase } from '../lib/supabase';
 import { getInwardEngine } from '../native/InwardEngineProvider';
-import { serializeReminders } from '../state/appStore';
 import { syncReflectionReminders } from '../notifications/reminders';
-import {
-  markOnboardingPending,
-  markOnboardingSynced,
-  readOnboardingRecord,
-  upsertOnboardingDraft,
-} from './store';
-import { toRpcProfile, type OnboardingDraft } from './types';
+import { serializeReminders } from '../state/appStore';
 
 /**
  * Always writes locally first. Cloud is best-effort: if the device is offline
@@ -116,15 +112,15 @@ async function persistLocalEngineCopy(draft: OnboardingDraft): Promise<void> {
   await engine.updateSettings({
     theme: settings.theme || 'default',
     reminderTime: serializeReminders({
-      morning: { enabled: true, time: draft.morningCheckinTime || '08:00' },
-      evening: { enabled: true, time: draft.eveningCheckinTime || '21:00' },
+      morning: { enabled: false, time: draft.morningCheckinTime || '08:00' },
+      evening: { enabled: false, time: draft.eveningCheckinTime || '21:00' },
     }),
     exportFormatPref: settings.exportFormatPref || 'json',
   });
   try {
     await syncReflectionReminders({
-      morning: { enabled: true, time: draft.morningCheckinTime || '08:00' },
-      evening: { enabled: true, time: draft.eveningCheckinTime || '21:00' },
+      morning: { enabled: false, time: draft.morningCheckinTime || '08:00' },
+      evening: { enabled: false, time: draft.eveningCheckinTime || '21:00' },
     });
   } catch {
     /* permission may be denied — times are still stored */

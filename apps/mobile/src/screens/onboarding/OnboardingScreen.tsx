@@ -1,39 +1,29 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
+  ActivityIndicator,
   ScrollView,
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, radius, shadow } from '../../design-system/tokens';
+
 import { Button } from '../../design-system/Button';
 import { Card } from '../../design-system/Card';
 import { EyebrowLabel } from '../../design-system/EyebrowLabel';
-import { PetalMark } from '../../design-system/PetalMark';
 import { MoodFacePicker } from '../../design-system/MoodFacePicker';
+import { PetalMark } from '../../design-system/PetalMark';
 import { PillSlider } from '../../design-system/PillSlider';
 import { WritingLineInput } from '../../design-system/WritingLineInput';
-import { setSecureFlag } from '../../native/secureFlag';
+import { colors, spacing, radius, shadow } from '../../design-system/tokens';
 import { useSaveCheckin } from '../../hooks/useCheckins';
 import { useProfile } from '../../hooks/useProfile';
-import {
-  describeEmailProblem,
-  describeNameProblem,
-  emptyDraft,
-  hasEmailShape,
-  isValidEmail,
-  isValidName,
-  NAME_MAX_LENGTH,
-  type OnboardingDraft,
-} from '../../onboarding/types';
-import { ONBOARDING_FLAG_KEY, readOnboardingRecord } from '../../onboarding/store';
-import { saveOnboardingLocalThenSync } from '../../onboarding/sync';
+import { setSecureFlag } from '../../native/secureFlag';
 import {
   CHALLENGES,
   EVENING_TIMES,
@@ -46,18 +36,30 @@ import {
   YEARS,
   formatClock,
 } from '../../onboarding/options';
+import { ONBOARDING_FLAG_KEY, readOnboardingRecord } from '../../onboarding/store';
+import { saveOnboardingLocalThenSync } from '../../onboarding/sync';
+import {
+  describeEmailProblem,
+  describeNameProblem,
+  emptyDraft,
+  hasEmailShape,
+  isValidEmail,
+  isValidName,
+  NAME_MAX_LENGTH,
+  type OnboardingDraft,
+} from '../../onboarding/types';
 
 const MOOD_LABELS = ['Sad', 'Low', 'Neutral', 'Good', 'Great'];
 
 type Step = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
-const STEP_META: Array<{ title: string; body: string }> = [
+const STEP_META: { title: string; body: string }[] = [
   { title: '', body: '' },
   { title: 'About you', body: 'Tell us a little about yourself.' },
   { title: 'What do you want to improve?', body: 'Pick what matters most — you can choose more than one.' },
   { title: "What's on your mind right now?", body: "Select what you're currently struggling with." },
   { title: 'Your preference', body: 'How would you like to use SWA?' },
-  { title: 'Check-in time', body: 'When would you like SWA to check in with you?' },
+  { title: 'Reminder times', body: 'Choose preferred times. Reminders stay off until you enable them in Settings.' },
   { title: 'First check-in', body: "Let's understand how you're feeling right now." },
   { title: 'Your SWA journey begins now', body: "We're here to support you, every step of the way." },
 ];
@@ -85,28 +87,40 @@ export default function OnboardingScreen() {
   const [draft, setDraft] = useState<OnboardingDraft>(emptyDraft);
   const draftRef = useRef(draft);
   draftRef.current = draft;
+  const [hydrating, setHydrating] = useState(true);
+  const [savingStep, setSavingStep] = useState(false);
   const [finishing, setFinishing] = useState(false);
+  const finishingRef = useRef(false);
+  const savingStepRef = useRef(false);
+  const [onboardingError, setOnboardingError] = useState('');
 
   useEffect(() => {
-    readOnboardingRecord().then((row) => {
-      if (!row) return;
-      setDraft(row.draft);
-      if (!row.completed && row.step >= 1 && row.step <= 7) {
-        setStep(row.step as Step);
-      }
-    });
+    let active = true;
+    readOnboardingRecord()
+      .catch((error) => {
+        console.warn('Could not restore the local setup draft:', error);
+        return null;
+      })
+      .then((row) => {
+        if (!active) return;
+        if (row) {
+          setDraft(row.draft);
+          if (!row.completed && row.step >= 1 && row.step <= 7) {
+            setStep(row.step as Step);
+          }
+        }
+      })
+      .finally(() => {
+        if (active) setHydrating(false);
+      });
+    return () => {
+      active = false;
+    };
   }, []);
 
-  const patch = (partial: Partial<OnboardingDraft>) => setDraft((d) => ({ ...d, ...partial }));
-
-  const persistStep = (nextStep: number, completed = false) => {
-    // Normalise the email before it leaves the screen so keyboard autocomplete
-    // can't smuggle a trailing space / capitalisation past the server's format
-    // check (which would make the column fall back to NULL).
-    void saveOnboardingLocalThenSync(normalizeDraft(draftRef.current), {
-      step: nextStep,
-      completed,
-    });
+  const patch = (partial: Partial<OnboardingDraft>) => {
+    setOnboardingError('');
+    setDraft((current) => ({ ...current, ...partial }));
   };
 
   const canContinue = useMemo(() => {
@@ -114,7 +128,7 @@ export default function OnboardingScreen() {
       if (!isValidName(draft.displayName)) return false;
       if (!draft.role || !draft.fieldOfStudy) return false;
       if (draft.role === 'college_student' && !draft.yearOfStudy) return false;
-      if (!isValidEmail(draft.email)) return false;
+      if (draft.email?.trim() && !isValidEmail(draft.email)) return false;
       return true;
     }
     if (step === 2) return draft.goals.length > 0;
@@ -123,24 +137,37 @@ export default function OnboardingScreen() {
     return true;
   }, [step, draft]);
 
-  const goNext = () => {
-    if (step >= 7) return;
+  const goNext = async () => {
+    if (step >= 7 || savingStepRef.current || finishingRef.current || !canContinue) return;
+    savingStepRef.current = true;
     const next = (step + 1) as Step;
-    persistStep(next);
-    setStep(next);
+    setSavingStep(true);
+    setOnboardingError('');
+    try {
+      await saveOnboardingLocalThenSync(normalizeDraft(draftRef.current), { step: next });
+      setStep(next);
+    } catch (error) {
+      console.warn('Could not save the setup step locally:', error);
+      setOnboardingError('Your answers could not be saved on this device. Please try again.');
+    } finally {
+      savingStepRef.current = false;
+      setSavingStep(false);
+    }
   };
 
   const goBack = () => {
-    if (step <= 0) return;
-    setStep((step - 1) as Step);
+    if (step <= 0 || savingStepRef.current || finishingRef.current) return;
+    setOnboardingError('');
+    setStep((current) => (current - 1) as Step);
   };
 
   const finish = async () => {
-    if (finishing) return;
+    if (finishingRef.current || savingStepRef.current) return;
+    finishingRef.current = true;
     setFinishing(true);
     try {
       const finalDraft = normalizeDraft(draftRef.current);
-      await saveOnboardingLocalThenSync(finalDraft, { step: 7, completed: true });
+      await saveOnboardingLocalThenSync(finalDraft, { step: 7, completed: false });
       // Mirror the name into the local engine profile so the home screen can
       // greet the user even though the questionnaire lives in Supabase.
       if (finalDraft.displayName) {
@@ -150,38 +177,59 @@ export default function OnboardingScreen() {
           console.warn('Saving display name to local profile failed (non-fatal):', e);
         }
       }
-      try {
-        await saveCheckin({
-          mood: draft.firstMood,
-          energy: draft.firstEnergy,
-          stress: draft.firstStress,
-          sleep: 3,
-          confidence: 50,
-          oneWord: draft.firstIntention.trim() || undefined,
-        });
-      } catch (e) {
-        console.warn('First check-in local save failed (non-fatal):', e);
-      }
+      await saveCheckin({
+        mood: finalDraft.firstMood,
+        energy: finalDraft.firstEnergy,
+        stress: finalDraft.firstStress,
+        sleep: finalDraft.firstSleep,
+        confidence: finalDraft.firstConfidence,
+        oneWord: undefined,
+      });
+      await saveOnboardingLocalThenSync(finalDraft, { step: 7, completed: true });
       await setSecureFlag(ONBOARDING_FLAG_KEY, 'true');
-      router.replace('/(tabs)');
-    } catch (e) {
-      console.warn('Failed to finish onboarding locally:', e);
+      router.replace({ pathname: '/spot-checkin', params: { source: 'onboarding' } });
+    } catch (error) {
+      console.warn('Failed to finish onboarding locally:', error);
+      setOnboardingError('Your setup could not be finished. Your answers are still here; please try again.');
+    } finally {
+      finishingRef.current = false;
       setFinishing(false);
     }
   };
+
+  if (hydrating) {
+    return (
+      <SafeAreaView style={[styles.safe, styles.hydrating]} edges={['top', 'bottom']}>
+        <ActivityIndicator color={colors.leafInk} accessibilityLabel="Restoring your setup" />
+        <Text style={styles.body}>Restoring your setup…</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         {step === 0 ? (
-          <Welcome onContinue={goNext} />
+          <Welcome onContinue={goNext} busy={savingStep} />
         ) : (
           <>
             <View style={styles.topBar}>
-              <TouchableOpacity onPress={goBack} hitSlop={12} style={styles.backBtn} accessibilityLabel="Back">
-                <Ionicons name="chevron-back" size={22} color={colors.ink} />
+              <TouchableOpacity
+                onPress={goBack}
+                disabled={savingStep || finishing}
+                hitSlop={12}
+                style={styles.backBtn}
+                accessibilityRole="button"
+                accessibilityLabel="Back"
+              >
+                <Ionicons name="chevron-back" size={22} color={colors.ink} accessible={false} />
               </TouchableOpacity>
-              <View style={styles.barTrack}>
+              <View
+                style={styles.barTrack}
+                accessibilityRole="progressbar"
+                accessibilityLabel="Setup progress"
+                accessibilityValue={{ min: 0, max: 7, now: step }}
+              >
                 <View style={[styles.barFill, { width: `${Math.round((step / 7) * 100)}%` }]} />
               </View>
               <Text style={styles.stepLabel}>Step {step} of 7</Text>
@@ -218,19 +266,25 @@ export default function OnboardingScreen() {
             </ScrollView>
 
             <View style={styles.footer}>
+              {onboardingError ? (
+                <Text style={styles.formError} accessibilityRole="alert">
+                  {onboardingError}
+                </Text>
+              ) : null}
               {step < 7 ? (
                 <Button
                   title="Continue"
                   onPress={goNext}
                   color={colors.gold}
-                  disabled={!canContinue}
+                  disabled={!canContinue || savingStep}
+                  loading={savingStep}
                 />
               ) : (
                 <Button
-                  title={finishing ? 'Opening…' : "Let's begin  →"}
+                  title={finishing ? 'Opening…' : "Let's begin →"}
                   onPress={finish}
                   color={colors.gold}
-                  disabled={finishing}
+                  disabled={finishing || savingStep}
                   loading={finishing}
                 />
               )}
@@ -242,7 +296,7 @@ export default function OnboardingScreen() {
   );
 }
 
-function Welcome({ onContinue }: { onContinue: () => void }) {
+function Welcome({ onContinue, busy }: { onContinue: () => void; busy: boolean }) {
   return (
     <View style={styles.welcome}>
       <View style={styles.welcomeArt}>
@@ -251,24 +305,19 @@ function Welcome({ onContinue }: { onContinue: () => void }) {
       <Text style={styles.brand}>SWA</Text>
       <Text style={styles.welcomeLine}>Understand yourself{'\n'}one step at a time</Text>
       <View style={{ flex: 1 }} />
-      <Button title="Continue" onPress={onContinue} color={colors.gold} />
+      <Button title="Continue" onPress={onContinue} color={colors.gold} disabled={busy} loading={busy} />
       <View style={styles.privacy}>
         <Ionicons name="shield-checkmark" size={16} color={colors.leaf} />
         <Text style={styles.privacyText}>
-          Your journal stays on this device. This setup is saved locally even without internet, and sent when you are back online.
+          Your journal and check-ins stay on this device. Setup details you choose, including an email if you add one,
+          are saved locally and sync online when a connection is available.
         </Text>
       </View>
     </View>
   );
 }
 
-function AboutStep({
-  draft,
-  patch,
-}: {
-  draft: OnboardingDraft;
-  patch: (p: Partial<OnboardingDraft>) => void;
-}) {
+function AboutStep({ draft, patch }: { draft: OnboardingDraft; patch: (p: Partial<OnboardingDraft>) => void }) {
   // Validate as the user types, but only *complain* once they've moved on from
   // the field (or typed something that can no longer become valid). Showing
   // "missing @" while someone is still on the first keystroke is just noise.
@@ -278,8 +327,9 @@ function AboutStep({
   const nameTouched = Boolean(draft.displayName);
 
   const emailProblem = describeEmailProblem(draft.email);
-  const emailAccepted = !emailProblem && Boolean(draft.email);
-  const showEmailProblem = Boolean(emailProblem) && (emailTouched || hasEmailShape(draft.email));
+  const hasEmailText = Boolean(draft.email?.trim());
+  const emailAccepted = hasEmailText && !emailProblem;
+  const showEmailProblem = hasEmailText && Boolean(emailProblem) && (emailTouched || hasEmailShape(draft.email));
 
   return (
     <View>
@@ -319,12 +369,7 @@ function AboutStep({
       <View style={{ height: spacing.lg }} />
       <EyebrowLabel label={draft.role === 'working_professional' ? 'FIELD OF WORK' : 'FIELD OF STUDY'} />
       {FIELDS.map((f) => (
-        <ChoiceRow
-          key={f}
-          label={f}
-          selected={draft.fieldOfStudy === f}
-          onPress={() => patch({ fieldOfStudy: f })}
-        />
+        <ChoiceRow key={f} label={f} selected={draft.fieldOfStudy === f} onPress={() => patch({ fieldOfStudy: f })} />
       ))}
 
       <View style={{ height: spacing.lg }} />
@@ -351,7 +396,7 @@ function AboutStep({
       </Card>
 
       <View style={{ height: spacing.lg }} />
-      <EyebrowLabel label="YOUR EMAIL" />
+      <EyebrowLabel label="YOUR EMAIL (OPTIONAL)" />
       <Card style={styles.padCard}>
         <WritingLineInput
           value={draft.email ?? ''}
@@ -365,26 +410,24 @@ function AboutStep({
           autoCorrect={false}
           autoComplete="email"
           textContentType="emailAddress"
+          maxLength={254}
         />
         {showEmailProblem ? (
           <Text style={styles.emailHint}>{emailProblem}</Text>
         ) : emailAccepted ? (
-          <Text style={styles.emailOk}>Looks good.</Text>
+          <Text style={styles.emailOk}>This is stored with your online setup profile.</Text>
         ) : (
-          <Text style={styles.emailNote}>We'll only use this to keep in touch — never to spam you.</Text>
+          <Text style={styles.emailNote}>
+            Optional. If added, this is stored with your setup profile and syncs online. It is not needed to use the
+            app.
+          </Text>
         )}
       </Card>
     </View>
   );
 }
 
-function PrefsStep({
-  draft,
-  patch,
-}: {
-  draft: OnboardingDraft;
-  patch: (p: Partial<OnboardingDraft>) => void;
-}) {
+function PrefsStep({ draft, patch }: { draft: OnboardingDraft; patch: (p: Partial<OnboardingDraft>) => void }) {
   return (
     <View>
       <EyebrowLabel label="PREFERRED EXPERIENCE LENGTH" />
@@ -412,15 +455,12 @@ function PrefsStep({
   );
 }
 
-function TimesStep({
-  draft,
-  patch,
-}: {
-  draft: OnboardingDraft;
-  patch: (p: Partial<OnboardingDraft>) => void;
-}) {
+function TimesStep({ draft, patch }: { draft: OnboardingDraft; patch: (p: Partial<OnboardingDraft>) => void }) {
   return (
     <View>
+      <Text style={styles.timeNote}>
+        These are saved as preferences only. Both reminders stay off until you enable them in Settings.
+      </Text>
       <Card style={styles.timeCard}>
         <View style={styles.timeHead}>
           <View style={[styles.timeIcon, { backgroundColor: '#FBF1DE' }]}>
@@ -457,13 +497,7 @@ function TimesStep({
   );
 }
 
-function CheckinStep({
-  draft,
-  patch,
-}: {
-  draft: OnboardingDraft;
-  patch: (p: Partial<OnboardingDraft>) => void;
-}) {
+function CheckinStep({ draft, patch }: { draft: OnboardingDraft; patch: (p: Partial<OnboardingDraft>) => void }) {
   return (
     <View>
       <EyebrowLabel label="HOW ARE YOU FEELING TODAY?" />
@@ -471,31 +505,75 @@ function CheckinStep({
         <Text style={styles.fieldLabel}>Mood</Text>
         <MoodFacePicker
           value={draft.firstMood}
-          onChange={(v) => patch({ firstMood: v })}
+          onChange={(value) => patch({ firstMood: value })}
           labels={MOOD_LABELS}
         />
       </Card>
       <Card style={styles.padCard}>
         <View style={styles.sliderLabels}>
           <Text style={styles.fieldLabel}>Energy</Text>
-          <Text style={styles.sliderEnds}>Low → High</Text>
+          <Text style={styles.sliderEnds}>Low → high · {draft.firstEnergy}/100</Text>
         </View>
-        <PillSlider value={draft.firstEnergy} onChange={(v) => patch({ firstEnergy: v })} color={colors.gold} />
+        <PillSlider
+          value={draft.firstEnergy}
+          onChange={(value) => patch({ firstEnergy: value })}
+          color={colors.gold}
+          accessibilityLabel="Energy, from low to high"
+        />
       </Card>
       <Card style={styles.padCard}>
         <View style={styles.sliderLabels}>
           <Text style={styles.fieldLabel}>Stress</Text>
-          <Text style={styles.sliderEnds}>Low → High</Text>
+          <Text style={styles.sliderEnds}>Low → high · {draft.firstStress}/100</Text>
         </View>
-        <PillSlider value={draft.firstStress} onChange={(v) => patch({ firstStress: v })} color={colors.peach} />
+        <PillSlider
+          value={draft.firstStress}
+          onChange={(value) => patch({ firstStress: value })}
+          color={colors.peach}
+          accessibilityLabel="Stress, from low to high"
+        />
+      </Card>
+      <Card style={styles.padCard}>
+        <Text style={styles.fieldLabel}>Sleep</Text>
+        <Text style={styles.inputHelper}>About how many hours did you sleep?</Text>
+        <View style={styles.sleepRow} accessibilityRole="radiogroup" accessibilityLabel="Hours of sleep">
+          {[0, 1, 2, 3, 4, 5].map((value) => {
+            const selected = draft.firstSleep === value;
+            return (
+              <TouchableOpacity
+                key={value}
+                onPress={() => patch({ firstSleep: value })}
+                style={[styles.sleepPill, selected && styles.sleepPillActive]}
+                accessibilityRole="radio"
+                accessibilityLabel={`${value + 3} hours`}
+                accessibilityState={{ checked: selected, selected }}
+              >
+                <Text style={[styles.sleepPillText, selected && styles.sleepPillTextActive]}>{value + 3}h</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </Card>
+      <Card style={styles.padCard}>
+        <View style={styles.sliderLabels}>
+          <Text style={styles.fieldLabel}>Confidence</Text>
+          <Text style={styles.sliderEnds}>Low → high · {draft.firstConfidence}/100</Text>
+        </View>
+        <PillSlider
+          value={draft.firstConfidence}
+          onChange={(value) => patch({ firstConfidence: value })}
+          color={colors.sage}
+          accessibilityLabel="Confidence, from low to high"
+        />
       </Card>
       <Card style={styles.padCard}>
         <Text style={styles.fieldLabel}>What's one thing you want today to go better?</Text>
         <WritingLineInput
           value={draft.firstIntention}
-          onChangeText={(t) => patch({ firstIntention: t })}
+          onChangeText={(value) => patch({ firstIntention: value })}
           placeholder="A few honest words are enough"
           multiline
+          accessibilityLabel="One thing you want today to go better"
         />
       </Card>
     </View>
@@ -534,7 +612,7 @@ function ChipGrid({
   onToggle,
   twoCol,
 }: {
-  items: Array<{ id: string; label: string }>;
+  items: { id: string; label: string }[];
   selected: string[];
   onToggle: (id: string) => void;
   twoCol?: boolean;
@@ -550,6 +628,9 @@ function ChipGrid({
               onPress={() => onToggle(item.id)}
               style={[styles.gridCell, on && styles.choiceOn]}
               activeOpacity={0.85}
+              accessibilityRole="checkbox"
+              accessibilityLabel={item.label}
+              accessibilityState={{ checked: on, selected: on }}
             >
               <Text style={[styles.choiceLabel, on && styles.choiceLabelOn]}>{item.label}</Text>
               <View style={[styles.check, on && styles.checkOn]}>
@@ -569,6 +650,7 @@ function ChipGrid({
           label={item.label}
           selected={selected.includes(item.id)}
           onPress={() => onToggle(item.id)}
+          selectionMode="multiple"
         />
       ))}
     </View>
@@ -580,14 +662,24 @@ function ChoiceRow({
   sub,
   selected,
   onPress,
+  selectionMode = 'single',
 }: {
   label: string;
   sub?: string;
   selected: boolean;
   onPress: () => void;
+  selectionMode?: 'single' | 'multiple';
 }) {
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.choice, selected && styles.choiceOn]} activeOpacity={0.85}>
+    <TouchableOpacity
+      onPress={onPress}
+      style={[styles.choice, selected && styles.choiceOn]}
+      activeOpacity={0.85}
+      accessibilityRole={selectionMode === 'multiple' ? 'checkbox' : 'radio'}
+      accessibilityLabel={label}
+      accessibilityHint={selectionMode === 'multiple' ? 'Select or clear this option' : 'Select this option'}
+      accessibilityState={{ checked: selected, selected }}
+    >
       <View style={{ flex: 1 }}>
         <Text style={[styles.choiceLabel, selected && styles.choiceLabelOn]}>{label}</Text>
         {sub ? <Text style={styles.choiceSub}>{sub}</Text> : null}
@@ -601,7 +693,14 @@ function ChoiceRow({
 
 function Pill({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.pill, selected && styles.choiceOn]} activeOpacity={0.85}>
+    <TouchableOpacity
+      onPress={onPress}
+      style={[styles.pill, selected && styles.choiceOn]}
+      activeOpacity={0.85}
+      accessibilityRole="radio"
+      accessibilityLabel={label}
+      accessibilityState={{ checked: selected, selected }}
+    >
       <Text style={[styles.pillText, selected && styles.choiceLabelOn]}>{label}</Text>
     </TouchableOpacity>
   );
@@ -609,6 +708,7 @@ function Pill({ label, selected, onPress }: { label: string; selected: boolean; 
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.cream },
+  hydrating: { alignItems: 'center', justifyContent: 'center', gap: spacing.sm },
   welcome: {
     flex: 1,
     paddingHorizontal: spacing.xxl,
@@ -621,7 +721,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
   },
   brand: {
-    fontFamily: 'Fraunces',
+    fontFamily: 'Fraunces_700Bold',
     fontSize: 42,
     fontWeight: '700',
     color: colors.ink,
@@ -629,7 +729,7 @@ const styles = StyleSheet.create({
     letterSpacing: 4,
   },
   welcomeLine: {
-    fontFamily: 'Fraunces',
+    fontFamily: 'Fraunces_600SemiBold',
     fontSize: 22,
     fontWeight: '600',
     color: colors.inkSoft,
@@ -645,7 +745,7 @@ const styles = StyleSheet.create({
   },
   privacyText: {
     flex: 1,
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_400Regular',
     fontSize: 12,
     color: colors.inkSoft,
     lineHeight: 17,
@@ -679,7 +779,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   stepLabel: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_800ExtraBold',
     fontSize: 11,
     fontWeight: '800',
     color: colors.inkSoft,
@@ -691,7 +791,7 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
   },
   title: {
-    fontFamily: 'Fraunces',
+    fontFamily: 'Fraunces_600SemiBold',
     fontSize: 26,
     fontWeight: '600',
     color: colors.ink,
@@ -699,7 +799,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   body: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_400Regular',
     fontSize: 14,
     color: colors.inkSoft,
     lineHeight: 21,
@@ -710,6 +810,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.md,
     paddingTop: spacing.sm,
+  },
+  formError: {
+    fontFamily: 'Nunito_700Bold',
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#8A3B24',
+    lineHeight: 18,
+    marginBottom: spacing.sm,
   },
   choice: {
     flexDirection: 'row',
@@ -729,7 +837,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
   },
   choiceLabel: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_700Bold',
     fontSize: 15,
     fontWeight: '700',
     color: colors.ink,
@@ -738,7 +846,7 @@ const styles = StyleSheet.create({
     color: colors.ink,
   },
   choiceSub: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_400Regular',
     fontSize: 12,
     color: colors.inkSoft,
     marginTop: 2,
@@ -771,7 +879,7 @@ const styles = StyleSheet.create({
     ...shadow.soft,
   },
   pillText: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_800ExtraBold',
     fontSize: 13,
     fontWeight: '800',
     color: colors.ink,
@@ -793,6 +901,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     ...shadow.soft,
   },
+  timeNote: {
+    fontFamily: 'Nunito_400Regular',
+    fontSize: 14,
+    color: colors.inkSoft,
+    lineHeight: 20,
+    marginBottom: spacing.md,
+  },
   timeCard: {
     padding: spacing.lg,
     marginBottom: spacing.md,
@@ -811,7 +926,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   timeTitle: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_800ExtraBold',
     fontSize: 15,
     fontWeight: '800',
     color: colors.ink,
@@ -821,29 +936,62 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   emailHint: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_400Regular',
     fontSize: 12,
-    color: colors.peach,
+    color: '#8A3B24',
     marginTop: spacing.sm,
   },
   emailOk: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_400Regular',
     fontSize: 12,
-    color: colors.leaf,
+    color: colors.leafInk,
     marginTop: spacing.sm,
   },
   emailNote: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_400Regular',
     fontSize: 12,
     color: colors.ghost,
     marginTop: spacing.sm,
   },
   fieldLabel: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_800ExtraBold',
     fontSize: 13,
     fontWeight: '800',
     color: colors.ink,
     marginBottom: spacing.sm,
+  },
+  inputHelper: {
+    fontFamily: 'Nunito_400Regular',
+    fontSize: 13,
+    color: colors.inkSoft,
+    marginBottom: spacing.sm,
+  },
+  sleepRow: {
+    flexDirection: 'row',
+    gap: spacing.xs,
+  },
+  sleepPill: {
+    flex: 1,
+    minHeight: 44,
+    borderRadius: radius.sm,
+    borderWidth: 1.5,
+    borderColor: '#D8CFC0',
+    backgroundColor: colors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sleepPillActive: {
+    borderColor: '#6C5B8A',
+    backgroundColor: '#F3EEF9',
+  },
+  sleepPillText: {
+    fontFamily: 'Nunito_700Bold',
+    fontSize: 12,
+    fontWeight: '700',
+    color: colors.ink,
+  },
+  sleepPillTextActive: {
+    color: colors.ink,
   },
   sliderLabels: {
     flexDirection: 'row',
@@ -851,7 +999,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   sliderEnds: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_700Bold',
     fontSize: 11,
     color: colors.inkSoft,
     fontWeight: '700',
@@ -861,7 +1009,7 @@ const styles = StyleSheet.create({
     paddingTop: spacing.xl,
   },
   beginTitle: {
-    fontFamily: 'Fraunces',
+    fontFamily: 'Fraunces_600SemiBold',
     fontSize: 28,
     fontWeight: '600',
     color: colors.ink,
@@ -893,7 +1041,7 @@ const styles = StyleSheet.create({
   },
   beginText: {
     flex: 1,
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_700Bold',
     fontSize: 13.5,
     fontWeight: '700',
     color: colors.ink,

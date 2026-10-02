@@ -1,36 +1,39 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, radius } from '../../design-system/tokens';
+import React, { useRef, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { Button } from '../../design-system/Button';
 import { Card } from '../../design-system/Card';
 import { MoodFacePicker } from '../../design-system/MoodFacePicker';
 import { PillSlider } from '../../design-system/PillSlider';
 import { WritingLineInput } from '../../design-system/WritingLineInput';
-import { Button } from '../../design-system/Button';
-import { useUI } from '../../hooks/useUI';
+import { colors, spacing, radius } from '../../design-system/tokens';
 import { useSaveCheckin } from '../../hooks/useCheckins';
+import { useUI } from '../../hooks/useUI';
 
 const MOOD_LABELS = ['Sad', 'Low', 'Neutral', 'Good', 'Great'];
+const SLEEP_VALUES = [0, 1, 2, 3, 4, 5];
 
-// Fresh-draft defaults (mirrors defaultCheckin in hooks/useUI) so the
-// progress dots can tell which sections the user has touched.
-const DEFAULTS = { mood: 3, energy: 50, stress: 50, sleep: 3, oneWord: '' };
+type Feedback = { tone: 'success' | 'error'; message: string } | null;
 
 export default function OnTheSpotScreen() {
   const router = useRouter();
   const { checkinDraft, setCheckinDraft } = useUI();
   const { save: saveCheckin, saving } = useSaveCheckin();
-  const [justSaved, setJustSaved] = useState(false);
+  const saveRef = useRef(false);
+  const [feedback, setFeedback] = useState<Feedback>(null);
 
-  const sectionsTouched =
-    1 +
-    [checkinDraft.energy !== DEFAULTS.energy, checkinDraft.stress !== DEFAULTS.stress,
-      checkinDraft.sleep !== DEFAULTS.sleep, checkinDraft.oneWord !== DEFAULTS.oneWord]
-      .filter(Boolean).length;
+  const updateDraft = (patch: Partial<typeof checkinDraft>) => {
+    setFeedback(null);
+    setCheckinDraft(patch);
+  };
 
   const handleSave = async () => {
-    if (saving || justSaved) return;
+    if (saving || saveRef.current) return;
+    saveRef.current = true;
+    setFeedback(null);
     try {
       await saveCheckin({
         mood: checkinDraft.mood,
@@ -38,173 +41,192 @@ export default function OnTheSpotScreen() {
         stress: checkinDraft.stress,
         sleep: checkinDraft.sleep,
         confidence: checkinDraft.confidence,
-        oneWord: checkinDraft.oneWord || undefined,
+        oneWord: checkinDraft.oneWord.trim() || undefined,
       });
-      setJustSaved(true);
-      setTimeout(() => setJustSaved(false), 2500);
-    } catch (e) {
-      console.warn('Failed to save check-in:', e);
+      setFeedback({ tone: 'success', message: 'Saved on this device.' });
+    } catch (error) {
+      console.warn('Failed to save check-in:', error);
+      setFeedback({
+        tone: 'error',
+        message: 'Could not save your check-in. Your answers are still here; please try again.',
+      });
+    } finally {
+      saveRef.current = false;
     }
   };
 
   return (
-    <View style={styles.container}>
-      {/* Header */}
+    <SafeAreaView style={styles.safe} edges={['top']}>
       <View style={styles.header}>
         <TouchableOpacity
-          onPress={() => router.push('/(tabs)')}
-          hitSlop={10}
+          onPress={() => router.navigate('/(tabs)')}
           style={styles.headerBack}
+          accessibilityRole="button"
           accessibilityLabel="Back to Today"
+          hitSlop={8}
         >
-          <Ionicons name="arrow-back" size={20} color={colors.ink} />
+          <Ionicons name="arrow-back" size={20} color={colors.ink} accessible={false} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Check-In</Text>
         <View style={styles.headerBack} />
       </View>
 
-      {/* Progress dots (one per section, lit as you go) */}
-      <View style={styles.dots}>
-        {Array.from({ length: 5 }).map((_, i) => (
-          <View key={i} style={[styles.dot, i < sectionsTouched && styles.dotActive]} />
-        ))}
-      </View>
+      <KeyboardAvoidingView style={styles.keyboardArea} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <ScrollView
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <Text style={styles.title}>How are you feeling right now?</Text>
+          <Text style={styles.subtitle}>A quick check-in. There is no right or wrong answer.</Text>
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}>How are you feeling right now?</Text>
-        <Text style={styles.subtitle}>There's no right or wrong answer.</Text>
+          <Card style={styles.card}>
+            <Text style={styles.fieldLabel}>Mood</Text>
+            <MoodFacePicker
+              value={checkinDraft.mood}
+              onChange={(value) => updateDraft({ mood: value })}
+              labels={MOOD_LABELS}
+            />
+          </Card>
 
-        {/* Mood */}
-        <Card style={styles.card}>
-          <MoodFacePicker
-            value={checkinDraft.mood}
-            onChange={(v) => setCheckinDraft({ mood: v })}
-            labels={MOOD_LABELS}
-          />
-        </Card>
+          <Card style={styles.card}>
+            <SliderHeading label="Energy" value={checkinDraft.energy} ends="Low to high" />
+            <PillSlider
+              value={checkinDraft.energy}
+              onChange={(value) => updateDraft({ energy: value })}
+              color={colors.gold}
+              accessibilityLabel="Energy, from low to high"
+            />
+          </Card>
 
-        {/* Energy */}
-        <Card style={styles.card}>
-          <View style={styles.fieldRow}>
-            <View style={[styles.fieldIcon, { backgroundColor: '#FBF1DE' }]}>
-              <Ionicons name="flash" size={16} color="#C99A2C" />
+          <Card style={styles.card}>
+            <SliderHeading label="Stress" value={checkinDraft.stress} ends="Low to high" />
+            <PillSlider
+              value={checkinDraft.stress}
+              onChange={(value) => updateDraft({ stress: value })}
+              color={colors.peach}
+              accessibilityLabel="Stress, from low to high"
+            />
+          </Card>
+
+          <Card style={styles.card}>
+            <SliderHeading label="Confidence" value={checkinDraft.confidence} ends="Low to high" />
+            <Text style={styles.helper}>How capable do you feel of handling what is in front of you?</Text>
+            <PillSlider
+              value={checkinDraft.confidence}
+              onChange={(value) => updateDraft({ confidence: value })}
+              color={colors.sage}
+              accessibilityLabel="Confidence, from low to high"
+            />
+          </Card>
+
+          <Card style={styles.card}>
+            <View style={styles.fieldRow}>
+              <View style={[styles.fieldIcon, { backgroundColor: '#F3EEF9' }]}>
+                <Ionicons name="moon" size={16} color="#6C5B8A" accessible={false} />
+              </View>
+              <Text style={styles.fieldLabel}>Sleep</Text>
             </View>
-            <Text style={styles.fieldLabel}>Energy</Text>
-          </View>
-          <PillSlider
-            value={checkinDraft.energy}
-            onChange={(v) => setCheckinDraft({ energy: v })}
-            color={colors.gold}
-          />
-        </Card>
-
-        {/* Stress */}
-        <Card style={styles.card}>
-          <View style={styles.fieldRow}>
-            <View style={[styles.fieldIcon, { backgroundColor: '#FBEFEC' }]}>
-              <Ionicons name="pulse" size={16} color="#D4795F" />
+            <Text style={styles.helper}>About how many hours did you sleep?</Text>
+            <View style={styles.sleepRow} accessibilityRole="radiogroup" accessibilityLabel="Hours of sleep">
+              {SLEEP_VALUES.map((value) => {
+                const selected = checkinDraft.sleep === value;
+                return (
+                  <TouchableOpacity
+                    key={value}
+                    onPress={() => updateDraft({ sleep: value })}
+                    style={[styles.sleepPill, selected && styles.sleepPillActive]}
+                    activeOpacity={0.8}
+                    accessibilityRole="radio"
+                    accessibilityLabel={`${value + 3} hours`}
+                    accessibilityState={{ checked: selected, selected }}
+                  >
+                    <Text style={styles.sleepPillText}>{value + 3}h</Text>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
-            <Text style={styles.fieldLabel}>Stress</Text>
-          </View>
-          <PillSlider
-            value={checkinDraft.stress}
-            onChange={(v) => setCheckinDraft({ stress: v })}
-            color={colors.peach}
+          </Card>
+
+          <Card style={styles.card}>
+            <Text style={styles.fieldLabel}>One word for right now</Text>
+            <Text style={styles.optional}>Optional</Text>
+            <WritingLineInput
+              value={checkinDraft.oneWord}
+              onChangeText={(value) => updateDraft({ oneWord: value })}
+              placeholder="A word, if one comes to mind"
+              multiline={false}
+              maxLength={80}
+              accessibilityLabel="One word for right now, optional"
+            />
+          </Card>
+
+          {feedback ? (
+            <Text
+              style={[styles.feedback, feedback.tone === 'error' && styles.feedbackError]}
+              accessibilityRole={feedback.tone === 'error' ? 'alert' : 'text'}
+              accessibilityLiveRegion="polite"
+            >
+              {feedback.message}
+            </Text>
+          ) : null}
+
+          <Button
+            title="Save check-in"
+            onPress={handleSave}
+            color={colors.leaf}
+            disabled={saving}
+            loading={saving}
+            style={styles.saveButton}
           />
-        </Card>
+          <View style={{ height: 24 }} />
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+}
 
-        {/* Sleep */}
-        <Card style={styles.card}>
-          <View style={styles.fieldRow}>
-            <View style={[styles.fieldIcon, { backgroundColor: '#F3EEF9' }]}>
-              <Ionicons name="moon" size={16} color="#8D7FAE" />
-            </View>
-            <Text style={styles.fieldLabel}>Sleep</Text>
-          </View>
-          <Text style={styles.sleepHint}>How many hours did you get?</Text>
-          <View style={styles.sleepRow}>
-            {[1, 2, 3, 4, 5].map((n) => {
-              const selected = checkinDraft.sleep === n;
-              return (
-                <TouchableOpacity
-                  key={n}
-                  onPress={() => setCheckinDraft({ sleep: n })}
-                  style={[styles.sleepPill, selected && styles.sleepPillActive]}
-                  activeOpacity={0.8}
-                >
-                  <Text style={[styles.sleepPillText, selected && styles.sleepPillTextActive]}>
-                    {n + 3}h
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        </Card>
-
-        {/* Anything on your mind */}
-        <Card style={styles.card}>
-          <Text style={styles.fieldLabel}>Anything on your mind?</Text>
-          <Text style={styles.optional}>Optional</Text>
-          <WritingLineInput
-            value={checkinDraft.oneWord}
-            onChangeText={(t) => setCheckinDraft({ oneWord: t })}
-            placeholder="Type here..."
-            multiline={false}
-          />
-        </Card>
-
-        <Button
-          title={justSaved ? 'Saved ✓' : saving ? 'Saving...' : 'Continue'}
-          onPress={handleSave}
-          color={justSaved ? colors.leaf : colors.leaf}
-          disabled={saving}
-          style={styles.continue}
-        />
-        <View style={{ height: 24 }} />
-      </ScrollView>
+function SliderHeading({ label, value, ends }: { label: string; value: number; ends: string }) {
+  return (
+    <View style={styles.sliderHeading}>
+      <Text style={styles.fieldLabel}>{label}</Text>
+      <Text style={styles.sliderValue}>
+        {ends} · {Math.round(value)}/100
+      </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.cream },
+  safe: { flex: 1, backgroundColor: colors.cream },
+  keyboardArea: { flex: 1 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
+    paddingTop: spacing.xs,
     paddingBottom: spacing.xs,
   },
-  headerBack: { width: 32, height: 32 },
+  headerBack: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   headerTitle: {
-    fontFamily: 'Fraunces',
-    fontSize: 19,
+    fontFamily: 'Fraunces_600SemiBold',
+    fontSize: 20,
     fontWeight: '600',
     color: colors.ink,
   },
-  dots: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 6,
-    paddingVertical: spacing.xs,
-  },
-  dot: {
-    width: 18,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: '#E5DFD3',
-  },
-  dotActive: {
-    backgroundColor: colors.leaf,
-    width: 26,
-  },
   content: {
     paddingHorizontal: spacing.lg,
-    paddingBottom: 100,
+    paddingBottom: 32,
   },
   title: {
-    fontFamily: 'Fraunces',
+    fontFamily: 'Fraunces_600SemiBold',
     fontSize: 25,
     fontWeight: '600',
     color: colors.ink,
@@ -212,11 +234,12 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
   },
   subtitle: {
-    fontFamily: 'Nunito',
-    fontSize: 13.5,
+    fontFamily: 'Nunito_400Regular',
+    fontSize: 14,
     color: colors.inkSoft,
     marginTop: 4,
     marginBottom: spacing.lg,
+    lineHeight: 20,
   },
   card: {
     padding: spacing.lg,
@@ -229,59 +252,76 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   fieldIcon: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
   },
   fieldLabel: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_800ExtraBold',
     fontSize: 15,
     fontWeight: '800',
     color: colors.ink,
   },
-  sleepHint: {
-    fontFamily: 'Nunito',
-    fontSize: 12,
-    color: colors.inkSoft,
-    marginBottom: spacing.sm,
-    marginTop: -spacing.xs,
-  },
-  sleepRow: {
+  sliderHeading: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
     gap: spacing.sm,
+    marginBottom: spacing.xs,
   },
-  sleepPill: {
-    flex: 1,
-    paddingVertical: 10,
-    borderRadius: radius.sm,
-    backgroundColor: colors.white,
-    borderWidth: 1.5,
-    borderColor: '#EDE7DB',
-    alignItems: 'center',
-  },
-  sleepPillActive: {
-    backgroundColor: colors.lavender,
-    borderColor: colors.lavender,
-  },
-  sleepPillText: {
-    fontFamily: 'Nunito',
-    fontSize: 13,
+  sliderValue: {
+    fontFamily: 'Nunito_700Bold',
+    fontSize: 12,
     fontWeight: '700',
     color: colors.inkSoft,
   },
-  sleepPillTextActive: {
+  helper: {
+    fontFamily: 'Nunito_400Regular',
+    fontSize: 13,
+    lineHeight: 18,
+    color: colors.inkSoft,
+    marginBottom: spacing.sm,
+  },
+  sleepRow: {
+    flexDirection: 'row',
+    gap: spacing.xs,
+  },
+  sleepPill: {
+    flex: 1,
+    minHeight: 44,
+    borderRadius: radius.sm,
+    borderWidth: 1.5,
+    borderColor: '#D8CFC0',
+    backgroundColor: colors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sleepPillActive: {
+    borderColor: '#6C5B8A',
+    backgroundColor: '#F3EEF9',
+  },
+  sleepPillText: {
+    fontFamily: 'Nunito_700Bold',
+    fontSize: 12,
+    fontWeight: '700',
     color: colors.ink,
-    fontWeight: '800',
   },
   optional: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito_400Regular',
     fontSize: 12,
     color: colors.ghost,
     marginBottom: spacing.sm,
   },
-  continue: {
-    marginTop: spacing.sm,
+  feedback: {
+    fontFamily: 'Nunito_700Bold',
+    fontSize: 14,
+    fontWeight: '700',
+    color: colors.leafInk,
+    lineHeight: 20,
+    marginBottom: spacing.md,
   },
+  feedbackError: { color: '#8A3B24' },
+  saveButton: { marginTop: spacing.sm },
 });

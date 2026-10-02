@@ -1,13 +1,7 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-  useCallback,
-} from 'react';
-import { AppState, Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
+import React, { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react';
+import { AppState, Platform } from 'react-native';
+
 import { useProfile } from '../hooks/useProfile';
 import { getSecureFlag, setSecureFlag } from '../native/secureFlag';
 
@@ -39,28 +33,13 @@ async function clearPasscode(): Promise<void> {
   }
 }
 
-async function storeHasKey(key: string): Promise<boolean> {
-  if (isWeb) {
-    try {
-      return typeof localStorage !== 'undefined' && localStorage.getItem(key) !== null;
-    } catch {
-      return false;
-    }
-  }
-  try {
-    const val = await SecureStore.getItemAsync(key);
-    return val !== null && val !== undefined;
-  } catch {
-    return false;
-  }
-}
-
 type AppLockContextValue = {
   enabled: boolean;
   locked: boolean;
   hasPasscode: boolean;
   enableAppLock: (code?: string) => Promise<void>;
   disableAppLock: () => Promise<void>;
+  resetAppLock: () => Promise<void>;
   unlock: () => void;
   verify: (code: string) => boolean;
 };
@@ -123,19 +102,23 @@ export function AppLockProvider({ children }: { children: React.ReactNode }) {
     [profile?.displayName, update],
   );
 
-  const disableAppLock = useCallback(
-    async () => {
-      await clearPasscode();
-      setPasscode(null);
-      sessionUnlocked.current = true;
-      setLocked(false);
-      await update({
-        displayName: profile?.displayName,
-        appLockEnabled: false,
-      });
-    },
-    [profile?.displayName, update],
-  );
+  const disableAppLock = useCallback(async () => {
+    await clearPasscode();
+    setPasscode(null);
+    sessionUnlocked.current = true;
+    setLocked(false);
+    await update({
+      displayName: profile?.displayName,
+      appLockEnabled: false,
+    });
+  }, [profile?.displayName, update]);
+
+  const resetAppLock = useCallback(async () => {
+    await clearPasscode();
+    setPasscode(null);
+    sessionUnlocked.current = true;
+    setLocked(false);
+  }, []);
 
   const unlock = useCallback(() => {
     sessionUnlocked.current = true;
@@ -150,6 +133,7 @@ export function AppLockProvider({ children }: { children: React.ReactNode }) {
     hasPasscode: !!passcode,
     enableAppLock,
     disableAppLock,
+    resetAppLock,
     unlock,
     verify,
   };
