@@ -12,7 +12,7 @@ import { useDailyCatalog } from '../../hooks/useDailyJourney';
 export default function PathScreen() {
   const router = useRouter();
   const focused = useIsFocused();
-  const { catalog, loading, refresh, exerciseDay, exerciseCompletedDays, statusByDay, total, nextDayLocked } =
+  const { catalog, loading, refresh, exerciseDay, exerciseCompletedDays, statusByDay, total, exerciseNextLocked: nextDayLocked } =
     useDailyCatalog();
 
   // Refresh when the tab gains focus (coming back from an exercise).
@@ -83,7 +83,7 @@ export default function PathScreen() {
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             accessibilityRole="button"
             accessibilityLabel={`${allExercisesDone ? 'Review' : 'Open'} exercise, Day ${exerciseDay}. ${exerciseDone ? 'Complete' : 'Still open'}.`}
-            accessibilityHint="You stay on the current day until all of its sessions are complete, and the next day opens the following day."
+            accessibilityHint="Exercise progress is separate from reflections. You stay on the current day until the exercise is complete, and the next day opens the following day."
           >
             <View style={styles.exerciseCard}>
               <View style={{ flex: 1 }}>
@@ -95,7 +95,7 @@ export default function PathScreen() {
                     ? `All ${total} exercises are complete.`
                     : nextDayLocked
                       ? `Completed. Day ${exerciseDay + 1} opens tomorrow.`
-                      : `${exerciseDone ? 'Completed' : 'Still open'}. Finish all of today's sessions to unlock the next day.`}
+                      : `${exerciseDone ? 'Completed' : 'Still open'}. Finish this exercise to unlock the next day.`}
                 </Text>
               </View>
               <Text style={styles.exerciseLeaf}>🌱</Text>

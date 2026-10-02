@@ -15,7 +15,7 @@ import {
   type PartStatus,
   type StoredPart,
 } from '../journey/types';
-import { currentJourneyDay, dayCompletionDates } from '../journey/unlock';
+import { currentFlowDay, flowCompletionDates } from '../journey/unlock';
 import type { InwardEngine, JournalDay, JournalProgress, Reflection } from '../native/InwardEngine';
 import { getInwardEngine } from '../native/InwardEngineProvider';
 import { seededJournalDay } from '../native/seedContent';
@@ -120,18 +120,22 @@ export function useDailyCatalog() {
     return map;
   }, [reflections, total]);
 
-  // One day at a time: the user stays on the first unfinished day, and a
+  // One day at a time, separately for the exercise flow and the morning +
+  // evening reflection flow: each stays on its first unfinished day, and a
   // finished day unlocks the next one only on a later calendar day. `today` is
   // read on every render so a screen left open past midnight unlocks on its
   // next refresh.
   const today = localIsoDate();
-  const completedOn = useMemo(() => dayCompletionDates(reflections, total), [reflections, total]);
-  const journeyDay = useMemo(
-    () => currentJourneyDay(total, statusByDay, completedOn, today),
-    [total, statusByDay, completedOn, today],
+  const exerciseFlow = useMemo(
+    () => currentFlowDay('exercise', total, statusByDay, flowCompletionDates(reflections, total, 'exercise'), today),
+    [reflections, total, statusByDay, today],
   );
-  const exerciseDay = journeyDay.day;
-  const reflectionDay = journeyDay.day;
+  const reflectionFlow = useMemo(
+    () => currentFlowDay('reflection', total, statusByDay, flowCompletionDates(reflections, total, 'reflection'), today),
+    [reflections, total, statusByDay, today],
+  );
+  const exerciseDay = exerciseFlow.day;
+  const reflectionDay = reflectionFlow.day;
   const exerciseCompletedDays = completedExerciseDays(total, statusByDay);
   const reflectionCompletedDays = completedReflectionDays(total, statusByDay);
 
@@ -149,10 +153,10 @@ export function useDailyCatalog() {
     exerciseCompletedDays,
     reflectionCompletedDays,
     statusByDay,
-    currentDay: journeyDay.day,
-    nextDayLocked: journeyDay.waiting,
-    nextDayUnlocksOn: journeyDay.unlocksOn,
-    allDaysDone: journeyDay.allDone,
+    exerciseNextLocked: exerciseFlow.waiting,
+    reflectionNextLocked: reflectionFlow.waiting,
+    exerciseAllDone: exerciseFlow.allDone,
+    reflectionAllDone: reflectionFlow.allDone,
   };
 }
 

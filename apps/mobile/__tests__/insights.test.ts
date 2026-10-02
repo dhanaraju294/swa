@@ -103,7 +103,7 @@ describe('computeInsightCards', () => {
     expect(flow?.title).toBe('Your two flows');
     expect(flow?.body).toMatch(/Reflections · Day 2/);
     expect(flow?.body).toMatch(/Practice · Day 1: open/);
-    expect(flow?.body).toMatch(/next day opens tomorrow/);
+    expect(flow?.body).toMatch(/stays on its current day/);
   });
 
   it('names feelings only from words the user actually logged', () => {

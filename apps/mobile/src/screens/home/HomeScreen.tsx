@@ -16,7 +16,7 @@ import { isoDay } from '../../hooks/appIcon';
 import { useProfile } from '../../hooks/useProfile';
 import { useLatestSpotCheckin } from '../../hooks/useSpotCheckins';
 import { streakMoodFor, streakMoodLabel } from '../../journey/streakMood';
-import { allPartsComplete, type JourneyPart } from '../../journey/types';
+import type { JourneyPart } from '../../journey/types';
 import type { Streak } from '../../native/InwardEngine';
 import { syncStreakWidget } from '../../widgets/streakWidget';
 
@@ -50,9 +50,12 @@ export default function HomeScreen() {
     reflectionDay,
     statusByDay,
     total,
-    currentDay,
-    nextDayLocked,
-    allDaysDone,
+    exerciseCompletedDays,
+    reflectionCompletedDays,
+    exerciseNextLocked,
+    reflectionNextLocked,
+    exerciseAllDone,
+    reflectionAllDone,
     refresh,
   } = useDailyCatalog();
   const { content: reflectionContent } = useDailyDay(reflectionDay);
@@ -72,8 +75,11 @@ export default function HomeScreen() {
     return () => clearInterval(timer);
   }, []);
 
-  // Finishing a day today means the user showed up today, so Blossom and the
-  // widget must never read it as a lapsed rhythm while the next day is locked.
+  // Finishing a day in either flow today means the user showed up today, so
+  // Blossom and the widget must never read it as a lapsed rhythm while that
+  // flow's next day is locked.
+  const nextDayLocked = exerciseNextLocked || reflectionNextLocked;
+  const allDaysDone = exerciseAllDone && reflectionAllDone;
   const todayUtc = isoDay(now);
   const effectiveStreak = useMemo<Streak | null | undefined>(() => {
     if (!nextDayLocked || !streak || streak.lastActiveDate === todayUtc) return streak;
@@ -85,10 +91,9 @@ export default function HomeScreen() {
     syncStreakWidget(effectiveStreak).catch((error) => console.warn('Failed to sync streak widget:', error));
   }, [effectiveStreak, streakLoading]);
 
-  const dayStatus = statusByDay[currentDay];
-  const partsDone =
-    Number(Boolean(dayStatus?.morning)) + Number(Boolean(dayStatus?.exercise)) + Number(Boolean(dayStatus?.evening));
-  const daysComplete = Object.values(statusByDay).filter(allPartsComplete).length;
+  const reflectionStatus = statusByDay[reflectionDay];
+  const exerciseStatus = statusByDay[exerciseDay];
+  const reflectionPartsDone = Number(Boolean(reflectionStatus?.morning)) + Number(Boolean(reflectionStatus?.evening));
   const greeting = greetingFor(now.getHours());
   const name = profile?.displayName?.trim();
 
@@ -104,9 +109,10 @@ export default function HomeScreen() {
     return session?.title || catalog?.days.find((d) => d.day === day)?.theme || PART_META[part].sub;
   };
 
-  const statusFor = (part: JourneyPart) => Boolean(dayStatus?.[part]);
+  const statusFor = (part: JourneyPart) =>
+    part === 'exercise' ? Boolean(exerciseStatus?.exercise) : Boolean(reflectionStatus?.[part]);
 
-  const dayFor = (_part: JourneyPart) => currentDay;
+  const dayFor = (part: JourneyPart) => (part === 'exercise' ? exerciseDay : reflectionDay);
 
   const mascotMood = streakMoodFor(effectiveStreak, now);
   const streakNum = streakLoading ? '—' : String(mascotMood === 'sad' ? 0 : (effectiveStreak?.currentStreak ?? 0));
@@ -114,12 +120,16 @@ export default function HomeScreen() {
   const moodBadgeLabel = allDaysDone
     ? 'Journey complete'
     : nextDayLocked
-      ? `Day ${currentDay} complete`
+      ? 'Nicely done today'
       : streakMoodLabel(mascotMood);
   const unfinishedNote =
     mascotMood === 'sad' && !nextDayLocked
-      ? `Blossom is resting. Day ${currentDay} is still waiting for you — finish it to move forward.`
+      ? `Blossom is resting. Reflections Day ${reflectionDay} and Exercise Day ${exerciseDay} are still waiting for you — finish them to move forward.`
       : null;
+  const lockLines = [
+    reflectionNextLocked ? `Reflections Day ${reflectionDay} is complete — Day ${reflectionDay + 1} opens tomorrow.` : null,
+    exerciseNextLocked ? `Exercise Day ${exerciseDay} is complete — Day ${exerciseDay + 1} opens tomorrow.` : null,
+  ].filter((line): line is string => Boolean(line));
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
@@ -185,33 +195,34 @@ export default function HomeScreen() {
           </View>
           <View style={styles.rhythmDivider} />
           <Text style={styles.rhythmNote}>
-            Each day has a morning reflection, a practice and an evening reflection. Finish all three to complete the
-            day; the next day opens tomorrow. Until then you stay on the same day.
+            Reflections and exercises move independently. Each stays on its current day until you complete it, and the
+            next day opens tomorrow.
           </Text>
           <Text style={styles.flowProgressNote}>
-            Day {currentDay} of {total} · {partsDone}/3 done · {daysComplete}/{total} days complete
+            Reflections: Day {reflectionDay} · {reflectionCompletedDays.length}/{total} complete
+            {'  '}Practice: Day {exerciseDay} · {exerciseCompletedDays.length}/{total} complete
           </Text>
         </Card>
 
         {unfinishedNote ? <Text style={styles.lockNote}>{unfinishedNote}</Text> : null}
 
-        {nextDayLocked || allDaysDone ? (
+        {lockLines.length > 0 || allDaysDone ? (
           <Card style={styles.lockCard}>
-            <Text style={styles.lockTitle}>
-              {allDaysDone ? 'You finished the whole journey 🌸' : `Day ${currentDay} complete 🌿`}
-            </Text>
-            <Text style={styles.lockBody}>
-              {allDaysDone
-                ? 'Every day is complete. You can revisit any of them below.'
-                : `Day ${currentDay + 1} opens tomorrow. Rest well — Blossom will be here. You can still revisit today's sessions.`}
-            </Text>
+            <Text style={styles.lockTitle}>{allDaysDone ? 'You finished the whole journey 🌸' : 'Nicely done today 🌿'}</Text>
+            {(allDaysDone ? ['Every day is complete. You can revisit any of them below.'] : lockLines).map((line) => (
+              <Text key={line} style={styles.lockBody}>
+                {line}
+              </Text>
+            ))}
+            {allDaysDone ? null : <Text style={styles.lockBody}>Rest well — Blossom will be here.</Text>}
           </Card>
         ) : null}
 
         {/* The reflection pair and exercise each keep their own sequence day. */}
         <EyebrowLabel label="CONTINUE YOUR PATH" />
         <Text style={styles.pathKicker}>
-          Day {currentDay} · {partsDone}/3 done
+          Reflections · Day {reflectionDay} ({reflectionPartsDone}/2) · Practice · Day {exerciseDay} (
+          {exerciseStatus?.exercise ? 1 : 0}/1)
         </Text>
         <Card style={styles.pathCard}>
           {PARTS.map((part, i) => {
@@ -277,7 +288,7 @@ export default function HomeScreen() {
           style={{ marginTop: spacing.lg }}
         />
 
-        <Text style={styles.dayMeta}>One day at a time · the next day opens tomorrow once today is complete</Text>
+        <Text style={styles.dayMeta}>One day at a time · each flow's next day opens tomorrow once today's is complete</Text>
         <View style={{ height: 24 }} />
       </ScrollView>
     </SafeAreaView>

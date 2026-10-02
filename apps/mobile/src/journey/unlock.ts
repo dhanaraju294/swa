@@ -1,22 +1,37 @@
 import type { Reflection } from '../native/InwardEngine';
 import { addDaysIso, isIsoDay, localIsoDate } from './calendar';
-import { allPartsComplete, PART_JOURNALS, parseStoredPart, type JourneyPart, type PartStatus } from './types';
+import { PART_JOURNALS, parseStoredPart, type JourneyPart, type PartStatus } from './types';
 
 const SESSION_PROMPT = 'session';
-const PARTS: JourneyPart[] = ['morning', 'exercise', 'evening'];
 
-/** Local calendar date on which each fully completed day was finished. */
+/**
+ * The journey has two independent flows that follow the same rule:
+ *  - exercise:    the daily practice (Path tab);
+ *  - reflections: the morning + evening pair.
+ * A flow's day is finished when every part listed here is saved.
+ */
+export type JourneyFlow = 'exercise' | 'reflection';
+export const FLOW_PARTS: Record<JourneyFlow, JourneyPart[]> = {
+  exercise: ['exercise'],
+  reflection: ['morning', 'evening'],
+};
+
+/** Local calendar date on which each fully completed day of a flow was finished. */
 export type DayCompletionDates = Record<number, string>;
 
 export type CurrentDay = {
   /** The day the user is on. While waiting for tomorrow it is the day just finished. */
   day: number;
-  /** Today's day is finished and the next one is still locked until `unlocksOn`. */
+  /** That day was finished today and the next one stays locked until `unlocksOn`. */
   waiting: boolean;
   unlocksOn: string | null;
-  /** Every authored day is finished. */
+  /** Every authored day of this flow is finished. */
   allDone: boolean;
 };
+
+export function isFlowDayComplete(flow: JourneyFlow, status: PartStatus | undefined): boolean {
+  return Boolean(status) && FLOW_PARTS[flow].every((part) => status?.[part]);
+}
 
 function completionDateOf(reflection: Reflection): string | null {
   const stored = parseStoredPart(reflection.response);
@@ -29,16 +44,16 @@ function completionDateOf(reflection: Reflection): string | null {
 }
 
 /**
- * A day is finished when its morning, exercise and evening sessions are all
- * saved; it was finished on the date of the last of those completions.
+ * A flow day is finished on the date of the last of its parts to be saved.
  * Days with an unreadable timestamp are left out and therefore never block the
  * next day.
  */
-export function dayCompletionDates(reflections: Reflection[], total: number): DayCompletionDates {
+export function flowCompletionDates(reflections: Reflection[], total: number, flow: JourneyFlow): DayCompletionDates {
+  const parts = FLOW_PARTS[flow];
   const byDay: Record<number, Partial<Record<JourneyPart, string>>> = {};
   for (const reflection of reflections) {
     if (reflection.prompt !== SESSION_PROMPT) continue;
-    const part = PARTS.find((p) => PART_JOURNALS[p] === reflection.journalId);
+    const part = parts.find((p) => PART_JOURNALS[p] === reflection.journalId);
     if (!part || reflection.dayNumber < 1 || reflection.dayNumber > total) continue;
     const date = completionDateOf(reflection);
     if (!date) continue;
@@ -47,18 +62,19 @@ export function dayCompletionDates(reflections: Reflection[], total: number): Da
 
   const result: DayCompletionDates = {};
   for (const [day, dates] of Object.entries(byDay)) {
-    if (!PARTS.every((part) => dates[part])) continue;
-    result[Number(day)] = PARTS.map((part) => dates[part] as string).sort()[PARTS.length - 1];
+    if (!parts.every((part) => dates[part])) continue;
+    result[Number(day)] = parts.map((part) => dates[part] as string).sort()[parts.length - 1];
   }
   return result;
 }
 
 /**
- * One day at a time:
- *  - the user stays on the first day whose three sessions are not all done;
+ * One day at a time, per flow:
+ *  - the user stays on the first day of the flow that is not finished;
  *  - once a day is finished, the next one opens only on a later calendar day.
  */
-export function currentJourneyDay(
+export function currentFlowDay(
+  flow: JourneyFlow,
   total: number,
   statusByDay: Record<number, PartStatus>,
   completedOn: DayCompletionDates,
@@ -67,7 +83,7 @@ export function currentJourneyDay(
   const lastDay = Math.max(1, total);
   let firstOpen = 0;
   for (let day = 1; day <= lastDay; day += 1) {
-    if (!allPartsComplete(statusByDay[day])) {
+    if (!isFlowDayComplete(flow, statusByDay[day])) {
       firstOpen = day;
       break;
     }
