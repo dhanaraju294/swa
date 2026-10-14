@@ -57,6 +57,10 @@ export default function SettingsScreen() {
   // Profile tab opens, and always available from the card below.
   const { data: streak } = useStreak();
   const widget = useAddStreakWidget(streak);
+  const celebrationSound = useUI((state) => state.celebrationSoundEnabled);
+  const celebrationHaptics = useUI((state) => state.celebrationHapticsEnabled);
+  const setCelebrationSound = useUI((state) => state.setCelebrationSoundEnabled);
+  const setCelebrationHaptics = useUI((state) => state.setCelebrationHapticsEnabled);
   const widgetPromptSeen = useUI((state) => state.widgetPromptSeen);
   const setWidgetPromptSeen = useUI((state) => state.setWidgetPromptSeen);
   const [uiHydrated, setUiHydrated] = useState(() => useUI.persist.hasHydrated());
@@ -331,6 +335,24 @@ export default function SettingsScreen() {
             loading={savingName}
             style={{ marginTop: spacing.md }}
           />
+        </Card>
+
+        <Card style={styles.card}>
+          <EyebrowLabel label="LITTLE CELEBRATIONS" />
+          <View style={styles.row}>
+            <View style={styles.rowInfo}>
+              <Text style={styles.rowLabel}>Celebration sounds</Text>
+              <Text style={styles.rowDesc}>A cheerful sound when you finish an exercise. Home stays quiet.</Text>
+            </View>
+            <Switch value={celebrationSound} onValueChange={setCelebrationSound} trackColor={{ true: colors.sage, false: '#E0DAD0' }} accessibilityLabel="Celebration sounds" />
+          </View>
+          <View style={styles.row}>
+            <View style={styles.rowInfo}>
+              <Text style={styles.rowLabel}>Celebration haptics</Text>
+              <Text style={styles.rowDesc}>Gentle taps with Sprout’s jumps and applause on supported devices.</Text>
+            </View>
+            <Switch value={celebrationHaptics} onValueChange={setCelebrationHaptics} trackColor={{ true: colors.sage, false: '#E0DAD0' }} accessibilityLabel="Celebration haptics" />
+          </View>
         </Card>
 
         {widget.supported ? (
