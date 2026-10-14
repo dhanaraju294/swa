@@ -5,7 +5,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BlossomMascot } from './BlossomMascot';
+import { SproutMascot } from '../../components/SproutMascot';
 import { Button } from '../../design-system/Button';
 import { Card } from '../../design-system/Card';
 import { EyebrowLabel } from '../../design-system/EyebrowLabel';
@@ -76,7 +76,7 @@ export default function HomeScreen() {
   }, []);
 
   // Finishing a day in either flow today means the user showed up today, so
-  // Blossom and the widget must never read it as a lapsed rhythm while that
+  // The rhythm badge and widget must never read it as a lapsed rhythm while that
   // flow's next day is locked.
   const nextDayLocked = exerciseNextLocked || reflectionNextLocked;
   const allDaysDone = exerciseAllDone && reflectionAllDone;
@@ -124,7 +124,7 @@ export default function HomeScreen() {
       : streakMoodLabel(mascotMood);
   const unfinishedNote =
     mascotMood === 'sad' && !nextDayLocked
-      ? `Blossom is resting. Reflections Day ${reflectionDay} and Exercise Day ${exerciseDay} are still waiting for you — finish them to move forward.`
+      ? `Your next step is waiting. Reflections Day ${reflectionDay} and Exercise Day ${exerciseDay} are still waiting for you — finish them to move forward.`
       : null;
   const lockLines = [
     reflectionNextLocked ? `Reflections Day ${reflectionDay} is complete — Day ${reflectionDay + 1} opens tomorrow.` : null,
@@ -166,9 +166,9 @@ export default function HomeScreen() {
         </Text>
         <Text style={styles.greetingSub}>Take a breath. You're exactly where you need to be.</Text>
 
-        {/* Blossom mirrors the streak gently; missed days never block the daily path. */}
+        {/* Home stays gently idle. Rewards belong to successfully completed exercises. */}
         <View style={styles.illustrationCard}>
-          <BlossomMascot mood={mascotMood} active={isFocused} />
+          <SproutMascot emotion="idle" size={220} active={isFocused} muted hapticsEnabled={false} />
           <View style={[styles.moodBadge, mascotMood === 'sad' && styles.moodBadgeSad]}>
             <View style={[styles.moodDot, mascotMood === 'sad' && styles.moodDotSad]} />
             <Text style={styles.moodBadgeText}>{moodBadgeLabel}</Text>
@@ -214,7 +214,7 @@ export default function HomeScreen() {
                 {line}
               </Text>
             ))}
-            {allDaysDone ? null : <Text style={styles.lockBody}>Rest well — Blossom will be here.</Text>}
+            {allDaysDone ? null : <Text style={styles.lockBody}>Rest well — Sprout will be here.</Text>}
           </Card>
         ) : null}
 
@@ -332,7 +332,9 @@ const styles = StyleSheet.create({
     marginTop: spacing.lg,
     borderRadius: radius.lg,
     overflow: 'hidden',
-    height: 202,
+    height: 230,
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: '#F6EFD9',
     position: 'relative',
   },

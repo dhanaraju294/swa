@@ -15,10 +15,12 @@
     "start": "npm run --workspace inward-journey start",
     "test:rust": "cd rust/inward_core && cargo test",
     "test:app": "npm run --workspace inward-journey test",
-    "typecheck": "npm run --workspace inward-journey typecheck"
+    "typecheck": "npm run --workspace inward-journey typecheck",
+    "preview:mascot": "vite --config previews/sprout/vite.config.ts"
   },
   "devDependencies": {
-    "uniffi-bindgen-react-native": "^0.29.3-1"
+    "uniffi-bindgen-react-native": "^0.29.3-1",
+    "vite": "^6.4.4"
   },
   "version": "1.0.0",
   "repository": {

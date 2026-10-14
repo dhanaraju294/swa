@@ -1,3 +1,4 @@
+import { useIsFocused } from '@react-navigation/native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import {
@@ -10,10 +11,13 @@ import {
   KeyboardAvoidingView,
   Platform,
   TextInput,
+  Keyboard,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Button } from '../../design-system/Button';
+import { ExerciseCompletion } from '../../components/ExerciseCompletion';
+import { shouldCelebrateExercise } from '../../journey/completionCelebration';
 import { WritingLineInput } from '../../design-system/WritingLineInput';
 import { colors, spacing, radius, shadow } from '../../design-system/tokens';
 import { useDailyCatalog, useDailyDay, useSaveJourneyPart, useStoredPartAnswers } from '../../hooks/useDailyJourney';
@@ -64,6 +68,10 @@ function parseAnswerDraft(raw: string | undefined): Record<string, string> {
 
 export default function SessionScreen() {
   const router = useRouter();
+  const isFocused = useIsFocused();
+  const celebrationSound = useUI((state) => state.celebrationSoundEnabled);
+  const celebrationHaptics = useUI((state) => state.celebrationHapticsEnabled);
+  const setCelebrationSound = useUI((state) => state.setCelebrationSoundEnabled);
   const params = useLocalSearchParams<{ day?: string; part?: string }>();
   const { exerciseDay, reflectionDay, statusByDay, loading: catalogLoading } = useDailyCatalog();
   const partParam = Array.isArray(params.part) ? params.part[0] : params.part;
@@ -91,7 +99,16 @@ export default function SessionScreen() {
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [done, setDone] = useState(false);
+  const [rewardDay, setRewardDay] = useState<number | null>(null);
   const [unexpectedSaveError, setUnexpectedSaveError] = useState('');
+
+  const mountedRef = useRef(true);
+  const viewKeyRef = useRef(sessionDraftKey);
+  viewKeyRef.current = sessionDraftKey;
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
 
   const answersRef = useRef(answers);
   answersRef.current = answers;
@@ -180,6 +197,9 @@ export default function SessionScreen() {
         const result = await savePart(day, part, finalAnswers);
         if (result.error) return;
         clearJournalDraft(sessionDraftKey);
+        if (!mountedRef.current || viewKeyRef.current !== sessionDraftKey) return;
+        Keyboard.dismiss();
+        setRewardDay(shouldCelebrateExercise(part, result) ? day : null);
         setDone(true);
       } catch (error) {
         console.warn('Could not save this journey step:', error);
@@ -220,6 +240,7 @@ export default function SessionScreen() {
     advancingRef.current = false;
     setStepIndex(0);
     setDone(false);
+    setRewardDay(null);
     setUnexpectedSaveError('');
     clearSaveError();
     const restored = stored?.answers ?? parseAnswerDraft(localAnswerDraft);
@@ -227,6 +248,23 @@ export default function SessionScreen() {
     answersRef.current = { ...restored };
     setAnswers({ ...restored });
   }, [storedReady, storedKeyForView, stored, localAnswerDraft, clearSaveError, clearJournalDraft, sessionDraftKey]);
+
+  // Keep the saved reward visible while catalog listeners refresh in the background.
+  // Reopening/editing a saved exercise, reflections and failed saves never reach this branch.
+  if (done && rewardDay !== null) {
+    return (
+      <SafeAreaView style={[styles.safe, { backgroundColor: '#FAF8F2' }]}>
+        <ExerciseCompletion
+          day={rewardDay}
+          active={isFocused}
+          soundEnabled={celebrationSound}
+          hapticsEnabled={celebrationHaptics}
+          onSoundChange={setCelebrationSound}
+          onContinue={() => router.replace('/(tabs)')}
+        />
+      </SafeAreaView>
+    );
+  }
 
   if (catalogLoading || loading || !storedReady) {
     return (

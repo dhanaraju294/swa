@@ -243,7 +243,7 @@ export function useSaveJourneyPart() {
       day: number,
       part: JourneyPart,
       answers: Record<string, string>,
-    ): Promise<{ status: PartStatus | null; error: string | null }> => {
+    ): Promise<{ status: PartStatus | null; error: string | null; isNewCompletion: boolean }> => {
       setSaving(true);
       setError(null);
       try {
@@ -277,11 +277,11 @@ export function useSaveJourneyPart() {
         // its state right now — the save above may have completed the day
         // and unlocked the next one.
         emitJourneyChanged();
-        return { status, error: null };
+        return { status, error: null, isNewCompletion: !previous };
       } catch (e) {
         const message = e instanceof Error ? e.message : 'Failed to save your reflection.';
         setError(message);
-        return { status: null, error: message };
+        return { status: null, error: message, isNewCompletion: false };
       } finally {
         setSaving(false);
       }

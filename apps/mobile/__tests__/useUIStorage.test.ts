@@ -58,3 +58,20 @@ describe('UI draft storage', () => {
     expect(secureStore.deleteItemAsync).toHaveBeenCalledWith('inward-ui-v1');
   });
 });
+
+it('remembers celebration preferences without modifying unfinished answers', async () => {
+  useUI.getState().setJournalDraft('journey-exercise-1', 'my unfinished practice');
+  useUI.getState().setCelebrationSoundEnabled(false);
+  useUI.getState().setCelebrationHapticsEnabled(false);
+  const raw = await AsyncStorage.getItem('inward-ui-v1');
+  const persisted = JSON.parse(raw as string).state;
+  expect(persisted.celebrationSoundEnabled).toBe(false);
+  expect(persisted.celebrationHapticsEnabled).toBe(false);
+  await useUI.persist.rehydrate();
+  expect(useUI.getState().celebrationSoundEnabled).toBe(false);
+  expect(useUI.getState().celebrationHapticsEnabled).toBe(false);
+  expect(useUI.getState().journalDrafts['journey-exercise-1']).toBe('my unfinished practice');
+  useUI.getState().clearUserData();
+  expect(useUI.getState().celebrationSoundEnabled).toBe(true);
+  expect(useUI.getState().celebrationHapticsEnabled).toBe(true);
+});

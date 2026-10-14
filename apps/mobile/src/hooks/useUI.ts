@@ -7,6 +7,10 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 type UIState = {
   currentTab: string;
   widgetPromptSeen: boolean;
+  celebrationSoundEnabled: boolean;
+  celebrationHapticsEnabled: boolean;
+  setCelebrationSoundEnabled: (enabled: boolean) => void;
+  setCelebrationHapticsEnabled: (enabled: boolean) => void;
   journalDrafts: Record<string, string>;
   onTheSpotDraft: {
     feeling: string;
@@ -104,6 +108,10 @@ export const useUI = create<UIState>()(
     (set) => ({
       currentTab: 'home',
       widgetPromptSeen: false,
+      celebrationSoundEnabled: true,
+      celebrationHapticsEnabled: true,
+      setCelebrationSoundEnabled: (enabled) => set({ celebrationSoundEnabled: enabled }),
+      setCelebrationHapticsEnabled: (enabled) => set({ celebrationHapticsEnabled: enabled }),
       journalDrafts: {},
       onTheSpotDraft: defaultOnTheSpot,
       spotCheckinDraft: defaultSpotCheckin,
@@ -124,6 +132,8 @@ export const useUI = create<UIState>()(
       clearCheckinDraft: () => set({ checkinDraft: defaultCheckin }),
       clearUserData: () =>
         set({
+          celebrationSoundEnabled: true,
+          celebrationHapticsEnabled: true,
           journalDrafts: {},
           onTheSpotDraft: defaultOnTheSpot,
           spotCheckinDraft: defaultSpotCheckin,
