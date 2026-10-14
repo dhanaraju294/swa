@@ -646,6 +646,7 @@ impl CoreApi {
 
         let export = serde_json::json!({
             "version": "1.2",
+            "device_backup": crate::db::backup::export(conn)?,
             "profile": profile,
             "settings": settings,
             "streak": streak,

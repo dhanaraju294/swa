@@ -1,5 +1,7 @@
-import React, { useMemo } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
+import { SproutMascot } from '../../components/SproutMascot';
 import Svg, { Path } from 'react-native-svg';
 
 import { colors, spacing, shadow } from '../../design-system/tokens';
@@ -12,26 +14,14 @@ type Props = {
   onPressDay: (day: number) => void;
 };
 
-const MAP_PAD = 28;
-const NODE = 64;
+const NODE = 68;
 const HIT_TARGET_WIDTH = NODE + 40;
-const HIT_TARGET_HEIGHT = 108;
-const ROW_H = 112;
-
-function sideFor(indexInUnit: number): 'left' | 'center' | 'right' {
-  const pattern: ('left' | 'center' | 'right')[] = ['center', 'right', 'left', 'center', 'right', 'left', 'center'];
-  return pattern[indexInUnit % pattern.length];
-}
-
-function xFor(side: 'left' | 'center' | 'right', width: number) {
-  if (side === 'left') return MAP_PAD + 18;
-  if (side === 'right') return width - MAP_PAD - NODE - 18;
-  return (width - NODE) / 2;
-}
+const HIT_TARGET_HEIGHT = 120;
+const ROW_H = 138;
 
 export function PathMap({ catalog, exerciseDay, statusByDay, onPressDay }: Props) {
-  const { width: screenWidth } = useWindowDimensions();
-  const width = Math.max(280, screenWidth - spacing.lg * 2);
+  const [width, setWidth] = useState(300);
+  const focused = useIsFocused();
 
   const layout = useMemo(() => {
     const nodes: {
@@ -46,7 +36,8 @@ export function PathMap({ catalog, exerciseDay, statusByDay, onPressDay }: Props
     catalog.units.forEach((unit) => {
       y += 78;
       unit.days.forEach((day, index) => {
-        const x = xFor(sideFor(index), width);
+        const amplitude = Math.max(0, Math.min(width * 0.23, (width - HIT_TARGET_WIDTH) / 2 - 12));
+        const x = width / 2 + Math.sin(index * Math.PI / 2.2) * amplitude - NODE / 2;
         nodes.push({ day, x, y, cx: x + NODE / 2, cy: y + NODE / 2, unitId: unit.id });
         y += ROW_H;
       });
@@ -68,7 +59,7 @@ export function PathMap({ catalog, exerciseDay, statusByDay, onPressDay }: Props
   }, [layout.nodes]);
 
   return (
-    <View style={[styles.map, { width, height: layout.height }]}>
+    <View onLayout={event => setWidth(event.nativeEvent.layout.width)} style={[styles.map, { height: layout.height }]}>
       <Svg width={width} height={layout.height} style={StyleSheet.absoluteFill} accessible={false}>
         <Path d={pathD} stroke="#DCD3C0" strokeWidth={10} fill="none" strokeLinecap="round" />
         <Path d={pathD} stroke="#A3BD96" strokeWidth={4} fill="none" strokeLinecap="round" strokeDasharray="2 10" />
@@ -82,11 +73,11 @@ export function PathMap({ catalog, exerciseDay, statusByDay, onPressDay }: Props
         return (
           <View
             key={unit.id}
-            style={[styles.unitBanner, { top: first.y - 70, backgroundColor: unit.tint, borderColor: unit.color }]}
+            style={[styles.unitBanner, { top: first.y - 82, backgroundColor: unit.tint, borderColor: unit.color }]}
           >
             <Text style={styles.unitEyebrow}>{unitDone ? 'COMPLETE' : unitCurrent ? 'IN PROGRESS' : 'UNIT'}</Text>
             <Text style={styles.unitTitle}>{unit.title}</Text>
-            <Text style={styles.unitSub}>{unit.subtitle}</Text>
+
           </View>
         );
       })}
@@ -111,6 +102,8 @@ export function PathMap({ catalog, exerciseDay, statusByDay, onPressDay }: Props
 
         const content = (
           <View style={styles.nodeContent}>
+            {current ? <View style={styles.activeRing} /> : null}
+            <View style={[styles.nodeBase, { backgroundColor: current ? '#B78330' : done ? '#77966B' : '#CEC4B3' }]}>
             <View style={[styles.nodeDisc, { backgroundColor: fill, borderColor: ring }]}>
               {done ? (
                 <Text style={styles.nodeCheck}>✓</Text>
@@ -120,14 +113,13 @@ export function PathMap({ catalog, exerciseDay, statusByDay, onPressDay }: Props
                 </Text>
               )}
             </View>
+            </View>
             <Text style={[styles.nodeLabel, locked && styles.nodeLabelLocked]} numberOfLines={2}>
               {exerciseTitle}
             </Text>
             {current ? (
-              <View style={styles.character}>
-                <View style={styles.trackMarker}>
-                  <Text style={styles.trackMarkerText}>Exercise</Text>
-                </View>
+              <View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[styles.character, node.cx > width / 2 ? { right: HIT_TARGET_WIDTH - 6 } : { left: HIT_TARGET_WIDTH - 6 }]}>
+                <SproutMascot emotion="idle" size={76} active={focused} muted hapticsEnabled={false} />
               </View>
             ) : null}
           </View>
@@ -171,6 +163,8 @@ const styles = StyleSheet.create({
   map: {
     position: 'relative',
     alignSelf: 'center',
+    width: '100%',
+    maxWidth: 600,
   },
   unitBanner: {
     position: 'absolute',
@@ -211,6 +205,8 @@ const styles = StyleSheet.create({
     width: HIT_TARGET_WIDTH,
     alignItems: 'center',
   },
+  activeRing: { position: 'absolute', top: -8, width: NODE + 16, height: NODE + 22, borderRadius: 50, borderWidth: 3, borderColor: '#EDD694', backgroundColor: '#FCF2D5' },
+  nodeBase: { width: NODE, height: NODE + 7, borderRadius: NODE / 2, paddingBottom: 7 },
   nodeDisc: {
     width: NODE,
     height: NODE,
@@ -239,7 +235,7 @@ const styles = StyleSheet.create({
     color: colors.ghost,
   },
   nodeLabel: {
-    marginTop: 6,
+    marginTop: 10,
     fontFamily: 'Nunito_700Bold',
     fontSize: 11.5,
     fontWeight: '700',
@@ -253,8 +249,7 @@ const styles = StyleSheet.create({
   },
   character: {
     position: 'absolute',
-    right: -6,
-    top: -6,
+    top: -8,
   },
   trackMarker: {
     borderRadius: 10,

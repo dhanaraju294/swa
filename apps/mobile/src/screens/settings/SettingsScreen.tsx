@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Modal, View, Text, StyleSheet, ScrollView, Switch, TouchableOpacity } from 'react-native';
 
+import { DeviceBackupCard } from '../../components/DeviceBackupCard';
 import { Button } from '../../design-system/Button';
 import { Card } from '../../design-system/Card';
 import { EyebrowLabel } from '../../design-system/EyebrowLabel';
@@ -428,6 +429,7 @@ export default function SettingsScreen() {
 
         <Card style={styles.card}>
           <EyebrowLabel label="DATA" />
+          <DeviceBackupCard />
           <Text style={styles.rowDesc}>
             Export a JSON copy of locally stored journal entries, check-ins, progress, settings, your setup profile and
             in-progress drafts. The app-lock passcode is not exported. The file can be shared outside the app; exported
@@ -448,7 +450,7 @@ export default function SettingsScreen() {
           <EyebrowLabel label="DANGER ZONE" />
           <Text style={styles.rowDesc}>
             Permanently delete journal entries, check-ins, progress, settings and in-progress drafts stored by this app
-            on this device. Exported files and setup details already synced online are not removed.
+            on this device, including linked device backups. If folder access was revoked, reselect it before deleting. Exported files and setup details already synced online are not removed.
           </Text>
           <Button
             title={deleting ? 'Deleting...' : 'Delete Local App Data'}

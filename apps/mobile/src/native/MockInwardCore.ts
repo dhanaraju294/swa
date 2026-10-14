@@ -78,16 +78,10 @@ export class MockCoreEngine implements InwardEngine {
   private schedulePersist(): void {
     if (this.persistQueued) return; // one pending write covers every mutation in the current tick
     this.persistQueued = true;
-    // Errors are swallowed so a failed write (storage full, etc.) never wedges
-    // the queue; in-memory state stays authoritative and the next mutation
-    // retries.
-    this.persistChain = this.persistChain.then(async () => {
+    // Expose write failures to the save caller; recover the queue for retries.
+    this.persistChain = this.persistChain.catch(() => undefined).then(async () => {
       this.persistQueued = false;
-      try {
-        await this.persist();
-      } catch {
-        /* non-fatal */
-      }
+      await this.persist();
     });
   }
 
@@ -121,6 +115,9 @@ export class MockCoreEngine implements InwardEngine {
       const raw = await AsyncStorage.getItem(MOCK_STORE_KEY);
       if (!raw) return;
       const saved = JSON.parse(raw) as PersistedMock;
+      if (!saved || !['checkins', 'onTheSpot', 'spotCheckins', 'reflections', 'badges'].every(key => Array.isArray(saved[key as keyof PersistedMock])) || !saved.progress || !saved.profile || !saved.settings || !saved.streak) {
+        throw new Error('Invalid stored engine state');
+      }
       this.checkins = saved.checkins ?? [];
       this.onTheSpot = saved.onTheSpot ?? [];
       this.spotCheckins = saved.spotCheckins ?? [];
@@ -130,8 +127,8 @@ export class MockCoreEngine implements InwardEngine {
       this.profile = saved.profile ?? this.profile;
       this.settings = saved.settings ?? this.settings;
       this.badges = saved.badges ?? [];
-    } catch {
-      // Ignore corrupt preview storage and start clean.
+    } catch (error) {
+      throw new Error(`Could not read saved data. Your stored copy has not been changed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -153,6 +150,7 @@ export class MockCoreEngine implements InwardEngine {
     // Showing up for a check-in counts toward the streak.
     this.recordActivity();
     this.schedulePersist();
+    await this.flushPersist();
     return checkin;
   }
 
@@ -179,6 +177,7 @@ export class MockCoreEngine implements InwardEngine {
     // An on-the-spot reflection also counts as showing up today.
     this.recordActivity();
     this.schedulePersist();
+    await this.flushPersist();
     return entry;
   }
 
@@ -197,6 +196,7 @@ export class MockCoreEngine implements InwardEngine {
     // Completing the first check-in counts as showing up today.
     this.recordActivity();
     this.schedulePersist();
+    await this.flushPersist();
     return entry;
   }
 
@@ -267,6 +267,7 @@ export class MockCoreEngine implements InwardEngine {
     // Completing a journal day counts as showing up today (once per day).
     this.recordActivity();
     this.schedulePersist();
+    await this.flushPersist();
     return this.getJournalProgress(journalId);
   }
 
@@ -311,6 +312,7 @@ export class MockCoreEngine implements InwardEngine {
       this.reflections.push(reflection);
     }
     this.schedulePersist();
+    await this.flushPersist();
     return reflection;
   }
 
@@ -340,6 +342,7 @@ export class MockCoreEngine implements InwardEngine {
   async updateProfile(input: ProfileInput): Promise<Profile> {
     this.profile = { ...this.profile, ...input };
     this.schedulePersist();
+    await this.flushPersist();
     return { ...this.profile };
   }
 
@@ -350,6 +353,7 @@ export class MockCoreEngine implements InwardEngine {
   async updateSettings(input: AppSettingsInput): Promise<AppSettings> {
     this.settings = { ...input };
     this.schedulePersist();
+    await this.flushPersist();
     return { ...this.settings };
   }
 
@@ -357,6 +361,9 @@ export class MockCoreEngine implements InwardEngine {
     return JSON.stringify(
       {
         version: '1.0',
+        device_backup: this.snapshot(),
+        spot_checkins: this.spotCheckins,
+        journal_progress: this.progress,
         profile: this.profile,
         settings: this.settings,
         streak: this.streak,
@@ -375,7 +382,7 @@ export class MockCoreEngine implements InwardEngine {
   async deleteAllData(): Promise<void> {
     // 1) Let any in-flight or queued write finish BEFORE clearing, so a stale
     //    write cannot land after the deletion and resurrect the data.
-    await this.flushPersist();
+    await this.flushPersist().catch(() => undefined);
     // 2) Clear the in-memory state.
     this.checkins = [];
     this.onTheSpot = [];
@@ -388,11 +395,10 @@ export class MockCoreEngine implements InwardEngine {
     this.settings = { theme: 'default', reminderTime: undefined, exportFormatPref: 'json' };
     // 3) Persist the cleared state through the same chain (no removeItem race:
     //    the write is ordered after everything queued before it).
-    this.persistChain = this.persistChain
+    this.persistChain = this.persistChain.catch(() => undefined)
       .then(() =>
         AsyncStorage.setItem(MOCK_STORE_KEY, JSON.stringify(this.snapshot())),
-      )
-      .catch(() => undefined);
+      );
     await this.flushPersist();
   }
 }

@@ -1,3 +1,4 @@
+import { requestDeviceBackup } from '../lib/backupEvents';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
@@ -90,6 +91,7 @@ const uiStorage = createJSONStorage(() => ({
   },
   setItem: async (name: string, value: string) => {
     await AsyncStorage.setItem(name, value);
+    await requestDeviceBackup();
   },
   removeItem: async (name: string) => {
     await AsyncStorage.removeItem(name).catch((error) => {

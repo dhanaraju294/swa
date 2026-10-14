@@ -27,7 +27,7 @@
         "backgroundColor": "#FDF6EC"
       },
       "package": "com.inwardjourney.app",
-      "allowBackup": false,
+      "allowBackup": true,
       "permissions": [
         "android.permission.POST_NOTIFICATIONS",
         "android.permission.RECEIVE_BOOT_COMPLETED",
@@ -54,6 +54,7 @@
         }
       ],
       "./plugins/withRustCore.js",
+      "./plugins/withDeviceBackup.js",
       "./plugins/withStreakWidget.js",
       [
         "@variant-systems/expo-dynamic-app-icon",

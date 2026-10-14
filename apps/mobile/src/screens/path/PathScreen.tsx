@@ -61,11 +61,12 @@ export default function PathScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>My Path</Text>
+        <Text style={styles.headerTitle}>Your Swa Journey</Text>
+        <Text style={styles.mapHead}>{exerciseCompletedDays.length}/{total} practices complete · One step a day</Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.mapHead}>Your exercises, one winding road</Text>
+
         <PathMap catalog={catalog} exerciseDay={exerciseDay} statusByDay={statusByDay} onPressDay={openDay} />
         <Text style={styles.foot}>
           Exercises {exerciseCompletedDays.length}/{total} complete

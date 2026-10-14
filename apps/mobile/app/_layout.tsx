@@ -9,9 +9,11 @@ import { Nunito_800ExtraBold } from '@expo-google-fonts/nunito/800ExtraBold';
 import * as FileSystem from 'expo-file-system';
 import { useFonts } from 'expo-font';
 import { Stack, router } from 'expo-router';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 
+import { getBackupStatus, subscribeBackupStatus } from '../src/lib/deviceBackup';
+import { useUI } from '../src/hooks/useUI';
 import AppLockGate from '../src/components/AppLockGate';
 import ErrorBoundary from '../src/components/ErrorBoundary';
 import { Button } from '../src/design-system/Button';
@@ -28,6 +30,7 @@ import { startOnboardingSyncListener } from '../src/onboarding/sync';
 import { parseReminders } from '../src/state/appStore';
 
 export default function RootLayout() {
+  const backup = useSyncExternalStore(subscribeBackupStatus, getBackupStatus, getBackupStatus);
   const [ready, setReady] = useState(false);
   const [initError, setInitError] = useState<string | null>(null);
   const initRun = useRef(0);
@@ -56,6 +59,7 @@ export default function RootLayout() {
       const engine = await getInwardEngine();
       const appDocumentsDir = FileSystem.documentDirectory || '';
       await engine.initialize(appDocumentsDir);
+      await useUI.persist.rehydrate();
       if (runId !== initRun.current) return; // superseded by a newer run
       setReady(true);
       // Best-effort: sync the reminder schedule. A failure here must not
@@ -89,6 +93,13 @@ export default function RootLayout() {
       router.push({ pathname: '/session', params: { part } });
     });
   }, []);
+
+  if (backup.restartRequired) {
+    return <View style={styles.errorWrap}>
+      <Text style={styles.errorTitle}>Your backup is ready to restore</Text>
+      <Text style={styles.errorBody}>Close SWA completely, then reopen it to apply your saved progress. No further changes will be saved until then.</Text>
+    </View>;
+  }
 
   if (initError) {
     return (

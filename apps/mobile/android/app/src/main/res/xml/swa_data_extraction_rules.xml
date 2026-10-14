@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+  <cloud-backup>
+    <exclude domain="sharedpref" path="SecureStore" />
+    <exclude domain="file" path="swa-native-restore.json" />
+  </cloud-backup>
+  <device-transfer>
+    <exclude domain="sharedpref" path="SecureStore" />
+    <exclude domain="file" path="swa-native-restore.json" />
+  </device-transfer>
+</data-extraction-rules>

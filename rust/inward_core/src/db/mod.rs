@@ -1,3 +1,4 @@
+pub mod backup;
 use rusqlite::{Connection, OpenFlags};
 use rusqlite_migration::{Migrations, M};
 
@@ -188,6 +189,15 @@ pub fn open_or_create(db_path: &str) -> Result<Connection> {
 
     crate::content::seed_daily_journey(&conn)?;
 
+    // A restore is staged by JS and applied only while opening the database,
+    // before the process-wide engine can serve reads or writes.
+    let pending = parent.join("swa-native-restore.json");
+    if pending.exists() {
+        let raw = std::fs::read_to_string(&pending)
+            .map_err(|e| CoreError::Serialization(e.to_string()))?;
+        backup::restore(&conn, &serde_json::from_str(&raw)?)?;
+        std::fs::remove_file(&pending).map_err(|e| CoreError::Serialization(e.to_string()))?;
+    }
     crate::logging::info("inward_core.db", "open_or_create -> ok");
     Ok(conn)
 }

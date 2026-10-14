@@ -1,3 +1,4 @@
+import { resumeDeviceBackupsAfterDeletion } from '../lib/deviceBackup';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import { useCallback, useEffect, useState } from 'react';
@@ -188,6 +189,7 @@ export function useDeleteAllData() {
       await writeNameBackup(undefined);
       await removeStoredItem(UI_STORE_KEY);
       await removeStoredItem(PASSCODE_KEY);
+      await resumeDeviceBackupsAfterDeletion();
     } finally {
       setLoading(false);
     }

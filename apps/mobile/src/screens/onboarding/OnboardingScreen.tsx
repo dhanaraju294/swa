@@ -1,3 +1,4 @@
+import { DeviceBackupCard } from '../../components/DeviceBackupCard';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -304,8 +305,9 @@ export default function OnboardingScreen() {
 }
 
 function Welcome({ onContinue, busy }: { onContinue: () => void; busy: boolean }) {
+  const [showRecovery, setShowRecovery] = useState(false);
   return (
-    <View style={styles.welcome}>
+    <ScrollView contentContainerStyle={styles.welcome}>
       <View style={styles.welcomeArt}>
         <PetalMark size={88} />
       </View>
@@ -313,14 +315,17 @@ function Welcome({ onContinue, busy }: { onContinue: () => void; busy: boolean }
       <Text style={styles.welcomeLine}>Understand yourself{'\n'}one step at a time</Text>
       <View style={{ flex: 1 }} />
       <Button title="Continue" onPress={onContinue} color={colors.gold} disabled={busy} loading={busy} />
+      {Platform.OS === 'android' ? <TouchableOpacity style={{ paddingVertical: 14 }} accessibilityRole="button" accessibilityState={{ expanded: showRecovery }} onPress={() => setShowRecovery(v => !v)}>
+        <Text style={styles.body}>{showRecovery ? 'Hide backup options' : 'Already have a device backup? Restore →'}</Text>
+      </TouchableOpacity> : null}
+      {showRecovery ? <DeviceBackupCard /> : null}
       <View style={styles.privacy}>
         <Ionicons name="shield-checkmark" size={16} color={colors.leaf} />
         <Text style={styles.privacyText}>
-          Your journal and check-ins stay on this device. Your setup details, including your email, are saved locally
-          and sync online when a connection is available.
+          Your journal and check-ins are stored locally and may be included in your device's OS backup. Optional folder backups contain readable personal data. Your setup details sync online when connected.
         </Text>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -717,7 +722,7 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.cream },
   hydrating: { alignItems: 'center', justifyContent: 'center', gap: spacing.sm },
   welcome: {
-    flex: 1,
+    flexGrow: 1,
     paddingHorizontal: spacing.xxl,
     paddingTop: spacing.xxxl,
     paddingBottom: spacing.lg,

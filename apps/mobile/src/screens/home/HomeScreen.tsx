@@ -2,9 +2,10 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useIsFocused } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { homeReflections } from '../../journey/reflectionSummary';
 import { SproutMascot } from '../../components/SproutMascot';
 import { Button } from '../../design-system/Button';
 import { Card } from '../../design-system/Card';
@@ -34,18 +35,21 @@ const PART_META: Record<JourneyPart, { icon: string; tint: string; sub: string }
   evening: { icon: 'moon', tint: '#F3EEF9', sub: 'Close your day with clarity' },
 };
 
-const PARTS: JourneyPart[] = ['morning', 'exercise', 'evening'];
+const PARTS: JourneyPart[] = ['morning', 'evening'];
 
 export default function HomeScreen() {
   const router = useRouter();
   const isFocused = useIsFocused();
   const hasFocusedBefore = useRef(false);
+  const [showPast, setShowPast] = useState(false);
+  const [showRhythmDetails, setShowRhythmDetails] = useState(false);
   const [now, setNow] = useState(() => new Date());
   const { data: profile } = useProfile();
   const { data: streak, loading: streakLoading, refresh: refreshStreak } = useStreak();
   const { data: spotCheckin, loading: spotCheckinLoading, refresh: refreshSpotCheckin } = useLatestSpotCheckin();
   const {
     catalog,
+    reflections,
     exerciseDay,
     reflectionDay,
     statusByDay,
@@ -91,6 +95,7 @@ export default function HomeScreen() {
     syncStreakWidget(effectiveStreak).catch((error) => console.warn('Failed to sync streak widget:', error));
   }, [effectiveStreak, streakLoading]);
 
+  const savedReflections = useMemo(() => homeReflections(reflections, reflectionDay), [reflections, reflectionDay]);
   const reflectionStatus = statusByDay[reflectionDay];
   const exerciseStatus = statusByDay[exerciseDay];
   const reflectionPartsDone = Number(Boolean(reflectionStatus?.morning)) + Number(Boolean(reflectionStatus?.evening));
@@ -194,14 +199,12 @@ export default function HomeScreen() {
             </View>
           </View>
           <View style={styles.rhythmDivider} />
-          <Text style={styles.rhythmNote}>
-            Reflections and exercises move independently. Each stays on its current day until you complete it, and the
-            next day opens tomorrow.
-          </Text>
-          <Text style={styles.flowProgressNote}>
-            Reflections: Day {reflectionDay} · {reflectionCompletedDays.length}/{total} complete
-            {'  '}Practice: Day {exerciseDay} · {exerciseCompletedDays.length}/{total} complete
-          </Text>
+          <TouchableOpacity accessibilityRole="button" accessibilityState={{ expanded: showRhythmDetails }} onPress={() => setShowRhythmDetails(v => !v)} style={{ paddingVertical: 8 }}>
+            <Text style={styles.rhythmNote}>{showRhythmDetails ? 'Hide progress details ↑' : 'How your rhythm works ↓'}</Text>
+          </TouchableOpacity>
+          {showRhythmDetails ? <Text style={styles.flowProgressNote}>
+            Reflections {reflectionCompletedDays.length}/{total} · Practice {exerciseCompletedDays.length}/{total}. Each flow keeps its own pace; the next day opens tomorrow after completion.
+          </Text> : null}
         </Card>
 
         {unfinishedNote ? <Text style={styles.lockNote}>{unfinishedNote}</Text> : null}
@@ -218,12 +221,13 @@ export default function HomeScreen() {
           </Card>
         ) : null}
 
-        {/* The reflection pair and exercise each keep their own sequence day. */}
-        <EyebrowLabel label="CONTINUE YOUR PATH" />
-        <Text style={styles.pathKicker}>
-          Reflections · Day {reflectionDay} ({reflectionPartsDone}/2) · Practice · Day {exerciseDay} (
-          {exerciseStatus?.exercise ? 1 : 0}/1)
-        </Text>
+        <View style={styles.sectionRow}>
+          <Text style={styles.sectionTitle}>Today's Reflection</Text>
+          <TouchableOpacity onPress={() => setShowPast(true)} accessibilityRole="button" accessibilityLabel="View past saved reflections" style={{ paddingVertical: 12 }}>
+            <Text style={styles.pastLink}>View past →</Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.pathKicker}>Day {reflectionDay} · {reflectionPartsDone}/2 moments saved</Text>
         <Card style={styles.pathCard}>
           {PARTS.map((part, i) => {
             const meta = PART_META[part];
@@ -264,13 +268,29 @@ export default function HomeScreen() {
           })}
         </Card>
 
+        {savedReflections.today.map(item => (
+          <TouchableOpacity key={item.id} accessibilityRole="button" accessibilityLabel={`Review ${item.journalId} reflection, day ${item.dayNumber}`} onPress={() => open(item.journalId as JourneyPart)} style={styles.summaryChip}>
+            <Text style={styles.pastLink}>{item.journalId === 'morning' ? '☀️ Morning' : '🌙 Evening'} · Saved</Text>
+            <Text style={styles.summaryText} numberOfLines={2}>{item.summary}</Text>
+          </TouchableOpacity>
+        ))}
+        {savedReflections.recent.map(item => (
+          <TouchableOpacity key={item.id} style={styles.summaryChip} onPress={() => setShowPast(true)} accessibilityRole="button" accessibilityLabel={`View saved reflection from day ${item.dayNumber}`}>
+            <Text style={styles.summaryText} numberOfLines={1}>Day {item.dayNumber} · {item.summary}</Text>
+          </TouchableOpacity>
+        ))}
+        <Card style={styles.firstCheckinCard}>
+          <Text style={styles.pathKicker}>TODAY'S PRACTICE · DAY {exerciseDay}</Text>
+          <Text style={styles.firstCheckinTitle} numberOfLines={2}>{titleFor('exercise')}</Text>
+          <Button title={exerciseStatus?.exercise ? 'Review practice' : 'Start practice'} color={colors.leaf} style={{ marginTop: spacing.md }} onPress={() => open('exercise')} />
+        </Card>
+
         {!spotCheckinLoading && !spotCheckin ? (
           <Card style={styles.firstCheckinCard}>
             <EyebrowLabel label="A MOMENT TO PAUSE" />
             <Text style={styles.firstCheckinTitle}>Take a 3–5 minute check-in</Text>
             <Text style={styles.firstCheckinBody}>
-              Twelve short prompts to notice what feels true for you right now. No right answers, and no change to your
-              daily-path progress.
+              Notice how you feel. Your path progress stays separate.
             </Text>
             <Button
               title="Start inward check-in"
@@ -291,11 +311,34 @@ export default function HomeScreen() {
         <Text style={styles.dayMeta}>One day at a time · each flow's next day opens tomorrow once today's is complete</Text>
         <View style={{ height: 24 }} />
       </ScrollView>
+      <Modal visible={showPast} animationType="slide" transparent onRequestClose={() => setShowPast(false)}>
+        <View style={styles.modalOverlay}><SafeAreaView style={styles.pastSheet}>
+          <Text style={styles.sectionTitle}>Past reflections</Text>
+          <ScrollView style={{ flexShrink: 1 }} contentContainerStyle={{ paddingVertical: spacing.md }}>
+            {savedReflections.past.length === 0 ? <Text style={styles.summaryText}>Your saved reflections will appear here.</Text> : null}
+            {savedReflections.past.map(item => <TouchableOpacity key={item.id} style={styles.summaryChip} accessibilityRole="button" onPress={() => {
+              setShowPast(false);
+              router.push({ pathname: '/session', params: { day: String(item.dayNumber), part: item.journalId } });
+            }}>
+              <Text style={styles.pastLink}>Day {item.dayNumber} · {item.journalId}</Text>
+              <Text style={styles.summaryText}>{item.summary}</Text>
+            </TouchableOpacity>)}
+          </ScrollView>
+          <Button title="Close" onPress={() => setShowPast(false)} color={colors.leaf} />
+        </SafeAreaView></View>
+      </Modal>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  sectionRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', marginTop: spacing.lg },
+  sectionTitle: { fontFamily: 'Fraunces_600SemiBold', fontSize: 21, color: colors.ink },
+  pastLink: { fontFamily: 'Nunito_700Bold', fontSize: 12, color: colors.leafInk },
+  summaryChip: { padding: spacing.md, borderRadius: 16, backgroundColor: '#F3EFE6', marginTop: spacing.sm },
+  summaryText: { fontSize: 13, lineHeight: 20, color: colors.inkSoft },
+  modalOverlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(40,30,20,0.45)' },
+  pastSheet: { maxHeight: '80%', backgroundColor: colors.cream, borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: spacing.lg },
   safe: { flex: 1, backgroundColor: colors.cream },
   container: { flex: 1, backgroundColor: colors.cream },
   content: { padding: spacing.lg, paddingBottom: 110 },

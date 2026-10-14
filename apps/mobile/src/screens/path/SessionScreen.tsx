@@ -445,7 +445,7 @@ function StepRenderer({
   switch (step.type) {
     case 'notice':
     case 'info':
-      return <InfoBody step={step} accent={accent} />;
+      return <InfoBody key={step.id} step={step} accent={accent} />;
     case 'scale':
       return <ScaleBody step={step} value={value} onChange={onChange} accent={accent} />;
     case 'slider':
@@ -1030,14 +1030,18 @@ function TextPromiseBody({
 }
 
 function InfoBody({ step, accent }: { step: JourneyStep; accent: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const body = step.body || 'You have taken another conscious step inward today.';
+  const canExpand = body.length > 180;
   return (
     <View style={[styles.insightCard, { borderColor: accent }]}>
       <View style={styles.insightHeader}>
         <Text style={styles.insightBadge}>💡 {step.insightTitle || 'KEY TAKEAWAY'}</Text>
       </View>
-      <Text style={styles.insightBody}>
-        {step.body || 'You have taken another conscious step inward today. Keep building your daily momentum.'}
-      </Text>
+      <Text style={styles.insightBody} numberOfLines={canExpand && !expanded ? 3 : undefined}>{body}</Text>
+      {canExpand ? <TouchableOpacity accessibilityRole="button" accessibilityState={{ expanded }} onPress={() => setExpanded(v => !v)} style={{ paddingVertical: 12 }}>
+        <Text style={styles.skipText}>{expanded ? 'Show less ↑' : 'Read deeper ↓'}</Text>
+      </TouchableOpacity> : null}
     </View>
   );
 }

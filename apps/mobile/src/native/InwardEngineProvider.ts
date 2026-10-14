@@ -1,12 +1,13 @@
 // Engine provider. Resolves a single long-lived engine for the process:
 //  - the native Rust engine (via UniFFI JSI bindings) on iOS/Android dev-client
 //    and custom builds, or
-//  - an in-memory JS fallback for Expo Go / web previews.
+//  - an persistent JS fallback for Expo Go / web previews.
 //
 // The native path is only taken when the `InwardCore` TurboModule is actually
 // registered, which also guarantees the generated entry module (which installs
 // the Rust crate into Hermes) is never evaluated in environments without it.
 import { Platform } from 'react-native';
+import { attachDeviceBackup } from '../lib/deviceBackup';
 
 import type { InwardEngine } from './InwardEngine';
 import { MockCoreEngine } from './MockInwardCore';
@@ -20,7 +21,7 @@ let nativeAvailability: boolean | null = null;
 // so requiring it is the exact same signal uniffi itself uses
 // (`TurboModuleRegistry.getEnforcing('InwardCore')`). If the module is absent
 // (Expo Go, web, or a dev client built before the Rust bridge was wired in)
-// the require throws and we fall back to the in-memory mock engine.
+// the require throws and we fall back to the persistent mock engine.
 //
 // Returns a tuple so the caller can log *why* a fallback happened.
 function probeNativeBridge(): { available: boolean; detail: string } {
@@ -31,7 +32,7 @@ function probeNativeBridge(): { available: boolean; detail: string } {
   // TurboModule is registered (the generated entry module installs the Rust
   // crate into Hermes via that module). If the module is absent (Expo Go, web,
   // or a dev client built before the Rust bridge was wired in) the require
-  // throws and we fall back to the in-memory mock engine.
+  // throws and we fall back to the persistent mock engine.
   try {
     require('../native/generated');
     const g: any = (globalThis as any).NativeInwardCore;
@@ -63,15 +64,15 @@ export async function getInwardEngine(): Promise<InwardEngine> {
 
   if (nativeAvailability) {
     console.log('[InwardEngine] Using native Rust bridge.');
-    engineInstance = new NativeInwardEngine();
+    engineInstance = attachDeviceBackup(new NativeInwardEngine(), 'native');
   } else {
     console.warn(
-      '[InwardEngine] Native Rust bridge unavailable — using in-memory JS fallback. ' +
+      '[InwardEngine] Native Rust bridge unavailable — using persistent JS fallback. ' +
         'This means the running app does NOT contain the InwardCore native module. ' +
         'Cause: running in Expo Go, or a dev client built before the Rust bridge was wired in. ' +
         'Fix: build & run the custom dev client (npm run ios / npm run android), not Expo Go.',
     );
-    engineInstance = new MockCoreEngine();
+    engineInstance = attachDeviceBackup(new MockCoreEngine(), 'mock');
   }
   return engineInstance;
 }

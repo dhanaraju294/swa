@@ -1,3 +1,4 @@
+import { requestDeviceBackup } from '../lib/backupEvents';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getOrCreateDeviceId, clearDeviceId, DEVICE_ID_KEY } from './deviceId';
 import { emptyDraft, parseRecord, type OnboardingDraft, type OnboardingRecord } from './types';
@@ -17,6 +18,7 @@ export async function readOnboardingRecord(): Promise<OnboardingRecord | null> {
 export async function writeOnboardingRecord(record: OnboardingRecord): Promise<void> {
   const next: OnboardingRecord = { ...record, updatedAt: new Date().toISOString() };
   await AsyncStorage.setItem(ONBOARDING_STORE_KEY, JSON.stringify(next));
+  await requestDeviceBackup();
 }
 
 export async function upsertOnboardingDraft(
