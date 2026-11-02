@@ -1,0 +1,1 @@
+module.exports = {dependency:{platforms:{android:{sourceDir:'./native/android',packageImportPath:'import com.swafocus.FocusPackage;',packageInstance:'new FocusPackage()'},ios:{podspecPath:'./SwaFocus.podspec'}}}};

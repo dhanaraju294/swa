@@ -1,0 +1,8 @@
+   Compiling focus-core v1.0.0 (/home/user/swa-focus-mobile/rust/focus-core)
+    Finished `release` profile [optimized] target(s) in 2.96s
+   Compiling focus-core v1.0.0 (/home/user/swa-focus-mobile/rust/focus-core)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.39s
+     Running `target/debug/uniffi-bindgen generate --metadata-no-deps --library target/release/libfocus_core.so --language python --out-dir target/ffi-check`
+Warning: Unable to auto-format focus_core.py using yapf: Os { code: 2, kind: NotFound, message: "No such file or directory" }
+PASS: native UniFFI C-ABI, catalogue, three games, timestamps, pause, concurrent calls and controlled invalid commands.
+2000 native C-ABI snapshot calls (Python overhead included): 87.1 ms

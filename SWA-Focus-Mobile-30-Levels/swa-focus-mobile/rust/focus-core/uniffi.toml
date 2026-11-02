@@ -1,0 +1,5 @@
+[bindings.kotlin]
+package_name = "com.swafocus.rust"
+cdylib_name = "focus_core"
+[bindings.swift]
+ffi_module_name = "FocusCoreFFI"

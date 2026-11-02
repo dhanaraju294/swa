@@ -1,0 +1,49 @@
+{
+  "name": "@swa/focus-mobile",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "react-native": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test:ts": "tsx --test tests/*.test.ts",
+    "preview": "vite --host 0.0.0.0 --port 3001",
+    "build:preview": "vite build",
+    "test:rust": "cargo test --manifest-path rust/focus-core/Cargo.toml",
+    "build:wasm": "bash scripts/build-wasm.sh"
+  },
+  "peerDependencies": {
+    "react": "^19.2.3",
+    "react-native": "^0.86.3",
+    "react-native-safe-area-context": "^5.10.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "prettier": "^3.6.2",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-safe-area-context": "^5.10.1",
+    "react-native-web": "^0.21.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0",
+    "vite": "^6.4.0"
+  },
+  "codegenConfig": {
+    "name": "SwaFocusSpec",
+    "type": "modules",
+    "jsSrcsDir": "src/native",
+    "android": {
+      "javaPackageName": "com.swafocus"
+    },
+    "ios": {
+      "modulesProvider": {
+        "NativeFocusCore": "NativeFocusCore"
+      }
+    }
+  }
+}
